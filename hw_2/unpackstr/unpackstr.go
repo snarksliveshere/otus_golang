@@ -47,17 +47,14 @@ func symbolDict(s string) (res []map[string]interface{}) {
 			slashes = s[i-2 : i]
 		}
 		if (string(v) == `\` && prev != `\`) ||
-			//((len(res) > i-1) && prev == `\` && err == nil && res[i-1]["symbol"] == `\`) ||
-			(err == nil && prev != `\` && slashes != `\\`) {
+			(err == nil && slashes == `\\`) ||
+			(err == nil && prev != `\`) {
 			continue
 		}
-		fmt.Println(prev, i, slashes, i, res, string(v) == `\` && prev != `\`, err == nil && prev != `\` && slashes != `\\`)
-		fmt.Println(err, prev, slashes, err == nil && prev != `\` && slashes == `\\`)
 		m["symbol"] = string(v)
 		m["index"] = i
 		res = append(res, m)
 	}
-	fmt.Println(res)
 	return res
 }
 
@@ -69,9 +66,9 @@ func setUnpackSymbols(storage []map[string]interface{}, s string) string {
 			startVal := v["index"].(int)
 			endVal := storage[i+1]["index"].(int)
 			delta := endVal - startVal
-			//fmt.Println(len(storage), i, v["symbol"], delta)
 			if delta >= 2 && s[startVal+1:endVal] != `\` {
 				strNum := s[startVal+1 : endVal]
+				strNum = strings.ReplaceAll(strNum, `\`, "")
 				num, _ := strconv.Atoi(strNum)
 				str += strings.Repeat(v["symbol"].(string), num)
 			} else {
@@ -79,7 +76,6 @@ func setUnpackSymbols(storage []map[string]interface{}, s string) string {
 			}
 			continue
 		}
-		fmt.Println(v["symbol"])
 		val := v["index"].(int)
 		if s[val+1:] != "" {
 			num, _ := strconv.Atoi(s[val+1:])

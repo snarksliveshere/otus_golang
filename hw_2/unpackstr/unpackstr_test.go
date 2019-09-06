@@ -36,19 +36,19 @@ func TestGetUnpackString(t *testing.T) {
 	if s, _ := GetUnpackString("q0e5"); s != "eeeee" {
 		t.Fatalf("bad something %v", s)
 	}
-	if s, _ := GetUnpackString("q01e5"); s != "qeeeee" {
-		t.Fatalf("bad something %v", s)
-	}
 	if s, _ := GetUnpackString("q1e5"); s != "qeeeee" {
 		t.Fatalf("bad something %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\\5`); s != `qwe\\\\\` {
+		t.Fatalf("bad something slashes %v", s)
+	}
+	if s, _ := GetUnpackString(`qwe\00\5`); s != `qwe5` {
+		t.Fatalf("bad something 2 %v", s)
+	}
+	if s, _ := GetUnpackString("q01e5"); s != "qeeeee" {
 		t.Fatalf("bad something %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\01\5`); s != `qwe05` {
-		t.Fatalf("bad something %v", s)
-	}
-	if s, _ := GetUnpackString(`qwe\00\5`); s != `qwe5` {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("bad something 1 %v", s)
 	}
 }
