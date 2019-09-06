@@ -12,11 +12,11 @@ func GetUnpackString(str string) (res string, err error) {
 	if checkStrCorrect(str) == false {
 		return res, errors.New("bad bad1")
 	}
-
+	fmt.Println(str, "this")
 	storage := symbolDict(str)
 	//fmt.Println(storage[0])
 
-	setUnpackSymbols(storage, str)
+	res = setUnpackSymbols(storage, str)
 
 	//numIndex := getAllNumIndex(str)
 	//storage := createStorage(numIndex, str)
@@ -30,39 +30,47 @@ func GetUnpackString(str string) (res string, err error) {
 	//	return res, nil
 	//}
 	//return res, errors.New("bad bad2")
-	return "", nil
+	return res, nil
 }
 
 func symbolDict(s string) (res []map[string]interface{}) {
 	for i, v := range s {
 		var prev string
+		var slashes string
 		m := make(map[string]interface{})
 		if i != 0 {
 			prev = string(s[i-1])
 		}
 		_, err := strconv.Atoi(string(v))
+
+		if i > 1 && len(s) > 1 {
+			slashes = s[i-2 : i]
+		}
 		if (string(v) == `\` && prev != `\`) ||
-			(prev == `\` && err == nil && res[i-1]["symbol"] == `\`) ||
-			(err == nil && prev != `\`) {
+			//((len(res) > i-1) && prev == `\` && err == nil && res[i-1]["symbol"] == `\`) ||
+			(err == nil && prev != `\` && slashes != `\\`) {
 			continue
 		}
+		fmt.Println(prev, i, slashes, i, res, string(v) == `\` && prev != `\`, err == nil && prev != `\` && slashes != `\\`)
+		fmt.Println(err, prev, slashes, err == nil && prev != `\` && slashes == `\\`)
 		m["symbol"] = string(v)
 		m["index"] = i
 		res = append(res, m)
 	}
+	fmt.Println(res)
 	return res
 }
 
-func setUnpackSymbols(storage []map[string]interface{}, s string) {
+func setUnpackSymbols(storage []map[string]interface{}, s string) string {
 	var str string
 	fmt.Println(storage, str)
 	for i, v := range storage {
 		if i != (len(storage) - 1) {
-			fmt.Println(len(storage), i)
 			startVal := v["index"].(int)
 			endVal := storage[i+1]["index"].(int)
 			delta := endVal - startVal
-			if delta >= 2 {
+			//fmt.Println(len(storage), i, v["symbol"], delta)
+			if delta >= 2 && s[startVal+1:endVal] != `\` {
 				strNum := s[startVal+1 : endVal]
 				num, _ := strconv.Atoi(strNum)
 				str += strings.Repeat(v["symbol"].(string), num)
@@ -71,6 +79,7 @@ func setUnpackSymbols(storage []map[string]interface{}, s string) {
 			}
 			continue
 		}
+		fmt.Println(v["symbol"])
 		val := v["index"].(int)
 		if s[val+1:] != "" {
 			num, _ := strconv.Atoi(s[val+1:])
@@ -79,7 +88,8 @@ func setUnpackSymbols(storage []map[string]interface{}, s string) {
 			str += v["symbol"].(string)
 		}
 	}
-	fmt.Println(str)
+
+	return str
 }
 
 func returnUnpackStr(str string, storage map[int]string) string {
