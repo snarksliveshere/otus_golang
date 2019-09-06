@@ -61,30 +61,41 @@ func checkStrCorrect(str string) bool {
 	return true
 }
 
-//func escapeSymbols(str string, v []int) (string, str) {
-//	if (v[1] - v[0]) <= 1 {
-//
-//	}
-//	a := str[v[0]+1:v[1]]
-//	multiSymbol := string(str[v[0]])
-//	return multiSymbol, a
-//}
+func escapeSymbols(str string, v []int) (s string, a string, skip bool) {
+	//var a string
+	ind := v[0] - 1
+	s = string(str[ind])
+	if s == "\\" {
+		if (v[1] - v[0]) <= 1 {
+			skip = true
+		}
+		a = str[v[0]+1 : v[1]]
+		s = string(str[v[0]])
+	} else {
+		a = str[v[0]:v[1]]
+	}
+	return s, a, skip
+}
 
 func createStorage(collection [][]int, str string) map[int]string {
 	storage := make(map[int]string)
 	for _, v := range collection {
 		ind := v[0] - 1
 		var a string
-		multiSymbol := string(str[ind])
-		fmt.Println(multiSymbol)
-		if multiSymbol == "\\" {
-			if (v[1] - v[0]) <= 1 {
-				continue
-			}
-			a = str[v[0]+1 : v[1]]
-			multiSymbol = string(str[v[0]])
-		} else {
-			a = str[v[0]:v[1]]
+		//multiSymbol := string(str[ind])
+		//fmt.Println(multiSymbol)
+		//if multiSymbol == "\\" {
+		//	if (v[1] - v[0]) <= 1 {
+		//		continue
+		//	}
+		//	a = str[v[0]+1 : v[1]]
+		//	multiSymbol = string(str[v[0]])
+		//} else {
+		//	a = str[v[0]:v[1]]
+		//}
+		multiSymbol, a, skip := escapeSymbols(str, v)
+		if skip == true {
+			continue
 		}
 		// if a0b2 == bb, then a01b2 == bb
 		if string(a[0]) == "0" {
