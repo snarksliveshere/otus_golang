@@ -15,22 +15,40 @@ func TestCheckStrCorrect(t *testing.T) {
 }
 
 func TestGetUnpackString(t *testing.T) {
-	if s, _ := GetUnpackString("olala3"); s != "olalaaa" {
+	if s, err := GetUnpackString("45"); err == nil {
 		t.Fatalf("bad something %v", s)
 	}
-	if s, _ := GetUnpackString("qwe\\4\\5"); s != "qwe45" {
+	if s, err := GetUnpackString("4aaa"); err == nil {
 		t.Fatalf("bad something %v", s)
 	}
-	if s, _ := GetUnpackString("qwe\\45"); s != "qwe44444" {
+	if s, _ := GetUnpackString("a4bc2d5e"); s != "aaaabccddddde" {
+		t.Fatalf("bad something %v", s)
+	}
+	if s, _ := GetUnpackString("abcd"); s != "abcd" {
+		t.Fatalf("bad something %v", s)
+	}
+	if s, _ := GetUnpackString(`qwe\4\5`); s != "qwe45" {
+		t.Fatalf("bad something %v", s)
+	}
+	if s, _ := GetUnpackString(`qwe\45`); s != "qwe44444" {
 		t.Fatalf("bad something %v", s)
 	}
 	if s, _ := GetUnpackString("q0e5"); s != "eeeee" {
 		t.Fatalf("bad something %v", s)
 	}
+	if s, _ := GetUnpackString("q01e5"); s != "eeeee" {
+		t.Fatalf("bad something %v", s)
+	}
 	if s, _ := GetUnpackString("q1e5"); s != "qeeeee" {
 		t.Fatalf("bad something %v", s)
 	}
-	//if s, _ := GetUnpackString("qwe\\\\5"); s != "qwe\\\\\\\\\\" {
-	//	t.Fatalf("bad something %q", s)
+	//if s, _ := GetUnpackString(`qwe\\5`); s != `qwe\\\\\` {
+	//	t.Fatalf("bad something %v", s)
+	//}
+	//if s, _ := GetUnpackString(`qwe\01\5`); s != `qwe05` {
+	//	t.Fatalf("bad something %v", s)
+	//}
+	//if s, _ := GetUnpackString(`qwe\00\5`); s != `qwe5` {
+	//	t.Fatalf("bad something %v", s)
 	//}
 }

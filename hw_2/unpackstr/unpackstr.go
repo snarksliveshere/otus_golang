@@ -16,7 +16,7 @@ func GetUnpackString(str string) (res string, err error) {
 	storage := createStorage(numIndex, str)
 
 	if len(storage) == 0 {
-		res := strings.ReplaceAll(str, "\\", "")
+		res := strings.ReplaceAll(str, `\`, "")
 		return res, nil
 	}
 
@@ -28,6 +28,7 @@ func GetUnpackString(str string) (res string, err error) {
 
 func returnUnpackStr(str string, storage map[int]string) string {
 	var s string
+	fmt.Println(str, storage)
 	for i, v := range str {
 		if _, err := strconv.Atoi(string(v)); err == nil {
 			continue
@@ -61,38 +62,37 @@ func checkStrCorrect(str string) bool {
 	return true
 }
 
-func escapeSymbols(str string, v []int) (s string, a string, skip bool) {
+func escapeSymbols(str string, v []int) (s string, a string, ind int, skip bool) {
 	var prev string
-	ind := v[0] - 1
+	ind = v[0] - 1
 	s = string(str[ind])
+	a = str[v[0]:v[1]]
 	if v[0] > 1 {
 		prev = string(str[ind-1])
 	}
-	if s == "\\" {
+	if s == `\` {
 		if (v[1] - v[0]) <= 1 {
-			if prev != "\\" {
+			if prev != `\` {
 				skip = true
 			}
-			a = str[v[0]:v[1]]
 			s = prev
 		} else {
 			a = str[v[0]+1 : v[1]]
 			s = string(str[v[0]])
 		}
-	} else {
-		a = str[v[0]:v[1]]
 	}
-	return s, a, skip
+	return s, a, ind, skip
 }
 
 func createStorage(collection [][]int, str string) map[int]string {
 	storage := make(map[int]string)
 	for _, v := range collection {
-		ind := v[0] - 1
-		multiSymbol, a, skip := escapeSymbols(str, v)
+		//ind := v[0] - 1
+		multiSymbol, a, ind, skip := escapeSymbols(str, v)
 		if skip == true {
 			continue
 		}
+		fmt.Println(a)
 		// if a0b2 == bb, then a01b2 == bb
 		if string(a[0]) == "0" {
 			storage[ind] = ""
@@ -105,7 +105,6 @@ func createStorage(collection [][]int, str string) map[int]string {
 			storage[ind] = strings.Repeat(multiSymbol, num)
 		}
 	}
-	fmt.Println(collection)
-	fmt.Println(storage)
+
 	return storage
 }

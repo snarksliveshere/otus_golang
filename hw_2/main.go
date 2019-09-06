@@ -12,7 +12,6 @@ func main() {
 		log.Fatal("olala")
 	}
 	str := os.Args[1]
-	fmt.Println(str, "start")
 	s, err := unpack.GetUnpackString(str)
 	if err != nil {
 		log.Fatal(err.Error())
