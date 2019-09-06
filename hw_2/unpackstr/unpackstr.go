@@ -12,18 +12,42 @@ func GetUnpackString(str string) (res string, err error) {
 	if checkStrCorrect(str) == false {
 		return res, errors.New("bad bad1")
 	}
-	numIndex := getAllNumIndex(str)
-	storage := createStorage(numIndex, str)
 
-	if len(storage) == 0 {
-		res := strings.ReplaceAll(str, `\`, "")
-		return res, nil
+	storage := symbolDict(str)
+	fmt.Println(storage)
+
+	//numIndex := getAllNumIndex(str)
+	//storage := createStorage(numIndex, str)
+	//
+	//if len(storage) == 0 {
+	//	res := strings.ReplaceAll(str, `\`, "")
+	//	return res, nil
+	//}
+	//
+	//if res := returnUnpackStr(str, storage); res != "" {
+	//	return res, nil
+	//}
+	//return res, errors.New("bad bad2")
+	return "olala", nil
+}
+
+func symbolDict(s string) map[int]string {
+	var storage = make(map[int]string)
+	for i, v := range s {
+		var prev string
+		if i != 0 {
+			prev = string(s[i-1])
+		}
+		_, err := strconv.Atoi(string(v))
+		if (string(v) == `\` && prev != `\`) ||
+			(err == nil && storage[i-1] == `\` && prev == `\`) ||
+			(err == nil && prev != `\`) {
+			continue
+		}
+		storage[i] = string(v)
 	}
 
-	if res := returnUnpackStr(str, storage); res != "" {
-		return res, nil
-	}
-	return res, errors.New("bad bad2")
+	return storage
 }
 
 func returnUnpackStr(str string, storage map[int]string) string {
@@ -35,6 +59,7 @@ func returnUnpackStr(str string, storage map[int]string) string {
 		}
 		if val, ok := storage[i]; ok {
 			s += val
+			fmt.Println(val, v)
 			continue
 		}
 		s += string(v)
@@ -105,6 +130,6 @@ func createStorage(collection [][]int, str string) map[int]string {
 			storage[ind] = strings.Repeat(multiSymbol, num)
 		}
 	}
-
+	fmt.Println(storage)
 	return storage
 }
