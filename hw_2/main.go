@@ -7,15 +7,20 @@ import (
 	"os"
 )
 
+const (
+	errorArgs = "there is no argument at the incoming point"
+	success   = "program completed successfully"
+)
+
 func main() {
 	if len(os.Args) != 2 {
-		log.Fatal("olala")
+		log.Fatal(errorArgs)
 	}
 	str := os.Args[1]
-	fmt.Println(str)
 	s, err := unpack.GetUnpackString(str)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	fmt.Println(s)
+	log.Println(success)
 }
