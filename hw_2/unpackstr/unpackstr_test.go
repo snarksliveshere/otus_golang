@@ -38,54 +38,54 @@ func TestGetPrevSymbol(t *testing.T) {
 	str1, str2, str3, str4 := `1\\to`, "abcdef", "abc", "ab"
 	i1, i2, i3, i4 := 2, 4, 1, 0
 	if prev, slashes := getPrevSymbol(i1, str1); prev != `\` && slashes != `1\` {
-		t.Fatalf("bad something %s %s %s %s", str1, prev, slashes, string(str1[i1]))
+		t.Fatalf("an error has occured %s %s %s %s", str1, prev, slashes, string(str1[i1]))
 	}
 	if prev, slashes := getPrevSymbol(i2, str2); prev != "d" && slashes != "cd" {
-		t.Fatalf("bad something %s %s %s %s", str2, prev, slashes, string(str2[i2]))
+		t.Fatalf("an error has occured %s %s %s %s", str2, prev, slashes, string(str2[i2]))
 	}
 	if prev, slashes := getPrevSymbol(i3, str3); prev != "a" && slashes != "" {
-		t.Fatalf("bad something %s %s %s %s", str3, prev, slashes, string(str3[i3]))
+		t.Fatalf("an error has occured %s %s %s %s", str3, prev, slashes, string(str3[i3]))
 	}
 	if prev, slashes := getPrevSymbol(i4, str4); prev != "" && slashes != "" {
-		t.Fatalf("bad something %s %s %s %s", str4, prev, slashes, string(str4[i4]))
+		t.Fatalf("an error has occured %s %s %s %s", str4, prev, slashes, string(str4[i4]))
 	}
 }
 
 func TestGetUnpackString(t *testing.T) {
 	if s, err := GetUnpackString("45"); err == nil {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, err := GetUnpackString("4aaa"); err == nil {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString("a4bc2d5e"); s != "aaaabccddddde" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString("abcd"); s != "abcd" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\4\5`); s != "qwe45" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\45`); s != "qwe44444" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString("q0e5"); s != "eeeee" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString("q1e5"); s != "qeeeee" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\\5`); s != `qwe\\\\\` {
-		t.Fatalf("bad something slashes %v", s)
+		t.Fatalf("an error has occured slashes %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\00\5`); s != `qwe5` {
-		t.Fatalf("bad something 2 %v", s)
+		t.Fatalf("an error has occured 2 %v", s)
 	}
 	if s, _ := GetUnpackString("q01e5"); s != "qeeeee" {
-		t.Fatalf("bad something %v", s)
+		t.Fatalf("an error has occured %v", s)
 	}
 	if s, _ := GetUnpackString(`qwe\01\5`); s != `qwe05` {
-		t.Fatalf("bad something 1 %v", s)
+		t.Fatalf("an error has occured 1 %v", s)
 	}
 }
