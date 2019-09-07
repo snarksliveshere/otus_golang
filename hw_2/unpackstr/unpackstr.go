@@ -17,7 +17,7 @@ func GetUnpackString(str string) (res string, err error) {
 	storage := symbolDict(str)
 	res = setUnpackSymbols(storage, str)
 
-	return res, nil
+	return
 }
 
 func symbolDict(s string) (res []map[string]interface{}) {
@@ -44,6 +44,7 @@ func getPrevSymbol(i int, s string) (prev, slashes string) {
 	if i > 1 && len(s) > 1 {
 		slashes = s[i-2 : i]
 	}
+
 	return
 }
 
@@ -58,33 +59,48 @@ func skipNotSymbol(el, prev, slashes string) bool {
 	return false
 }
 
-func setUnpackSymbols(storage []map[string]interface{}, s string) string {
-	var str string
+func setUnpackSymbols(storage []map[string]interface{}, s string) (str string) {
 	for i, v := range storage {
 		if i != (len(storage) - 1) {
 			startVal := v["index"].(int)
 			endVal := storage[i+1]["index"].(int)
-			delta := endVal - startVal
-			if delta >= 2 && s[startVal+1:endVal] != `\` {
-				strNum := s[startVal+1 : endVal]
-				strNum = strings.ReplaceAll(strNum, `\`, "")
-				num, _ := strconv.Atoi(strNum)
-				str += strings.Repeat(v["symbol"].(string), num)
-			} else {
-				str += v["symbol"].(string)
-			}
+			str += getUnpackStrWithoutTail(v, s, startVal, endVal)
 			continue
 		}
-		val := v["index"].(int)
-		if s[val+1:] != "" {
-			num, _ := strconv.Atoi(s[val+1:])
-			str += strings.Repeat(v["symbol"].(string), num)
-		} else {
-			str += v["symbol"].(string)
-		}
+		str += getTailUnpackStr(v, s)
 	}
 
-	return str
+	return
+}
+
+func getUnpackStrWithoutTail(v map[string]interface{}, s string, startVal, endVal int) (str string) {
+	delta := endVal - startVal
+	if delta >= 2 && s[startVal+1:endVal] != `\` {
+		strNum := s[startVal+1 : endVal]
+		strNum = strings.ReplaceAll(strNum, `\`, "")
+		num, err := strconv.Atoi(strNum)
+		if err != nil {
+			str = ""
+		}
+		str += strings.Repeat(v["symbol"].(string), num)
+	} else {
+		str += v["symbol"].(string)
+	}
+	return
+}
+
+func getTailUnpackStr(v map[string]interface{}, s string) (str string) {
+	val := v["index"].(int)
+	if s[val+1:] != "" {
+		num, err := strconv.Atoi(s[val+1:])
+		if err != nil {
+			str = ""
+		}
+		str = strings.Repeat(v["symbol"].(string), num)
+	} else {
+		str = v["symbol"].(string)
+	}
+	return
 }
 
 func checkStrCorrect(str string) bool {

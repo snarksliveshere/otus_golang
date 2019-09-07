@@ -24,14 +24,30 @@ func TestSymbolFilter(t *testing.T) {
 	require.Equal(t, skipNotSymbol(`a`, `\`, `no`), false, "Must be a symbol - escaping letter")
 }
 
+// вот теперь не совсем понятно, как его тестировать
+//func TestSymbolDict(t *testing.T) {
+//	a := []map[string]interface{
+//		{"index": 0, "symbol": "a"},
+//		{"index": 1, "symbol": "b"},
+//		{"index": 2, "symbol": "c"},
+//	}
+//	require.Equal(t, symbolDict("abc3"), a, "Just a backslash")
+//}
+
 func TestGetPrevSymbol(t *testing.T) {
-	str1, str2 := `1\\to`, "abcdef"
-	i1, i2 := 2, 4
+	str1, str2, str3, str4 := `1\\to`, "abcdef", "abc", "ab"
+	i1, i2, i3, i4 := 2, 4, 1, 0
 	if prev, slashes := getPrevSymbol(i1, str1); prev != `\` && slashes != `1\` {
 		t.Fatalf("bad something %s %s %s %s", str1, prev, slashes, string(str1[i1]))
 	}
 	if prev, slashes := getPrevSymbol(i2, str2); prev != "d" && slashes != "cd" {
 		t.Fatalf("bad something %s %s %s %s", str2, prev, slashes, string(str2[i2]))
+	}
+	if prev, slashes := getPrevSymbol(i3, str3); prev != "a" && slashes != "" {
+		t.Fatalf("bad something %s %s %s %s", str3, prev, slashes, string(str3[i3]))
+	}
+	if prev, slashes := getPrevSymbol(i4, str4); prev != "" && slashes != "" {
+		t.Fatalf("bad something %s %s %s %s", str4, prev, slashes, string(str4[i4]))
 	}
 }
 
