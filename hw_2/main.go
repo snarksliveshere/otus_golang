@@ -9,7 +9,7 @@ import (
 
 const (
 	errorArgs = "there is no argument at the incoming point"
-	success   = "program completed successfully"
+	success   = "program successfully completed"
 )
 
 func main() {

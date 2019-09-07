@@ -22,23 +22,24 @@ func GetUnpackString(str string) (res string, err error) {
 
 func symbolDict(s string) (res []map[string]interface{}) {
 	for i, v := range s {
-		var prev string
-		var slashes string
+		//var prev string
+		//var slashes string
 		vStr := string(v)
 		m := make(map[string]interface{})
-		if i != 0 {
-			prev = string(s[i-1])
-		}
-		_, err := strconv.Atoi(vStr)
 
-		if i > 1 && len(s) > 1 {
-			slashes = s[i-2 : i]
-		}
-		if (vStr == `\` && prev != `\`) ||
-			(err == nil && slashes == `\\`) ||
-			(err == nil && prev != `\`) {
+		prev, slashes := getPrevSymbol(i, s)
+
+		//if i != 0 {
+		//	prev = string(s[i-1])
+		//}
+		//if i > 1 && len(s) > 1 {
+		//	slashes = s[i-2 : i]
+		//}
+
+		if skip := skipNotSymbol(vStr, prev, slashes); skip == true {
 			continue
 		}
+
 		m["symbol"] = vStr
 		m["index"] = i
 		res = append(res, m)
@@ -46,9 +47,26 @@ func symbolDict(s string) (res []map[string]interface{}) {
 	return res
 }
 
-//func symbolFilter() bool {
-//
-//}
+func getPrevSymbol(i int, s string) (prev, slashes string) {
+	if i != 0 {
+		prev = string(s[i-1])
+	}
+	if i > 1 && len(s) > 1 {
+		slashes = s[i-2 : i]
+	}
+	return
+}
+
+func skipNotSymbol(el, prev, slashes string) bool {
+	_, err := strconv.Atoi(el)
+	if (el == `\` && prev != `\`) ||
+		(err == nil && slashes == `\\`) ||
+		(err == nil && prev != `\`) {
+		return true
+	}
+
+	return false
+}
 
 func setUnpackSymbols(storage []map[string]interface{}, s string) string {
 	var str string

@@ -6,12 +6,22 @@ import (
 )
 
 func TestCheckStrCorrect(t *testing.T) {
+	require.Equal(t, checkStrCorrect("olala"), true, "Must be OK - normal entry string")
+	require.Equal(t, checkStrCorrect("ASDlala"), true, "Must be OK normal entry string with capitalized")
+	require.Equal(t, checkStrCorrect("ASDlala45"), true, "Must be OK normal entry string with numbers")
 	require.Equal(t, checkStrCorrect("3olala"), false, "Must be an error if the first symbol is num")
-	require.Equal(t, checkStrCorrect("olala"), true, "Must be OK")
-	require.Equal(t, checkStrCorrect("ASDlala"), true, "Must be OK")
 	require.Equal(t, checkStrCorrect("45"), false, "Must be an error if string can be convert to num")
 	require.Equal(t, checkStrCorrect("0"), false, "Must be an error if string equal to zero")
 	require.Equal(t, checkStrCorrect(""), false, "Must be an error if the string is empty")
+}
+
+func TestSymbolFilter(t *testing.T) {
+	require.Equal(t, skipNotSymbol(`\`, `a`, `no`), true, "Just a backslash")
+	require.Equal(t, skipNotSymbol(`4`, `\`, `\\`), true, "Must be number after double backslash - quantifier")
+	require.Equal(t, skipNotSymbol(`4`, `a`, `no`), true, "Must be Number quantifier")
+	require.Equal(t, skipNotSymbol(`4`, `\`, `no`), false, "Must be a symbol - escaping number")
+	require.Equal(t, skipNotSymbol(`\`, `\`, `no`), false, "Must be a symbol - escaping backslash")
+	require.Equal(t, skipNotSymbol(`a`, `\`, `no`), false, "Must be a symbol - escaping letter")
 }
 
 func TestGetUnpackString(t *testing.T) {
