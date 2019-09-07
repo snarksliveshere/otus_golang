@@ -22,19 +22,9 @@ func GetUnpackString(str string) (res string, err error) {
 
 func symbolDict(s string) (res []map[string]interface{}) {
 	for i, v := range s {
-		//var prev string
-		//var slashes string
 		vStr := string(v)
 		m := make(map[string]interface{})
-
 		prev, slashes := getPrevSymbol(i, s)
-
-		//if i != 0 {
-		//	prev = string(s[i-1])
-		//}
-		//if i > 1 && len(s) > 1 {
-		//	slashes = s[i-2 : i]
-		//}
 
 		if skip := skipNotSymbol(vStr, prev, slashes); skip == true {
 			continue
