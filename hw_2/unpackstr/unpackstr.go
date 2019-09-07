@@ -11,7 +11,7 @@ const (
 )
 
 func GetUnpackString(str string) (res string, err error) {
-	if checkStrCorrect(str) == false {
+	if !checkStrCorrect(str) {
 		return res, errors.New(errorsInvalidStr)
 	}
 	storage := symbolDict(str)
@@ -26,7 +26,7 @@ func symbolDict(s string) (res []map[string]interface{}) {
 		m := make(map[string]interface{})
 		prev, slashes := getPrevSymbol(i, s)
 
-		if skip := skipNotSymbol(vStr, prev, slashes); skip == true {
+		if skip := skipNotSymbol(vStr, prev, slashes); skip {
 			continue
 		}
 
