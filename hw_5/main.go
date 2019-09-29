@@ -25,71 +25,38 @@ func (t *tickT) testTick() error {
 	}
 }
 
+func (t *tickT) testTick2(i int) error {
+	ticker := time.NewTicker(time.Duration(i) * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			rand.Seed(time.Now().UnixNano())
+			i := rand.Intn(100)
+			if i%2 != 0 {
+				return errors.New("err cause odd")
+			} else {
+				return nil
+			}
+		}
+	}
+}
+
 func gogo(sl []func() error, toGo, numErrs int) {
 	if toGo >= len(sl) {
 		return
 	}
+	errCh := make(chan int, numErrs)
+	errSlice := make([]int, 0, numErrs)
 
-	errCh := make(chan int)
 	for i := 0; i <= toGo; i++ {
-		go func() {
-			err := sl[i]()
-			if err != nil {
-				errCh <- i
-			}
-		}()
-	}
-
-	go func() {
-		for x := range errCh {
-			fmt.Println(x)
-		}
-	}()
-
-}
-
-func main() {
-	fmt.Println("start")
-
-	//ff := func() error {
-	//	f1 := new(tickT)
-	//	return f1.testTick(2)
-	//}
-	//var tsl []func() error
-	//tsl = append(tsl, ff)
-	//tsl[0]()
-	//errCh := make(chan error)
-	//test1()
-	//t := new(tickT)
-	//err2 := t.testTick(2)
-	sl := make([]func() error, 0)
-	for i := 1; i < 100; i++ {
-		foo := func() error {
-			f := new(tickT)
-			return f.testTick()
-		}
-		sl = append(sl, foo)
-	}
-
-	//err := sl[0]()
-	//if err != nil {
-	//	fmt.Println("ola err")
-	//} else {
-	//	fmt.Println("ola ok")
-	//}
-	che := make(chan int)
-	var errSlice []int
-	//var start = make(chan struct{})
-
-	for i := 0; i <= 90; i++ {
+		time.Sleep(10 * time.Millisecond)
 		go func(i int) {
 			fmt.Println("goroutine", i)
 			if sl[i]() != nil {
-				if len(errSlice) >= 5 {
-					fmt.Println(len(errSlice), "length in routine > 5")
+				if len(errSlice) >= numErrs {
 					return
 				}
-				che <- i
+				errCh <- i
 			}
 		}(i)
 	}
@@ -97,12 +64,11 @@ func main() {
 	for {
 		i := 0
 		select {
-		case <-che:
-			errSlice = append(errSlice, <-che)
+		case <-errCh:
+			errSlice = append(errSlice, <-errCh)
 			//fmt.Println(<-che)
-			fmt.Println(len(errSlice), "length")
-			if len(errSlice) >= 5 {
-				//close(che)
+			fmt.Println(len(errSlice), "error length")
+			if len(errSlice) >= numErrs {
 				i = 1
 				break
 			}
@@ -111,7 +77,65 @@ func main() {
 			break
 		}
 	}
-	fmt.Println("end")
+	fmt.Println("func end")
+
+}
+
+func main() {
+	fmt.Println("start")
+	sl := make([]func() error, 0)
+	for i := 1; i < 40; i++ {
+		time.Sleep(10 * time.Millisecond)
+		foo := func() error {
+			f := new(tickT)
+			return f.testTick2(i)
+		}
+		sl = append(sl, foo)
+	}
+
+	gogo(sl, 30, 5)
+
+	//err := sl[0]()
+	//if err != nil {
+	//	fmt.Println("ola err")
+	//} else {
+	//	fmt.Println("ola ok")
+	//}
+	//che := make(chan int)
+	//var errSlice []int
+	////var start = make(chan struct{})
+	//
+	//for i := 0; i <= 90; i++ {
+	//	go func(i int) {
+	//		fmt.Println("goroutine", i)
+	//		if sl[i]() != nil {
+	//			if len(errSlice) >= 5 {
+	//				fmt.Println(len(errSlice), "length in routine > 5")
+	//				return
+	//			}
+	//			che <- i
+	//		}
+	//	}(i)
+	//}
+
+	//for {
+	//	i := 0
+	//	select {
+	//	case <-che:
+	//		errSlice = append(errSlice, <-che)
+	//		//fmt.Println(<-che)
+	//		fmt.Println(len(errSlice), "length")
+	//		if len(errSlice) >= 5 {
+	//			//close(che)
+	//			i = 1
+	//			break
+	//		}
+	//	}
+	//	if i == 1 {
+	//		break
+	//	}
+	//}
+	fmt.Println("end main")
 	//for x := range che {
 	//			fmt.Println(x)
 	//		}
