@@ -54,12 +54,14 @@ func gogo(sl []func() error, toGo, numErrs int) {
 		go func(i int) {
 			<-start
 			fmt.Println("goroutine", i)
-			if sl[i]() != nil {
-				if len(errSlice) >= numErrs {
-					close(errCh)
-					return
+			for {
+				if sl[i]() != nil {
+					if len(errSlice) >= numErrs {
+						close(errCh)
+						return
+					}
+					errCh <- i
 				}
-				errCh <- i
 			}
 		}(i)
 	}
