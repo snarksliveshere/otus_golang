@@ -3,31 +3,25 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math/rand"
+	"runtime"
 	"time"
 )
 
 const (
 	numOfErrs     = 5
-	numOfFunc     = 40
-	numOfRoutines = 30
+	numOfFunc     = 10
+	numOfRoutines = 8
 )
 
 type tickT int
 
-func (t *tickT) testTick(i int) error {
-	ticker := time.NewTicker(time.Duration(i) * time.Second)
-	fmt.Println(i, "ticktime")
+// эта конструкция просто для удобства
+func (t *tickT) testTimer(i int) error {
+	timer := time.NewTimer(time.Duration(i) * time.Second)
 	for {
 		select {
-		case <-ticker.C:
-			rand.Seed(time.Now().UnixNano())
-			i := rand.Intn(100)
-			if i%2 != 0 {
-				return errors.New("err cause odd number")
-			} else {
-				return nil
-			}
+		case <-timer.C:
+			return errors.New("just err")
 		}
 	}
 }
@@ -37,48 +31,31 @@ func gogo(sl []func() error, toGo, numErrs int) {
 		return
 	}
 	errCh := make(chan int, numErrs)
-	die := make(chan bool)
-	errSlice := make([]int, 0, numErrs)
-	start := make(chan bool)
 	for i := 0; i <= toGo; i++ {
-		time.Sleep(10 * time.Millisecond)
 		go func(i int) {
-			<-start
-			fmt.Println("goroutine", i)
 			for {
-				select {
-				case <-die:
-					die <- true
-					return
-				default:
-					if sl[i]() != nil {
-						//if len(errSlice) >= numErrs {
-						//	close(errCh)
-						//	return
-						//}
-						errCh <- i
+				if sl[i]() != nil {
+					select {
+					case errCh <- i:
+					default:
+						return
 					}
 				}
 
 			}
 		}(i)
 	}
-	close(start)
-Loop:
 	for {
 		select {
-		case <-errCh:
-			errSlice = append(errSlice, <-errCh)
-			fmt.Println(len(errSlice), "error length")
-			if len(errSlice) >= numErrs {
-				die <- true
-				break Loop
+		case <-time.After(time.Millisecond * 100):
+			fmt.Println(len(errCh), "len errch", time.Now())
+			fmt.Printf("Runtime numGoroutine %d\n", runtime.NumGoroutine())
+			// 1 горутина - это main, следовательно, все остальные отвалились
+			if runtime.NumGoroutine() == 1 {
+				return
 			}
 		}
 	}
-	<-die
-
-	fmt.Println("func end")
 }
 
 func main() {
@@ -89,7 +66,7 @@ func main() {
 		foo := func(i int) func() error {
 			return func() error {
 				f := new(tickT)
-				return f.testTick(i)
+				return f.testTimer(i)
 			}
 		}(i)
 		sl = append(sl, foo)
