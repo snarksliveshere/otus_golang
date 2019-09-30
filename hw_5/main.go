@@ -37,6 +37,7 @@ func gogo(sl []func() error, toGo, numErrs int) {
 		return
 	}
 	errCh := make(chan int, numErrs)
+	die := make(chan bool)
 	errSlice := make([]int, 0, numErrs)
 	start := make(chan bool)
 	for i := 0; i <= toGo; i++ {
@@ -45,13 +46,19 @@ func gogo(sl []func() error, toGo, numErrs int) {
 			<-start
 			fmt.Println("goroutine", i)
 			for {
-				if sl[i]() != nil {
-					if len(errSlice) >= numErrs {
-						close(errCh)
-						return
+				select {
+				case <-die:
+					return
+				default:
+					if sl[i]() != nil {
+						//if len(errSlice) >= numErrs {
+						//	close(errCh)
+						//	return
+						//}
+						errCh <- i
 					}
-					errCh <- i
 				}
+
 			}
 		}(i)
 	}
@@ -63,6 +70,7 @@ Loop:
 			errSlice = append(errSlice, <-errCh)
 			fmt.Println(len(errSlice), "error length")
 			if len(errSlice) >= numErrs {
+				close(die)
 				break Loop
 			}
 		}
