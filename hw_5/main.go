@@ -7,25 +7,15 @@ import (
 	"time"
 )
 
+const (
+	numOfErrs     = 5
+	numOfFunc     = 40
+	numOfRoutines = 30
+)
+
 type tickT int
 
-func (t *tickT) testTick() error {
-	ticker := time.NewTicker(1 * time.Second)
-	for {
-		select {
-		case <-ticker.C:
-			rand.Seed(time.Now().UnixNano())
-			i := rand.Intn(100)
-			if i%2 != 0 {
-				return errors.New("err cause odd")
-			} else {
-				return nil
-			}
-		}
-	}
-}
-
-func (t *tickT) testTick2(i int) error {
+func (t *tickT) testTick(i int) error {
 	ticker := time.NewTicker(time.Duration(i) * time.Second)
 	fmt.Println(i, "ticktime")
 	for {
@@ -34,7 +24,7 @@ func (t *tickT) testTick2(i int) error {
 			rand.Seed(time.Now().UnixNano())
 			i := rand.Intn(100)
 			if i%2 != 0 {
-				return errors.New("err cause odd")
+				return errors.New("err cause odd number")
 			} else {
 				return nil
 			}
@@ -84,17 +74,17 @@ Loop:
 func main() {
 	fmt.Println("start")
 	sl := make([]func() error, 0)
-	for i := 1; i < 40; i++ {
+	for i := 1; i < numOfFunc; i++ {
 		time.Sleep(10 * time.Millisecond)
 		foo := func(i int) func() error {
 			return func() error {
 				f := new(tickT)
-				return f.testTick2(i)
+				return f.testTick(i)
 			}
 		}(i)
 		sl = append(sl, foo)
 	}
 
-	gogo(sl, 30, 5)
+	gogo(sl, numOfRoutines, numOfErrs)
 	fmt.Println("end main")
 }
