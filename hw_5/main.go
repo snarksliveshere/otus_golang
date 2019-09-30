@@ -62,7 +62,6 @@ func main() {
 	fmt.Println("start")
 	sl := make([]func() error, 0)
 	for i := 1; i < numOfFunc; i++ {
-		time.Sleep(10 * time.Millisecond)
 		foo := func(i int) func() error {
 			return func() error {
 				f := new(tickT)
