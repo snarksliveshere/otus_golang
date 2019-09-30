@@ -48,6 +48,7 @@ func gogo(sl []func() error, toGo, numErrs int) {
 			for {
 				select {
 				case <-die:
+					die <- true
 					return
 				default:
 					if sl[i]() != nil {
@@ -70,11 +71,12 @@ Loop:
 			errSlice = append(errSlice, <-errCh)
 			fmt.Println(len(errSlice), "error length")
 			if len(errSlice) >= numErrs {
-				close(die)
+				die <- true
 				break Loop
 			}
 		}
 	}
+	<-die
 
 	fmt.Println("func end")
 }
