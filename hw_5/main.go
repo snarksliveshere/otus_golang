@@ -27,6 +27,7 @@ func (t *tickT) testTick() error {
 
 func (t *tickT) testTick2(i int) error {
 	ticker := time.NewTicker(time.Duration(i) * time.Second)
+	fmt.Println(i, "ticktime")
 	for {
 		select {
 		case <-ticker.C:
@@ -47,19 +48,22 @@ func gogo(sl []func() error, toGo, numErrs int) {
 	}
 	errCh := make(chan int, numErrs)
 	errSlice := make([]int, 0, numErrs)
-
+	start := make(chan bool)
 	for i := 0; i <= toGo; i++ {
 		time.Sleep(10 * time.Millisecond)
 		go func(i int) {
+			<-start
 			fmt.Println("goroutine", i)
 			if sl[i]() != nil {
 				if len(errSlice) >= numErrs {
+					close(errCh)
 					return
 				}
 				errCh <- i
 			}
 		}(i)
 	}
+	close(start)
 
 	for {
 		i := 0
@@ -86,10 +90,12 @@ func main() {
 	sl := make([]func() error, 0)
 	for i := 1; i < 40; i++ {
 		time.Sleep(10 * time.Millisecond)
-		foo := func() error {
-			f := new(tickT)
-			return f.testTick2(i)
-		}
+		foo := func(i int) func() error {
+			return func() error {
+				f := new(tickT)
+				return f.testTick2(i)
+			}
+		}(i)
 		sl = append(sl, foo)
 	}
 
