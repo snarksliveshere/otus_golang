@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"runtime"
 	"sync"
@@ -23,7 +22,8 @@ func (t *tickT) testTimer(i int) error {
 	for {
 		select {
 		case <-timer.C:
-			return errors.New("just err")
+			return nil
+			//return errors.New("just err")
 		}
 	}
 }
@@ -62,37 +62,47 @@ func gogo(sl []func() error, toGo, numErrs int) {
 
 func go2(sl []func() error, numOfRoutines, numOfErrors int) {
 	tasks := make(chan func() error, numOfFunc)
-	errCh := make(chan int, numOfErrors)
+	errCh := make(chan int)
 	die := make(chan bool)
 	for _, v := range sl {
 		tasks <- v
 	}
 	time.Sleep(1 * time.Second)
 	var wg sync.WaitGroup
-	for i := 0; i <= numOfRoutines; i++ {
-		go func(i int) {
-			wg.Add(1)
-			worker(tasks, errCh, die, &wg)
-		}(i)
+	for i := 0; i < numOfRoutines; i++ {
+		fmt.Println(i, "ola")
+		wg.Add(1)
+		go worker(tasks, errCh, die, &wg)
 	}
 
-	wg.Wait()
-	fmt.Println("ola")
 	for {
 		select {
-
-		case <-errCh:
-		default:
-			die <- true
-			//case <-time.After(time.Millisecond * 100):
-			//	fmt.Println(len(errCh), "len errch", time.Now())
-			//	fmt.Printf("Runtime numGoroutine %d\n", runtime.NumGoroutine())
-			// 1 горутина - это main, следовательно, все остальные отвалились
-			//if runtime.NumGoroutine() == 1 {
-			//	return
-			//}
+		case <-time.After(time.Millisecond * 100):
+			fmt.Println("numof routines", runtime.NumGoroutine(), time.Now())
 		}
 	}
+	wg.Wait()
+	fmt.Println("ola")
+
+	//var i int
+	//for {
+	//	select {
+	//
+	//	case <-errCh:
+	//		i++
+	//		fmt.Println(len(errCh))
+	//		if i >= 5 {
+	//			die <- true
+	//		}
+	//case <-time.After(time.Millisecond * 100):
+	//	fmt.Println(len(errCh), "len errch", time.Now())
+	//	fmt.Printf("Runtime numGoroutine %d\n", runtime.NumGoroutine())
+	// 1 горутина - это main, следовательно, все остальные отвалились
+	//if runtime.NumGoroutine() == 1 {
+	//	return
+	//}
+	//}
+	//}
 }
 
 func worker(tasks <-chan func() error, errCh chan int, die <-chan bool, wg *sync.WaitGroup) {
@@ -102,15 +112,13 @@ func worker(tasks <-chan func() error, errCh chan int, die <-chan bool, wg *sync
 		select {
 		case <-die:
 			return
-		case <-tasks:
-			f := <-tasks
+		case f := <-tasks:
 			if f() != nil {
 				fmt.Println(len(errCh), "err length")
-				if _, ok := <-die; ok {
-					return
-				}
 				errCh <- 1
 			}
+		default:
+			return
 		}
 	}
 }
