@@ -29,7 +29,11 @@ func (t *tickT) testTimer(i int) error {
 }
 
 func go2(sl []func() error, numOfRoutines, numOfErrors int) {
-	tasks := make(chan func() error, numOfFunc)
+	lenSl := len(sl)
+	if numOfRoutines >= lenSl {
+		numOfRoutines = lenSl
+	}
+	tasks := make(chan func() error, lenSl)
 	errCh := make(chan int, numOfErrors)
 	for _, v := range sl {
 		tasks <- v
@@ -38,7 +42,7 @@ func go2(sl []func() error, numOfRoutines, numOfErrors int) {
 	for i := 0; i < numOfRoutines; i++ {
 		wg.Add(1)
 		go func(i int) {
-			go worker(tasks, errCh, &wg, numOfErrors, len(sl), i)
+			go worker(tasks, errCh, &wg, numOfErrors, lenSl, i)
 		}(i)
 
 	}
