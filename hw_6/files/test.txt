@@ -1,0 +1,1 @@
+This article will show you how to copy a file in the Go programming language
