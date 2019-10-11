@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -28,32 +27,34 @@ func CopySubStr() {
 	flag.Parse()
 	fmt.Println(from, to, offset, limit)
 	//ifFile, err := os.Open(from)
-	fromPath, err := filepath.Abs(from)
-	errHandler(err)
-	ifFile, err := os.Open(fromPath)
+	//fromPath, err := filepath.Abs(from)
+	//errHandler(err)
+	ifFile, err := os.Open(from)
 	errHandler(err)
 	ofFile, err := os.Create(to)
 	errHandler(err)
-
-	defer func() { _ = ifFile.Close() }()
-	defer func() { _ = ofFile.Close() }()
+	var test io.Reader = (*os.File)(ifFile)
+	//
+	//defer func() { _ = ifFile.Close() }()
+	//defer func() { _ = ofFile.Close() }()
 
 	// reader section
 	b := make([]byte, limit)
 	_, err = ifFile.ReadAt(b, offset)
-	errHandler(err)
+	//errHandler(err)
 	// bad reader
-	reader1 := bytes.NewReader(b)
+	//reader1 := bytes.NewReader(b)
 	//var limit int64 = 1024 * 1024 * 200
 	// we will copy 200 Mb from /dev/rand to /dev/null
 	//reader := io.LimitReader(rand.Reader, limit)
-	reader := io.LimitReader(reader1, limit)
+	//reader := io.LimitReader(ifFile, limit)
+	//read1 := &reader
 	//writer := ioutil.Discard
 
 	// start new bar
 	bar := pb.Full.Start64(limit)
 	// create proxy reader
-	barReader := bar.NewProxyReader(reader)
+	barReader := bar.NewProxyReader(test)
 	// copy from proxy reader
 	io.Copy(ofFile, barReader)
 	// finish bar
@@ -70,7 +71,7 @@ func CopySubStr() {
 	//bw := bufio.NewWriter(ofFile)
 
 	//runProgress(b)
-	testIO(ifFile, ofFile, limit, offset)
+	//testIO(ifFile, ofFile, limit, offset)
 
 	//pack := 12
 	//var offs int
