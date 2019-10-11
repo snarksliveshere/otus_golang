@@ -38,18 +38,26 @@ func CopySubStr() {
 	defer func() { _ = ifFile.Close() }()
 	defer func() { _ = ofFile.Close() }()
 
+	// reader section
+	b := make([]byte, limit)
+	_, err = ifFile.ReadAt(b, offset)
+	errHandler(err)
+	// bad reader
+	reader1 := bytes.NewReader(b)
+	//var limit int64 = 1024 * 1024 * 200
 	// we will copy 200 Mb from /dev/rand to /dev/null
 	//reader := io.LimitReader(rand.Reader, limit)
+	reader := io.LimitReader(reader1, limit)
 	//writer := ioutil.Discard
-	//
-	//// start new bar
-	//bar := pb.Full.Start64(limit)
-	//// create proxy reader
-	//barReader := bar.NewProxyReader(reader)
-	//// copy from proxy reader
-	//io.Copy(writer, barReader)
-	//// finish bar
-	//bar.Finish()
+
+	// start new bar
+	bar := pb.Full.Start64(limit)
+	// create proxy reader
+	barReader := bar.NewProxyReader(reader)
+	// copy from proxy reader
+	io.Copy(ofFile, barReader)
+	// finish bar
+	bar.Finish()
 
 	//runProgress(b, to)
 
