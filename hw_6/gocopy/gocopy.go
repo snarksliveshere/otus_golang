@@ -2,7 +2,6 @@ package gocopy
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -13,16 +12,10 @@ import (
 )
 
 var (
-	from, to      string
-	offset, limit int64
-	clear         map[string]func()
+	clear map[string]func()
 )
 
 func init() {
-	flag.StringVar(&from, "from", "./files/if.txt", "if file")
-	flag.StringVar(&to, "to", "./files/of.txt", "of file")
-	flag.Int64Var(&offset, "offset", 0, "offset")
-	flag.Int64Var(&limit, "limit", 0, "limit")
 	clear = make(map[string]func())
 	clear["linux"] = func() {
 		cmd := exec.Command("clear")
@@ -41,8 +34,7 @@ func CallClear() {
 	}
 }
 
-func CopySubStr() {
-	flag.Parse()
+func CopySubStr(from, to string, limit, offset int64) {
 	ifFile, err := os.Open(from)
 	errHandler(err)
 	ofFile, err := os.Create(to)
@@ -57,18 +49,22 @@ func CopySubStr() {
 		if int(limit) < pad {
 			pad = int(limit)
 		}
-		//fmt.Println(offset, bw.Buffered())
-		if (bw.Buffered() + pad) > int(offset) {
+		if (bw.Buffered() + pad) > int(limit) {
+			pad = int(limit) - bw.Buffered()
+		}
+		if (bw.Buffered()+pad) > int(offset) && offset != 0 {
 			pad = int(offset) - bw.Buffered()
 		}
-		//fmt.Println(pad, "pad")
 		temp := make([]byte, pad)
-		//fmt.Println(offset, pad)
 		nBytes, err := ifFile.ReadAt(temp, offset)
-
+		offset += int64(nBytes)
+		iter := offset - offs
 		if err == io.EOF {
 			CallClear()
-			fmt.Printf("percent EOF %d  %%\n", (offset-offs)*100/limit)
+			fmt.Printf("percent EOF %d  %%\n", iter*100/limit)
+			if nBytes == 0 {
+				errHandler(err)
+			}
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("EOF file. Continue? [y/n]: ")
 			text, errs := reader.ReadString('\n')
@@ -86,10 +82,10 @@ func CopySubStr() {
 		_, err = bw.Write(temp)
 		errHandler(err)
 
-		time.Sleep(100 * time.Millisecond)
-		offset += int64(nBytes)
+		time.Sleep(10 * time.Millisecond)
+
 		CallClear()
-		fmt.Printf("percent %d  %%\n", (offset-offs)*100/limit)
+		fmt.Printf("percent %d  %%\n", iter*100/limit)
 
 	}
 	err = bw.Flush()
