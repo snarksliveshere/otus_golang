@@ -57,7 +57,7 @@ func TestLimitWithOffset(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		CopySubStr(c.from, c.to, c.limit, c.offset)
+		CopySubStr(c.from, c.to, c.limit, c.offset, "y")
 		f, _ := os.Open(c.to)
 		fs, _ := f.Stat()
 		if fs.Size() != c.destSize {
@@ -83,7 +83,7 @@ func TestLimitZeroOffsetZero(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		CopySubStr(c.from, c.to, c.limit, c.offset)
+		CopySubStr(c.from, c.to, c.limit, c.offset, "y")
 		f, _ := os.Open(c.to)
 		fs, _ := f.Stat()
 		if fs.Size() != c.destSize {
@@ -98,6 +98,7 @@ func TestEOF(t *testing.T) {
 		limit, offset int64
 		res           string
 		destSize      int64
+		eof           string
 	}{
 		{
 			from:     "../files/if.txt",
@@ -105,15 +106,78 @@ func TestEOF(t *testing.T) {
 			limit:    100,
 			offset:   400,
 			destSize: 44,
+			eof:      "y",
+		},
+		{
+			from:     "../files/if.txt",
+			to:       "../files/of.txt",
+			limit:    100,
+			offset:   400,
+			destSize: 44,
+			eof:      "n",
 		},
 	}
 
 	for _, c := range cases {
-		CopySubStr(c.from, c.to, c.limit, c.offset)
+		err := CopySubStr(c.from, c.to, c.limit, c.offset, c.eof)
 		f, _ := os.Open(c.to)
 		fs, _ := f.Stat()
-		if fs.Size() != c.destSize {
+		if c.eof == "n" && fs.Size() == c.destSize {
 			t.Errorf("TestEOF() limit == %d, offset %d", c.limit, c.offset)
+		}
+		if fs.Size() != c.destSize && err != nil && c.eof == "y" {
+			t.Errorf("TestEOF() limit == %d, offset %d", c.limit, c.offset)
+		}
+		if fs.Size() != c.destSize && err == nil {
+			t.Errorf("TestEOF() limit == %d, offset %d", c.limit, c.offset)
+		}
+	}
+}
+
+func TestExplicitErrors(t *testing.T) {
+	cases := []struct {
+		from, to      string
+		limit, offset int64
+		res           string
+		destSize      int64
+		eof           string
+	}{
+		{
+			from:   "../files/if.txt",
+			to:     "../files/of.txt",
+			limit:  100,
+			offset: 500,
+			eof:    "y",
+		},
+		{
+			from:   "../files/if.txt",
+			to:     "../files/of.txt",
+			limit:  100,
+			offset: 400,
+			eof:    "n",
+		},
+		{
+			from:   "../files/if1.txt",
+			to:     "../files/of.txt",
+			limit:  10,
+			offset: 20,
+			eof:    "y",
+		},
+		{
+			from:   "../files/if.txt",
+			to:     "$dsfsd../files/of.txt",
+			limit:  10,
+			offset: 20,
+			eof:    "y",
+		},
+	}
+
+	for _, c := range cases {
+		err := CopySubStr(c.from, c.to, c.limit, c.offset, c.eof)
+		//f, _ := os.Open(c.to)
+		//fs, _ := f.Stat()
+		if err == nil {
+			t.Errorf("TestExplicitErrors() limit == %d, offset %d", c.limit, c.offset)
 		}
 	}
 }
