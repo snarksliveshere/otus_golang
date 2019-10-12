@@ -30,22 +30,8 @@ func TestLimitWithOffset(t *testing.T) {
 			from:     "../files/if.txt",
 			to:       "../files/of.txt",
 			limit:    10,
-			offset:   0,
-			destSize: 10,
-		},
-		{
-			from:     "../files/if.txt",
-			to:       "../files/of.txt",
-			limit:    10,
 			offset:   10,
 			destSize: 10,
-		},
-		{
-			from:     "../files/if.txt",
-			to:       "../files/of.txt",
-			limit:    0,
-			offset:   10,
-			destSize: 0,
 		},
 		{
 			from:     "../files/if.txt",
@@ -75,7 +61,7 @@ func TestLimitWithOffset(t *testing.T) {
 	}
 }
 
-func TestLimitZeroOffsetZero(t *testing.T) {
+func TestLimitZero(t *testing.T) {
 	cases := []struct {
 		from, to      string
 		limit, offset int64
@@ -83,29 +69,43 @@ func TestLimitZeroOffsetZero(t *testing.T) {
 		destSize      int64
 	}{
 		{
-			from:     "../files/if.txt",
-			to:       "../files/of.txt",
-			limit:    0,
-			offset:   0,
-			destSize: 0,
+			from:   "../files/if.txt",
+			to:     "../files/of.txt",
+			limit:  0,
+			offset: 0,
+		},
+		{
+			from:   "../files/if.txt",
+			to:     "../files/of.txt",
+			limit:  0,
+			offset: 10,
 		},
 	}
 
 	for _, c := range cases {
-		err := CopySubStr(c.from, c.to, c.limit, c.offset, "y")
-		if err != nil {
-			t.Errorf("TestLimitZeroOffsetZero(), err while start function")
-		}
-		f, err := os.Open(c.to)
+		ofFile, err := os.Open(c.to)
 		if err != nil {
 			t.Errorf("TestLimitZeroOffsetZero(), err while Open file %s", c.to)
 		}
-		fs, err := f.Stat()
+		ifFile, err := os.Open(c.from)
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while Open file %s", c.to)
+		}
+		err = CopySubStr(c.from, c.to, c.limit, c.offset, "y")
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while start function")
+		}
+		ofs, err := ofFile.Stat()
 		if err != nil {
 			t.Errorf("TestLimitZeroOffsetZero(), err while get stat file %s", c.to)
 		}
-		if fs.Size() != c.destSize {
-			t.Errorf("TestLimitZeroOffsetZero() limit == %d, offset %d", c.limit, c.offset)
+		ifs, err := ifFile.Stat()
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while get stat file %s", c.to)
+		}
+
+		if ofs.Size() != ifs.Size()-c.offset {
+			t.Errorf("TestLimitZeroOffsetZero() limit == %d, offset %d, file size: %d, orig: %d", c.limit, c.offset, ofs.Size(), ifs.Size())
 		}
 	}
 }

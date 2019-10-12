@@ -54,6 +54,14 @@ func CopySubStr(from, to string, limit, offset int64, eof string) error {
 		return err
 	}
 	defer func() { _ = ofFile.Close() }()
+	fIf, err := ifFile.Stat()
+	if err != nil {
+		return err
+	}
+	if limit == 0 {
+		limit = fIf.Size() - offset
+		fmt.Println(limit)
+	}
 
 	pad := 10
 	offs := offset
@@ -65,7 +73,7 @@ func CopySubStr(from, to string, limit, offset int64, eof string) error {
 		if (bw.Buffered() + pad) > int(limit) {
 			pad = int(limit) - bw.Buffered()
 		}
-		if (bw.Buffered()+pad) > int(offset) && offset != 0 {
+		if (bw.Buffered()+pad) > int(offset) && offset != 0 && (int(offset)-bw.Buffered()) != 0 {
 			pad = int(offset) - bw.Buffered()
 		}
 		temp := make([]byte, pad)
@@ -112,8 +120,10 @@ func CopySubStr(from, to string, limit, offset int64, eof string) error {
 		return err
 	}
 
-	fOf, _ := ofFile.Stat()
-	fIf, _ := ifFile.Stat()
+	fOf, err := ofFile.Stat()
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("Finish writing, dest file size: %d\n", fOf.Size())
 	fmt.Printf("src file size: %d\n", fIf.Size())
