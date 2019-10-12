@@ -57,24 +57,24 @@ func CopySubStr() {
 		if int(limit) < pad {
 			pad = int(limit)
 		}
-		fmt.Println(offset, bw.Buffered())
+		//fmt.Println(offset, bw.Buffered())
 		if (bw.Buffered() + pad) > int(offset) {
 			pad = int(offset) - bw.Buffered()
 		}
-		fmt.Println(pad, "pad")
+		//fmt.Println(pad, "pad")
 		temp := make([]byte, pad)
-		fmt.Println(offset, pad)
+		//fmt.Println(offset, pad)
 		nBytes, err := ifFile.ReadAt(temp, offset)
 
 		if err == io.EOF {
 			CallClear()
-			fmt.Printf("percent EOF %d  %%\n", offset*100/limit)
+			fmt.Printf("percent EOF %d  %%\n", (offset-offs)*100/limit)
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("EOF file. Continue? [y/n]: ")
 			text, errs := reader.ReadString('\n')
 			errHandler(errs)
 			if text == "y\n" {
-				_, err = bw.Write(temp)
+				_, err = bw.Write(temp[:nBytes])
 				errHandler(err)
 				break
 			}
@@ -87,15 +87,19 @@ func CopySubStr() {
 		errHandler(err)
 
 		time.Sleep(100 * time.Millisecond)
-		//CallClear()
-		fmt.Printf("percent %d  %%\n", offset*100/limit)
 		offset += int64(nBytes)
+		CallClear()
+		fmt.Printf("percent %d  %%\n", (offset-offs)*100/limit)
 
 	}
 	err = bw.Flush()
 	errHandler(err)
 
-	fmt.Println("Finish")
+	fs, _ := ofFile.Stat()
+	fIf, _ := ifFile.Stat()
+
+	fmt.Printf("Finish writing, dest file size: %d\n", fs.Size())
+	fmt.Printf("src file size: %d\n", fIf.Size())
 }
 
 func errHandler(err error) {
