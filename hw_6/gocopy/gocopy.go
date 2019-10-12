@@ -6,11 +6,14 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
+	"runtime"
 )
 
 var (
 	from, to      string
 	offset, limit int64
+	clear         map[string]func()
 )
 
 func init() {
@@ -18,11 +21,26 @@ func init() {
 	flag.StringVar(&to, "to", "./files/of.txt", "of file")
 	flag.Int64Var(&offset, "offset", 0, "offset")
 	flag.Int64Var(&limit, "limit", 0, "limit")
+	clear = make(map[string]func()) //Initialize it
+	clear["linux"] = func() {
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
+
+func CallClear() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
 }
 
 func CopySubStr() {
 	flag.Parse()
-	fmt.Println(from, to, offset, limit)
+	//fmt.Println(from, to, offset, limit)
 	//ifFile, err := os.Open(from)
 	//fromPath, err := filepath.Abs(from)
 	//errHandler(err)
@@ -36,13 +54,18 @@ func CopySubStr() {
 	// reader section
 	b := make([]byte, 0, limit)
 	//_, err = ifFile.ReadAt(b, offset)
-	pad := 10
+	pad := 1024
 	offs := offset
 	for offset < (limit + offs) {
-		fmt.Println(offset, limit)
+		fmt.Println(offset, "offset")
+		if offset > (limit - int64(pad)) {
+			pad = int(limit - offset)
+		}
 		temp := make([]byte, pad)
+
 		nBytes, err := ifFile.ReadAt(temp, offset)
 		offset += int64(nBytes)
+
 		if err == io.EOF {
 			b = append(b, temp...)
 			break
@@ -50,16 +73,17 @@ func CopySubStr() {
 		if err != nil {
 			log.Panicf("failed to read: %v", err)
 		}
-		fmt.Printf("Length b %d  , temp %d\n", len(b), len(temp))
+		//fmt.Printf("Length b %d  , temp %d\n", len(b), len(temp))
 
 		b = append(b, temp...)
-		fmt.Println(len(b), "lenB")
-		fmt.Println(string(b))
+		//CallClear()
+		fmt.Println(len(b))
+		//fmt.Println(string(b))
 	}
-	//fmt.Println(len(b), "end")
-	fs, _ := ifFile.Stat()
-	fs.Size()
-	fmt.Println(len(b), "end", fs.Size())
+	fmt.Println(len(b), "end")
+	//fs, _ := ifFile.Stat()
+	//fs.Size()
+	//fmt.Println(len(b), "end", fs.Size())
 
 }
 
