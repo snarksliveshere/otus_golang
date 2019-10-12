@@ -1,6 +1,7 @@
 package gocopy
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -22,29 +23,26 @@ func init() {
 	flag.StringVar(&to, "to", "./files/of.txt", "of file")
 	flag.Int64Var(&offset, "offset", 0, "offset")
 	flag.Int64Var(&limit, "limit", 0, "limit")
-	clear = make(map[string]func()) //Initialize it
+	clear = make(map[string]func())
 	clear["linux"] = func() {
-		cmd := exec.Command("clear") //Linux example, its tested
+		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
-		cmd.Run()
+		err := cmd.Run()
+		errHandler(err)
 	}
 }
 
 func CallClear() {
-	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
-	if ok {                          //if we defined a clear func for that platform:
-		value() //we execute it
-	} else { //unsupported platform
+	value, ok := clear[runtime.GOOS]
+	if ok {
+		value()
+	} else {
 		panic("Your platform is unsupported! I can't clear terminal screen :(")
 	}
 }
 
 func CopySubStr() {
 	flag.Parse()
-	//fmt.Println(from, to, offset, limit)
-	//ifFile, err := os.Open(from)
-	//fromPath, err := filepath.Abs(from)
-	//errHandler(err)
 	ifFile, err := os.Open(from)
 	errHandler(err)
 	ofFile, err := os.Create(to)
@@ -52,14 +50,11 @@ func CopySubStr() {
 	defer func() { _ = ifFile.Close() }()
 	defer func() { _ = ofFile.Close() }()
 
-	// reader section
-	b := make([]byte, 0, limit)
-	//_, err = ifFile.ReadAt(b, offset)
+	//b := make([]byte, 0, limit)
 	pad := 10
 	offs := offset
-
+	bw := bufio.NewWriter(ofFile)
 	for offset < (limit + offs) {
-		//var percent int64
 		if offset > (limit - int64(pad)) {
 			pad = int(limit - offset)
 		}
@@ -67,31 +62,34 @@ func CopySubStr() {
 		nBytes, err := ifFile.ReadAt(temp, offset)
 		offset += int64(nBytes)
 		if err == io.EOF {
-			b = append(b, temp...)
+			//b = append(b, temp...)
 			CallClear()
-			fmt.Printf("percent EOF %d  %%\n", offset*100/(limit*2))
-			//reader := bufio.NewReader(os.Stdin)
-			//fmt.Print("Enter text: ")
-			//text, _ := reader.ReadString('\n')
-			//fmt.Println(text)
-			break
+			fmt.Printf("percent EOF %d  %%\n", offset*100/limit)
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("EOF file. Continue? [y/n]: ")
+			text, _ := reader.ReadString('\n')
+			if text == "y\n" {
+				_, err = bw.Write(temp)
+				errHandler(err)
+				break
+			}
+			errHandler(err)
 		}
 		if err != nil {
 			log.Panicf("failed to read: %v", err)
 		}
-		b = append(b, temp...)
-		//ln := int64(len(b))
-		//percent = offset * 100 / int64(ln)
+		//b = append(b, temp...)
+		_, err = bw.Write(temp)
+		errHandler(err)
 		time.Sleep(10 * time.Millisecond)
 		CallClear()
 
-		fmt.Printf("percent %d  %%\n", offset*100/(limit*2))
+		fmt.Printf("percent %d  %%\n", offset*100/limit)
 	}
-	//fmt.Println(len(b), "end")
-	//fs, _ := ifFile.Stat()
-	//fs.Size()
-	//fmt.Println(len(b), "end", fs.Size())
+	err = bw.Flush()
+	errHandler(err)
 
+	fmt.Println("Finish")
 }
 
 func errHandler(err error) {
