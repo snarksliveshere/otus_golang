@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 )
 
 var (
@@ -54,33 +55,39 @@ func CopySubStr() {
 	// reader section
 	b := make([]byte, 0, limit)
 	//_, err = ifFile.ReadAt(b, offset)
-	pad := 1024
+	pad := 10
 	offs := offset
+
 	for offset < (limit + offs) {
-		fmt.Println(offset, "offset")
+		//var percent int64
 		if offset > (limit - int64(pad)) {
 			pad = int(limit - offset)
 		}
 		temp := make([]byte, pad)
-
 		nBytes, err := ifFile.ReadAt(temp, offset)
 		offset += int64(nBytes)
-
 		if err == io.EOF {
 			b = append(b, temp...)
+			CallClear()
+			fmt.Printf("percent EOF %d  %%\n", offset*100/(limit*2))
+			//reader := bufio.NewReader(os.Stdin)
+			//fmt.Print("Enter text: ")
+			//text, _ := reader.ReadString('\n')
+			//fmt.Println(text)
 			break
 		}
 		if err != nil {
 			log.Panicf("failed to read: %v", err)
 		}
-		//fmt.Printf("Length b %d  , temp %d\n", len(b), len(temp))
-
 		b = append(b, temp...)
-		//CallClear()
-		fmt.Println(len(b))
-		//fmt.Println(string(b))
+		//ln := int64(len(b))
+		//percent = offset * 100 / int64(ln)
+		time.Sleep(10 * time.Millisecond)
+		CallClear()
+
+		fmt.Printf("percent %d  %%\n", offset*100/(limit*2))
 	}
-	fmt.Println(len(b), "end")
+	//fmt.Println(len(b), "end")
 	//fs, _ := ifFile.Stat()
 	//fs.Size()
 	//fmt.Println(len(b), "end", fs.Size())
