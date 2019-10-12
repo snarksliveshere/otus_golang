@@ -198,8 +198,6 @@ func TestExplicitErrors(t *testing.T) {
 
 	for _, c := range cases {
 		err := CopySubStr(c.from, c.to, c.limit, c.offset, c.eof)
-		//f, _ := os.Open(c.to)
-		//fs, _ := f.Stat()
 		if err == nil {
 			t.Errorf("TestExplicitErrors() limit == %d, offset %d", c.limit, c.offset)
 		}

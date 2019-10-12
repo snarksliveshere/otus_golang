@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"time"
 )
 
 var (
@@ -104,9 +103,6 @@ func CopySubStr(from, to string, limit, offset int64, eof string) error {
 		if err != nil {
 			return err
 		}
-
-		time.Sleep(20 * time.Millisecond)
-
 		CallClear()
 		fmt.Printf("percent %d  %%\n", iter*100/limit)
 
