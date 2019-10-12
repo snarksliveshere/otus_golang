@@ -25,6 +25,14 @@ func init() {
 			log.Fatalf(err.Error())
 		}
 	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+	}
 }
 
 func CallClear() {
@@ -41,11 +49,11 @@ func CopySubStr(from, to string, limit, offset int64, eof string) error {
 	if err != nil {
 		return err
 	}
+	defer func() { _ = ifFile.Close() }()
 	ofFile, err := os.Create(to)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = ifFile.Close() }()
 	defer func() { _ = ofFile.Close() }()
 
 	pad := 10

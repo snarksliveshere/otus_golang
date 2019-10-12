@@ -57,9 +57,18 @@ func TestLimitWithOffset(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		CopySubStr(c.from, c.to, c.limit, c.offset, "y")
-		f, _ := os.Open(c.to)
-		fs, _ := f.Stat()
+		err := CopySubStr(c.from, c.to, c.limit, c.offset, "y")
+		if err != nil {
+			t.Errorf("TestLimitWithOffset(), err while start function")
+		}
+		f, err := os.Open(c.to)
+		if err != nil {
+			t.Errorf("TestLimitWithOffset(), err while Open file %s", c.to)
+		}
+		fs, err := f.Stat()
+		if err != nil {
+			t.Errorf("TestLimitWithOffset(), err while get stat file %s", c.to)
+		}
 		if fs.Size() != c.destSize {
 			t.Errorf("TestLimitWithOffset() limit == %d, offset %d", c.limit, c.offset)
 		}
@@ -83,9 +92,18 @@ func TestLimitZeroOffsetZero(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		CopySubStr(c.from, c.to, c.limit, c.offset, "y")
-		f, _ := os.Open(c.to)
-		fs, _ := f.Stat()
+		err := CopySubStr(c.from, c.to, c.limit, c.offset, "y")
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while start function")
+		}
+		f, err := os.Open(c.to)
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while Open file %s", c.to)
+		}
+		fs, err := f.Stat()
+		if err != nil {
+			t.Errorf("TestLimitZeroOffsetZero(), err while get stat file %s", c.to)
+		}
 		if fs.Size() != c.destSize {
 			t.Errorf("TestLimitZeroOffsetZero() limit == %d, offset %d", c.limit, c.offset)
 		}
@@ -120,8 +138,14 @@ func TestEOF(t *testing.T) {
 
 	for _, c := range cases {
 		err := CopySubStr(c.from, c.to, c.limit, c.offset, c.eof)
-		f, _ := os.Open(c.to)
-		fs, _ := f.Stat()
+		f, errF := os.Open(c.to)
+		if errF != nil {
+			t.Errorf("TestLimitWithOffset(), err while Open file %s", c.to)
+		}
+		fs, errS := f.Stat()
+		if errS != nil {
+			t.Errorf("TestLimitWithOffset(), err while get stat file %s", c.to)
+		}
 		if c.eof == "n" && fs.Size() == c.destSize {
 			t.Errorf("TestEOF() limit == %d, offset %d", c.limit, c.offset)
 		}
