@@ -1,47 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"flag"
+	"github.com/snarksliveshere/otus_golang/hw_7/envsdir"
 	"log"
-	"os"
-	"os/exec"
 )
 
+var (
+	pathEnvs, pathProg string
+)
+
+const (
+	envDir     = "./envs/"
+	pathToProg = "./test_prog/env_prog"
+)
+
+func init() {
+	flag.StringVar(&pathEnvs, "path_env_dir", envDir, "path to env dir")
+	flag.StringVar(&pathProg, "path_prog", pathToProg, "path to program")
+}
+
 func main() {
-	files, err := ioutil.ReadDir("./envs")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, f := range files {
-		fmt.Println(f.Name(), " f name")
-		fo, err := os.Open("./envs/" + f.Name())
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		r, err := ioutil.ReadAll(fo)
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("\nenv : %s,  var: %s\n", f.Name(), string(r))
-		err = os.Setenv(f.Name(), string(r))
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-	}
-	fmt.Println("olla ", os.Getenv("first_env"))
-
-	out, err := exec.Command("./test_prog/env_prog").Output()
+	flag.Parse()
+	err := envsdir.EnvsDir(pathEnvs, pathProg)
 	if err != nil {
 		log.Fatal(err.Error())
-	}
-	fmt.Println(string(out))
-
-	for _, f := range files {
-		err := os.Unsetenv(f.Name())
-		if err != nil {
-			log.Fatal(err.Error())
-		}
 	}
 }
