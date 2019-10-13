@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
-	fmt.Println("call test_prog")
+	firstEnv := os.Getenv("first_env")
+	secondEnv := os.Getenv("second_env")
+	fmt.Printf("Call prog with env var. First: %s, Second: %s", firstEnv, secondEnv)
 }
