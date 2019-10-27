@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	dbHandler := drivers.NewStorageHandler()
+	handler := drivers.NewStorageHandler()
+	actions := new(usecases.Actions)
+	actions.Logger = new(drivers.Logger)
 
 	handlers := make(map[string]interfaces.DbHandler)
 	handlers["DbUserRepo"] = dbHandler
@@ -14,8 +16,6 @@ func main() {
 	handlers["DbItemRepo"] = dbHandler
 	handlers["DbOrderRepo"] = dbHandler
 
-	actions := new(usecases.Actions)
-	actions.Logger = new(drivers.Logger)
 	orderInteractor.UserRepository = interfaces.NewDbUserRepo(handlers)
 	orderInteractor.ItemRepository = interfaces.NewDbItemRepo(handlers)
 	orderInteractor.OrderRepository = interfaces.NewDbOrderRepo(handlers)
