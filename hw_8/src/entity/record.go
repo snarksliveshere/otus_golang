@@ -11,5 +11,5 @@ type RecordRepository interface {
 	Delete(record Record) error
 	Edit(record Record) error
 	Show() []Record
-	Store(record Record) (Record, error)
+	Save(record Record) error
 }

@@ -23,5 +23,5 @@ type DayRepository interface {
 	AddRecordToDay(record Record, day Day) error
 	ShowDayRecords(day Day) ([]Record, error)
 	FindById(id uint64) (Day, error)
-	Store(record Record) error
+	Save(record Day) error
 }
