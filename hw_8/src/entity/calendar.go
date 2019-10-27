@@ -14,11 +14,14 @@ type Month struct {
 }
 
 type Day struct {
+	Id      uint64
 	Records []Record
 	Num     uint16
 }
 
 type DayRepository interface {
-	ShowDayRecords(day Day) []Record
-	AddRecordToDay(record Record) bool
+	AddRecordToDay(record Record, day Day) error
+	ShowDayRecords(day Day) ([]Record, error)
+	FindById(id uint64) (Day, error)
+	Store(record Record) error
 }

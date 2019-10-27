@@ -7,9 +7,9 @@ type Record struct {
 }
 
 type RecordRepository interface {
-	Add(record Record)
-	FindById(id uint64) Record
-	Delete(id uint64) bool
-	Edit(id uint64, title, description string) bool
+	FindById(id uint64) (Record, error)
+	Delete(record Record) error
+	Edit(record Record) error
 	Show() []Record
+	Store(record Record) (Record, error)
 }
