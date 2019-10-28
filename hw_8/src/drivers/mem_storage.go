@@ -1,8 +1,6 @@
-package infrastructure
+package drivers
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type InMemStorage struct {
 	conn string
