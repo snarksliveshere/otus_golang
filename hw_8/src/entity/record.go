@@ -5,11 +5,3 @@ type Record struct {
 	Title       string
 	Description string
 }
-
-type RecordRepository interface {
-	FindById(id uint64) (Record, error)
-	Delete(record Record) error
-	Edit(record Record) error
-	Show() []Record
-	Save(record Record) error
-}

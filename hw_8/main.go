@@ -7,6 +7,7 @@ import (
 
 func main() {
 	handler := drivers.NewStorageHandler()
+
 	actions := new(usecases.Actions)
 	actions.Logger = new(drivers.Logger)
 

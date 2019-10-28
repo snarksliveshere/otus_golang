@@ -5,16 +5,16 @@ import (
 )
 
 type InMemStorage struct {
-	Conn string
+	conn string
 }
 
-func (handler *InMemStorage) Execute(interface{}) (i interface{}) {
-	fmt.Println("execute")
+func (handler *InMemStorage) Execute(str string) (i interface{}) {
+	fmt.Println(str)
 	return i
 }
 
 func NewStorageHandler() *InMemStorage {
 	inMemStorage := new(InMemStorage)
-	inMemStorage.Conn = "connection"
+	inMemStorage.conn = "connection"
 	return inMemStorage
 }
