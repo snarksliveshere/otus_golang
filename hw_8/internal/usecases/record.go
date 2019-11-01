@@ -2,13 +2,14 @@ package usecases
 
 import "github.com/snarskliveshere/otus_golang/hw_8/entity"
 
-func (act *Actions) AddRecord(id int) error {
-	rec, err := act.getRecordById(id)
-	if err != nil {
-		act.Logger.Log(err.Error())
-		return err
+func (act *Actions) AddRecord(title, description string) error {
+	rec := entity.Record{
+		Id:          1,
+		Title:       title,
+		Description: description,
 	}
-	err = act.RecordRepository.Save(rec)
+
+	err := act.RecordRepository.Save(rec)
 	if err != nil {
 		act.Logger.Log("An error occurred while record added")
 		return err

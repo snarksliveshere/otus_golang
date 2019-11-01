@@ -24,6 +24,7 @@ func (d *DateRepo) FindById(id uint64) (entity.Date, error) {
 }
 
 func (d *DateRepo) Save(record entity.Date) error {
+
 	d.handler.Execute("save")
 	return nil
 }

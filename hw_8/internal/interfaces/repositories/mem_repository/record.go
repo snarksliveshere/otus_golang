@@ -28,6 +28,7 @@ func (r *RecordRepo) Show() []entity.Record {
 }
 
 func (r *RecordRepo) Save(record entity.Record) error {
+
 	r.handler.Execute("save")
 	return nil
 }
