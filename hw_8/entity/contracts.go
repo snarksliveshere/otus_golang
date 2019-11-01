@@ -8,9 +8,9 @@ type RecordRepository interface {
 	Save(record Record) error
 }
 
-type DayRepository interface {
-	AddRecordToDay(record Record, day Day) error
-	ShowDayRecords(day Day) ([]Record, error)
-	FindById(id uint64) (Day, error)
-	Save(record Day) error
+type DateRepository interface {
+	AddRecordToDate(record Record, day Date) error
+	ShowDayRecords(day Date) ([]Record, error)
+	FindById(id uint64) (Date, error)
+	Save(record Date) error
 }

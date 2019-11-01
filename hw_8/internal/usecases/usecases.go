@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_8/src/entity"
+	"github.com/snarskliveshere/otus_golang/hw_8/entity"
 )
 
 type Logger interface {
@@ -10,6 +10,6 @@ type Logger interface {
 
 type Actions struct {
 	RecordRepository entity.RecordRepository
-	DayRepository    entity.DayRepository
+	DateRepository   entity.DateRepository
 	Logger           Logger
 }

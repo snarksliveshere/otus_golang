@@ -1,6 +1,6 @@
 package usecases
 
-import "github.com/snarskliveshere/otus_golang/hw_8/src/entity"
+import "github.com/snarskliveshere/otus_golang/hw_8/entity"
 
 func (act *Actions) AddRecord(id int) error {
 	rec, err := act.getRecordById(id)

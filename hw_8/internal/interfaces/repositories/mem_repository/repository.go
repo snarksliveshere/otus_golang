@@ -1,10 +1,10 @@
 package mem_repository
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_8/src/drivers"
+	"github.com/snarskliveshere/otus_golang/hw_8/pkg"
 )
 
-type DayRepo struct {
+type DateRepo struct {
 	*Repo
 }
 
@@ -13,7 +13,7 @@ type RecordRepo struct {
 }
 
 type Repo struct {
-	handler *drivers.InMemStorage
+	handler *pkg.InMemStorage
 }
 
 func (r *Repo) Execute(str string) {
@@ -31,13 +31,13 @@ func (r *Repo) Execute(str string) {
 //	return m
 //}
 
-func GetDayRepo(handler *drivers.InMemStorage) *DayRepo {
+func GetDateRepo(handler *pkg.InMemStorage) *DateRepo {
 	repo := new(Repo)
 	repo.handler = handler
-	return &DayRepo{repo}
+	return &DateRepo{repo}
 }
 
-func GetRecordRepo(handler *drivers.InMemStorage) *RecordRepo {
+func GetRecordRepo(handler *pkg.InMemStorage) *RecordRepo {
 	repo := new(Repo)
 	repo.handler = handler
 	return &RecordRepo{repo}
