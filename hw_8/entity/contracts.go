@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type RecordRepository interface {
 	FindById(id uint64) (Record, error)
 	Delete(record Record) error
@@ -11,5 +13,6 @@ type RecordRepository interface {
 type DateRepository interface {
 	AddRecordToDate(record Record, day Date) error
 	ShowDayRecords(day Date) ([]Record, error)
-	FindById(id uint64) (Date, error)
+	FindByDay(day time.Time) (Date, error)
+	GetDateFromString(date string) (time.Time, error)
 }

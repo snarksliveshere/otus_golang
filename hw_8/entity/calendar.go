@@ -7,7 +7,6 @@ type Calendar struct {
 }
 
 type Date struct {
-	Id      uint64
-	Item    time.Time
+	Day     time.Time
 	Records []Record
 }

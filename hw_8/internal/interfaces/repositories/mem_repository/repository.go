@@ -14,6 +14,7 @@ type RecordRepo struct {
 
 type Repo struct {
 	handler *pkg.InMemStorage
+	logger  pkg.Logger
 }
 
 func (r *Repo) Execute(str string) {
