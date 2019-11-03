@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-type config struct {
+type Config struct {
 	ListenIp   string `yaml:"listen_ip"`
 	ListenPort string `yaml:"listen_port"`
 	LogLevel   string `yaml:"log_level"`
@@ -15,23 +15,23 @@ type config struct {
 
 var (
 	confOnce sync.Once
-	conf     *config
+	conf     *Config
 )
 
-func Conf() *config {
+func Conf(path string) *Config {
 	confOnce.Do(func() {
-		conf = &config{}
-		conf.parse()
+		conf = &Config{}
+		conf.parse(path)
 	})
 	return conf
 }
 
-func ListenAddr(conf *config) string {
+func ListenAddr(conf *Config) string {
 	return conf.ListenIp + ":" + conf.ListenPort
 }
 
-func (conf *config) parse() {
-	cf, err := ioutil.ReadFile("./config/config.yaml")
+func (conf *Config) parse(path string) {
+	cf, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
