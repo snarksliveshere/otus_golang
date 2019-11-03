@@ -1,7 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"github.com/caarlos0/env"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
 	"sync"
 )
 
@@ -17,6 +21,14 @@ var (
 )
 
 func Conf() *config {
+	cf, err := ioutil.ReadFile("./config/config.yaml")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	yc := &YamlFileConfig{}
+	yc.parse(cf)
+	fmt.Println(yc.ListenIp)
+
 	confOnce.Do(func() {
 		conf = &config{}
 		err := env.Parse(conf)
@@ -29,4 +41,15 @@ func Conf() *config {
 
 func ListenAddr(conf *config) string {
 	return conf.ListenIp + ":" + conf.ListenPort
+}
+
+type YamlFileConfig struct {
+	ListenIp string `yaml:"listenIp"`
+}
+
+func (y *YamlFileConfig) parse(sb []byte) {
+	err := yaml.Unmarshal(sb, y)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }
