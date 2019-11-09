@@ -12,13 +12,13 @@ import (
 
 var (
 	webServer *http.Server
-	log       pkg.Logger
+	log       *pkg.Logger
 	conf      *config.Config
 )
 
 func Server(path string) {
 	conf = config.CreateConfig(path)
-	log = pkg.CreateLog(path)
+	log = pkg.CreateLog(conf)
 
 	stopch := make(chan os.Signal, 1)
 	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
