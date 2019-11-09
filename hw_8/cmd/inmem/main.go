@@ -1,4 +1,4 @@
-package main
+package inmem
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/snarskliveshere/otus_golang/hw_8/pkg"
 )
 
-func main() {
+func InMemFunc() {
 	handler := pkg.NewStorageHandler()
 	actions := new(usecases.Actions)
 	actions.Logger = new(pkg.Logger)
