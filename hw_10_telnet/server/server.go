@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 const retry = 3
@@ -50,19 +53,26 @@ func writeHandler(conn net.Conn, pattern string, text []interface{}) {
 }
 
 func main() {
+	stopch := make(chan os.Signal, 1)
+	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
 	l, err := net.Listen("tcp", "0.0.0.0:3302")
 	if err != nil {
 		log.Fatalf("Cannot listen: %v", err)
 	}
 
+LOOP:
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Fatalf("Cannot accept: %v", err)
 		}
 		go handleConnection(conn)
-		break
+		select {
+		case <-stopch:
+			break LOOP
+		}
 	}
+	log.Print("\nServer shutdown\n")
 	func() {
 		_ = l.Close()
 	}()
