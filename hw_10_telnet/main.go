@@ -21,6 +21,7 @@ var (
 
 const (
 	timeoutDefault = 10
+	retry          = 3
 )
 
 func init() {
@@ -41,7 +42,7 @@ LOOP:
 			if !scanner.Scan() {
 				log.Printf("CANNOT SCAN")
 				ch <- os.Signal(syscall.SIGTERM)
-				//break LOOP
+				break LOOP
 			}
 			text := scanner.Text()
 			log.Printf("From server: %s", text)
@@ -51,7 +52,7 @@ LOOP:
 	return
 }
 
-func writeRoutine(ctx context.Context, conn net.Conn) {
+func writeRoutine(ctx context.Context, conn net.Conn, ch chan<- os.Signal) {
 	scanner := bufio.NewScanner(os.Stdin)
 WRITER:
 	for {
@@ -60,12 +61,12 @@ WRITER:
 			break WRITER
 		default:
 			if !scanner.Scan() {
+				ch <- os.Signal(syscall.SIGTERM)
 				break WRITER
 			}
 			str := scanner.Text()
 			log.Printf("To server %v\n", str)
-
-			conn.Write([]byte(fmt.Sprintf("%s\n", str)))
+			writeHandler(conn, "%s\n", []interface{}{str})
 		}
 
 	}
@@ -74,25 +75,26 @@ WRITER:
 }
 
 func main() {
+	flag.Parse()
+	fmt.Println(host, port, timeout)
 	t := time.Duration(timeout) * time.Second
-	fmt.Println(t)
-
+	fmt.Printf("Trying to establish connection on %s with timeout %s\n", host+":"+port, t)
 	dialer := &net.Dialer{}
 	ctx, cancel := context.WithTimeout(context.Background(), t)
-
 	conn, err := dialer.DialContext(ctx, "tcp", host+":"+port)
 	if err != nil {
 		log.Fatalf("Cannot connect: %v", err)
 	}
-
+	fmt.Println("Connection established")
 	stopch := make(chan os.Signal, 1)
 	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
 		readRoutine(ctx, cancel, conn, stopch)
 	}()
 
 	go func() {
-		writeRoutine(ctx, conn)
+		writeRoutine(ctx, conn, stopch)
 	}()
 
 	<-stopch
@@ -101,5 +103,18 @@ func main() {
 	if err != nil {
 		log.Fatal("I cannot close the connection")
 	}
-	fmt.Println("ola3")
+	fmt.Println("Connection closed")
+}
+
+func writeHandler(conn net.Conn, pattern string, text []interface{}) {
+	var err error
+	for i := 0; i < retry; i++ {
+		_, err = conn.Write([]byte(fmt.Sprintf(pattern, text...)))
+		if err == nil {
+			break
+		}
+	}
+	if err != nil {
+		log.Fatal("WRITE: Basic server functionality doesnt work, panic")
+	}
 }
