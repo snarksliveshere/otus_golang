@@ -11,26 +11,24 @@ import (
 )
 
 var (
-	webServer *http.Server
-	log       *pkg.Logger
-	conf      *config.Config
+	log *pkg.Logger
 )
 
 func Server(path string) {
-	conf = config.CreateConfig(path)
+	conf := config.CreateConfig(path)
 	log = pkg.CreateLog(conf)
 
 	stopch := make(chan os.Signal, 1)
 	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
-	webApi()
+	webApi(conf)
 	<-stopch
 }
 
-func webApi() {
+func webApi(conf *config.Config) {
 	listenAddr := conf.ListenAddr()
 	router := mux.NewRouter()
 	router.HandleFunc("/", helloHandler)
-	webServer = &http.Server{Addr: listenAddr, Handler: router}
+	webServer := &http.Server{Addr: listenAddr, Handler: router}
 
 	go func() {
 		if err := webServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {

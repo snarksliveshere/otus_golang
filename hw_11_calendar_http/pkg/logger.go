@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/snarskliveshere/otus_golang/hw_8/config"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
 )
 
 const appName = "simple_app_calendar"

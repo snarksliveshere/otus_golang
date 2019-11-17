@@ -1,7 +1,7 @@
 package mem_repository
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_8/entity"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 	"time"
 )
 
