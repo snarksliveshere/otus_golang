@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Calendar struct {
-	Date
+	Dates []*Date `json:"dates,omitempty"`
 }
 
 type Date struct {

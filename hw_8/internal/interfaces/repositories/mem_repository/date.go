@@ -12,14 +12,15 @@ func (d *DateRepo) AddRecordToDate(record entity.Record, day entity.Date) error 
 
 func (d *DateRepo) ShowDayRecords(day entity.Date) ([]entity.Record, error) {
 	d.handler.Execute("show day record")
-	return []entity.Record{}, nil
+	return nil, nil
 }
 
 func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 	layout := "2006-01-02"
 	t, err := time.Parse(layout, date)
 	if err != nil {
-		d.logger.Log("Wrong incoming day pattern")
+		d.logger.Log().Info("Wrong incoming day pattern")
+		return t, err
 	}
 	return t, nil
 }
