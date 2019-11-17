@@ -2,7 +2,9 @@ package web
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/usecases"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/pkg"
 	"net/http"
 	"os"
@@ -11,12 +13,15 @@ import (
 )
 
 var (
-	log *pkg.Logger
+	log    *pkg.Logger
+	action *usecases.Actions
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
 	log = pkg.CreateLog(conf)
+
+	action = inmem.GetActionInstance(log)
 
 	stopch := make(chan os.Signal, 1)
 	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
@@ -31,8 +36,8 @@ func webApi(conf *config.Config) {
 	webServer := &http.Server{Addr: listenAddr, Handler: router}
 	go func() {
 		if err := webServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Log().Panic(err)
+			log.Fatal(err)
 		}
 	}()
-	log.Log().Infof("Run web webApi server: %v", listenAddr)
+	log.Infof("Run web webApi server: %v", listenAddr)
 }

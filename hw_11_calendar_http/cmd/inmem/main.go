@@ -23,3 +23,13 @@ func InMemFunc() {
 	}
 	fmt.Println(record)
 }
+
+func GetActionInstance(logger usecases.Logger) *usecases.Actions {
+	handler := pkg.NewStorageHandler()
+	actions := new(usecases.Actions)
+	actions.Logger = logger
+	actions.DateRepository = mem_repository.GetDateRepo(handler)
+	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
+
+	return actions
+}

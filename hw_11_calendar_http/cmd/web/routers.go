@@ -18,48 +18,48 @@ func routesRegister(router *mux.Router) {
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }
 
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
-		log.Log().Fatal("An error occurred")
+		log.Fatal("An error occurred")
 	}
 }

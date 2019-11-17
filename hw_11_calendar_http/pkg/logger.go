@@ -11,8 +11,20 @@ type Logger struct {
 	log *logrus.Entry
 }
 
-func (logger *Logger) Log() *logrus.Entry {
-	return logger.log
+func (logger *Logger) Infof(pattern string, args ...interface{}) {
+	logger.log.Infof(pattern, args...)
+}
+
+func (logger *Logger) Info(args ...interface{}) {
+	logger.log.Info(args...)
+}
+
+func (logger *Logger) Fatal(args ...interface{}) {
+	logger.log.Fatal(args...)
+}
+
+func (logger *Logger) Fatalf(pattern string, args ...interface{}) {
+	logger.log.Fatalf(pattern, args...)
 }
 
 func CreateLog(config *config.Config) *Logger {

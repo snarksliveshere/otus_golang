@@ -19,7 +19,7 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 	layout := "2006-01-02"
 	t, err := time.Parse(layout, date)
 	if err != nil {
-		d.logger.Log().Info("Wrong incoming day pattern")
+		d.logger.Info("Wrong incoming day pattern")
 		return t, err
 	}
 	return t, nil

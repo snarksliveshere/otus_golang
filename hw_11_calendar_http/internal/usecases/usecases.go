@@ -5,7 +5,8 @@ import (
 )
 
 type Logger interface {
-	Log(args ...interface{})
+	Info(args ...interface{})
+	Infof(pattern string, args ...interface{})
 }
 
 type Actions struct {
