@@ -11,22 +11,13 @@ type Storage struct {
 	actions *usecases.Actions
 }
 
-func InMemFunc() {
-	handler := pkg.NewStorageHandler()
-	actions := new(usecases.Actions)
-	actions.Logger = new(pkg.Logger)
-	actions.DateRepository = mem_repository.GetDateRepo(handler)
-	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
-	err := actions.AddRecord("title1", "descr1")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	record, err := actions.RecordRepository.FindById(1)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Println(record)
-}
+//func InMemFunc() {
+//	handler := pkg.NewStorageHandler()
+//	actions := new(usecases.Actions)
+//	actions.Logger = new(pkg.Logger)
+//	actions.DateRepository = mem_repository.GetDateRepo(handler)
+//	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
+//}
 
 func CreateStorageInstance(logger usecases.Logger) *Storage {
 	handler := pkg.NewStorageHandler()
@@ -38,8 +29,12 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	return &Storage{actions: actions}
 }
 
-func (s *Storage) AddRecord(title, desc string) error {
-	err := s.actions.AddRecord(title, desc)
+func (s *Storage) AddRecord(title, desc, date string) error {
+	rec, err := s.actions.AddRecord(title, desc)
+	if err != nil {
+		return err
+	}
+	err = s.actions.AddRecordToDate(int(rec.Id), date)
 	if err != nil {
 		return err
 	}

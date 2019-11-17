@@ -2,21 +2,21 @@ package usecases
 
 import "github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 
-func (act *Actions) AddRecord(title, description string) error {
-	rec := entity.Record{
+func (act *Actions) AddRecord(title, description string) (rec entity.Record, err error) {
+	rec = entity.Record{
 		Id:          1,
 		Title:       title,
 		Description: description,
 	}
 
-	err := act.RecordRepository.Save(rec)
+	err = act.RecordRepository.Save(rec)
 	if err != nil {
 		act.Logger.Info("An error occurred while record added")
-		return err
+		return rec, err
 	}
 	act.Logger.Info("Record added successfully")
 
-	return nil
+	return rec, nil
 }
 
 func (act *Actions) EditRecord(id int) error {

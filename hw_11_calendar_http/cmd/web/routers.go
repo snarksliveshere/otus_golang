@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/validators"
 	"net/http"
@@ -25,6 +24,14 @@ func notValidHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func otherErrorHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusBadRequest)
+	_, err := w.Write([]byte("500"))
+	if err != nil {
+		log.Fatal("An error occurred")
+	}
+}
+
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
@@ -33,18 +40,15 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
-	a := -10
-	b := uint64(a)
-	fmt.Println(b)
-	title, desc := r.FormValue("title"), r.FormValue("description")
-	fmt.Println(title)
-	title, desc, err := validators.CheckCreateEvent(title, desc)
+	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
+	title, desc, date, err := validators.CheckCreateEvent(title, desc, date)
 	if err != nil {
 		notValidHandler(w, r)
 	}
-	fmt.Println("olalal")
-	fmt.Sprintf("%#v,%#v,%#v,", title, desc, err)
-	//storage.AddRecord(title, desc)
+	err = storage.AddRecord(title, desc, date)
+	if err != nil {
+		otherErrorHandler(w, r)
+	}
 	//
 	//t := storage.FindRecordById(1)
 	//
