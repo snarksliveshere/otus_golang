@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
-	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/usecases"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/pkg"
 	"net/http"
 	"os"
@@ -13,15 +12,15 @@ import (
 )
 
 var (
-	log    *pkg.Logger
-	action *usecases.Actions
+	log     *pkg.Logger
+	storage *inmem.Storage
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
 	log = pkg.CreateLog(conf)
 
-	action = inmem.GetActionInstance(log)
+	storage = inmem.CreateStorageInstance(log)
 
 	stopch := make(chan os.Signal, 1)
 	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)

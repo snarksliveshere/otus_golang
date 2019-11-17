@@ -23,7 +23,11 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("hello"))
+	storage.AddRecord("some_title", "some_desc")
+
+	t := storage.FindRecordById(1)
+
+	_, err := w.Write([]byte(t))
 	if err != nil {
 		log.Fatal("An error occurred")
 	}

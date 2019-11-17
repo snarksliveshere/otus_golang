@@ -7,6 +7,10 @@ import (
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/pkg"
 )
 
+type Storage struct {
+	actions *usecases.Actions
+}
+
 func InMemFunc() {
 	handler := pkg.NewStorageHandler()
 	actions := new(usecases.Actions)
@@ -24,12 +28,21 @@ func InMemFunc() {
 	fmt.Println(record)
 }
 
-func GetActionInstance(logger usecases.Logger) *usecases.Actions {
+func CreateStorageInstance(logger usecases.Logger) *Storage {
 	handler := pkg.NewStorageHandler()
 	actions := new(usecases.Actions)
 	actions.Logger = logger
 	actions.DateRepository = mem_repository.GetDateRepo(handler)
 	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
 
-	return actions
+	return &Storage{actions: actions}
+}
+
+func (s *Storage) AddRecord(title, desc string) {
+	s.actions.AddRecord(title, desc)
+}
+
+func (s *Storage) FindRecordById(id uint64) string {
+	record, _ := s.actions.RecordRepository.FindById(id)
+	return fmt.Sprintf("resccc %#v", record)
 }
