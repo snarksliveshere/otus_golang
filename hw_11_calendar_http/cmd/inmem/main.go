@@ -38,8 +38,12 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	return &Storage{actions: actions}
 }
 
-func (s *Storage) AddRecord(title, desc string) {
-	s.actions.AddRecord(title, desc)
+func (s *Storage) AddRecord(title, desc string) error {
+	err := s.actions.AddRecord(title, desc)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Storage) FindRecordById(id uint64) string {
