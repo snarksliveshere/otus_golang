@@ -61,6 +61,16 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	data := ctx.Value("data").(map[string]string)
+	n := ctx.Value("eventId").(uint64)
+	title, okTitle := data["title"]
+	desc, okDesc := data["desc"]
+	date, okDate := data["date"]
+
+	if !okTitle || !okDesc || !okDate {
+		otherErrorHandler(w, r)
+	}
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
@@ -68,6 +78,9 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	eventId := ctx.Value("data").(uint64)
+
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
