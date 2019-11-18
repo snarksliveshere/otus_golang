@@ -1,19 +1,52 @@
 package web
 
 import (
+	"context"
 	"github.com/gorilla/mux"
-	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/validators"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/data_handlers"
 	"net/http"
 )
 
 func routesRegister(router *mux.Router) {
 	router.HandleFunc("/", helloHandler)
-	router.HandleFunc("/create-event", createEventHandler)
+	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler))
 	router.HandleFunc("/update-event", updateEventHandler)
 	router.HandleFunc("/delete-event", deleteEventHandler)
 	router.HandleFunc("/events-for-day", eventsForDayHandler)
 	router.HandleFunc("/events-for-week", eventsForWeekHandler)
 	router.HandleFunc("/events-for-month", eventsForMonthHandler)
+}
+
+func validCreateEventHandler(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
+		title, desc, date, err := data_handlers.CheckCreateEvent(title, desc, date)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+		m := make(map[string]string, 3)
+		m["title"] = title
+		m["desc"] = desc
+		m["date"] = date
+		ctx := context.WithValue(r.Context(), "data", m)
+		r = r.WithContext(ctx)
+		h(w, r)
+	}
+}
+
+func validDeleteEventHandler(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		eventId := r.FormValue("eventId")
+		n, err := data_handlers.CheckDeleteEvent(eventId)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "eventId", n)
+		r = r.WithContext(ctx)
+		h(w, r)
+	}
 }
 
 func notValidHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,12 +73,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
-	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
-	title, desc, date, err := validators.CheckCreateEvent(title, desc, date)
-	if err != nil {
-		notValidHandler(w, r)
-	}
-	err = storage.AddRecord(title, desc, date)
+	err := storage.AddRecord(title, desc, date)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
