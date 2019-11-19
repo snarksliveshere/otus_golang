@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
 func routesRegister(router *mux.Router) {
@@ -10,16 +11,16 @@ func routesRegister(router *mux.Router) {
 	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler))
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
-	router.HandleFunc("/events-for-day", eventsForDayHandler)
+	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).Queries("date", "{date}")
 	router.HandleFunc("/events-for-week", eventsForWeekHandler)
-	router.HandleFunc("/events-for-month", eventsForMonthHandler)
+	router.HandleFunc("/events-for-month", eventsForMonthHandler).Queries("month", "{month}")
 }
 
 func notValidHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusBadRequest)
 	_, err := w.Write([]byte("400"))
 	if err != nil {
-		log.Fatal("An error occurred")
+		log.Fatal("not valid params", err.Error())
 	}
 }
 
@@ -27,7 +28,7 @@ func otherErrorHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusBadRequest)
 	_, err := w.Write([]byte("500"))
 	if err != nil {
-		log.Fatal("An error occurred")
+		log.Fatal("An error occurred", err.Error())
 	}
 }
 
@@ -88,6 +89,8 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	t := ctx.Value("data").(time.Time)
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
