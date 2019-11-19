@@ -68,7 +68,7 @@ func validDeleteEventHandler(h http.HandlerFunc) http.HandlerFunc {
 func validEventsForDayHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		date, ok := vars["date"]
+		date, ok := vars["month"]
 		if !ok {
 			notValidHandler(w, r)
 			return
@@ -78,7 +78,7 @@ func validEventsForDayHandler(h http.HandlerFunc) http.HandlerFunc {
 			notValidHandler(w, r)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "eventId", t)
+		ctx := context.WithValue(r.Context(), "date", t)
 		r = r.WithContext(ctx)
 		log.Infof("events-for-day query with date %v", t)
 		h(w, r)
@@ -89,19 +89,19 @@ func validEventsForMonthHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		date, ok := vars["date"]
+		month, ok := vars["month"]
 		if !ok {
 			notValidHandler(w, r)
 			return
 		}
-		t, err := data_handlers.CheckEventsForDay(date)
+		n, err := data_handlers.CheckEventsForMonth(month)
 		if err != nil {
 			notValidHandler(w, r)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "eventId", t)
+		ctx := context.WithValue(r.Context(), "month", n)
 		r = r.WithContext(ctx)
-		log.Infof("events-for-day query with date %v", t)
+		log.Infof("events-for-month query with date %v", n)
 		h(w, r)
 	}
 }

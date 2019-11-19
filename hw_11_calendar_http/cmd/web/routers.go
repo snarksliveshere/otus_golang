@@ -13,7 +13,7 @@ func routesRegister(router *mux.Router) {
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
 	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).Queries("date", "{date}")
 	router.HandleFunc("/events-for-week", eventsForWeekHandler)
-	router.HandleFunc("/events-for-month", eventsForMonthHandler).Queries("month", "{month}")
+	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).Queries("month", "{month}")
 }
 
 func notValidHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,14 +90,7 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	t := ctx.Value("data").(time.Time)
-	_, err := w.Write([]byte("hello"))
-	if err != nil {
-		log.Fatal("An error occurred")
-	}
-}
-
-func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
+	date := ctx.Value("date").(time.Time)
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
@@ -105,6 +98,15 @@ func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	month := ctx.Value("month").(uint8)
+	_, err := w.Write([]byte("hello"))
+	if err != nil {
+		log.Fatal("An error occurred")
+	}
+}
+
+func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
