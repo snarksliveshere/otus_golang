@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (act *Actions) AddRecordToDate(recId int, dateStr string) error {
+func (act *Actions) AddRecordToDate(recId int, date time.Time) error {
 	date, err := act.getDate(dateStr)
 	if err != nil {
 		act.Logger.Info(err.Error())
@@ -40,18 +40,13 @@ func (act *Actions) ShowDayRecords(dateStr string) ([]entity.Record, error) {
 	return records, nil
 }
 
-func (act *Actions) getDate(dateStr string) (entity.Date, error) {
-	day, err := act.DateRepository.GetDateFromString(dateStr)
-	if err != nil {
-		act.Logger.Info("An error occurred while get day in time.Time")
-		return entity.Date{}, err
-	}
-	date, err := act.DateRepository.FindByDay(day)
+func (act *Actions) getDate(date time.Time) (entity.Date, error) {
+	entityDate, err := act.DateRepository.FindByDay(date)
 	if err != nil {
 		act.Logger.Info("An error occurred while get day")
 		return entity.Date{}, err
 	}
-	return date, nil
+	return entityDate, nil
 }
 
 func (act *Actions) returnDate(day time.Time) entity.Date {

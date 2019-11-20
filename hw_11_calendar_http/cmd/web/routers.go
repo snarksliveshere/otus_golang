@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
@@ -8,7 +9,7 @@ import (
 
 func routesRegister(router *mux.Router) {
 	router.HandleFunc("/", helloHandler)
-	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler))
+	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
 	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).Queries("date", "{date}")
@@ -42,10 +43,10 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
+	date := ctx.Value("day").(time.Time)
 	title, okTitle := data["title"]
 	desc, okDesc := data["desc"]
-	date, okDate := data["date"]
-	if !okTitle || !okDesc || !okDate {
+	if !okTitle || !okDesc {
 		otherErrorHandler(w, r)
 	}
 	err := storage.AddRecord(title, desc, date)
@@ -68,6 +69,7 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	title, okTitle := data["title"]
 	desc, okDesc := data["desc"]
 	date, okDate := data["date"]
+	fmt.Println(title, desc, date, n)
 
 	if !okTitle || !okDesc || !okDate {
 		otherErrorHandler(w, r)
@@ -81,6 +83,7 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	eventId := ctx.Value("data").(uint64)
+	fmt.Println(eventId)
 
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
@@ -91,6 +94,7 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	date := ctx.Value("date").(time.Time)
+	fmt.Println(date)
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
@@ -100,6 +104,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	month := ctx.Value("month").(uint8)
+	fmt.Println(month)
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")

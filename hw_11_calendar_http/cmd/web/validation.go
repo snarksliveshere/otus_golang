@@ -10,7 +10,12 @@ import (
 func validCreateEventHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
-		title, desc, date, err := data_handlers.CheckCreateEvent(title, desc, date)
+		title, desc, err := data_handlers.CheckCreateEvent(title, desc)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+		day, err := data_handlers.GetTimeFromString(date)
 		if err != nil {
 			notValidHandler(w, r)
 			return
@@ -18,9 +23,9 @@ func validCreateEventHandler(h http.HandlerFunc) http.HandlerFunc {
 		m := make(map[string]string, 3)
 		m["title"] = title
 		m["desc"] = desc
-		m["date"] = date
 		ctx := context.WithValue(r.Context(), "data", m)
-		r = r.WithContext(ctx)
+		ct := context.WithValue(ctx, "date", day)
+		r = r.WithContext(ct)
 		log.Infof("create-event query with %#v", m)
 		h(w, r)
 	}
@@ -68,7 +73,7 @@ func validDeleteEventHandler(h http.HandlerFunc) http.HandlerFunc {
 func validEventsForDayHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		date, ok := vars["month"]
+		date, ok := vars["date"]
 		if !ok {
 			notValidHandler(w, r)
 			return

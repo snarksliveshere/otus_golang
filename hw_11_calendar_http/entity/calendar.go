@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Calendar struct {
-	Date
+	Dates []Date
 }
 
 type Date struct {

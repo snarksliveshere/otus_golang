@@ -5,6 +5,7 @@ import (
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/interfaces/repositories/mem_repository"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/usecases"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/pkg"
+	"time"
 )
 
 type Storage struct {
@@ -29,7 +30,7 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	return &Storage{actions: actions}
 }
 
-func (s *Storage) AddRecord(title, desc, date string) error {
+func (s *Storage) AddRecord(title, desc string, date time.Time) error {
 	rec, err := s.actions.AddRecord(title, desc)
 	if err != nil {
 		return err
