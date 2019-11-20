@@ -26,3 +26,7 @@ func IsNumOfMonthInString(month string) (uint8, error) {
 	errs := errors.New("not valid month num")
 	return 0, errs
 }
+
+func MakeTimestampId() uint64 {
+	return uint64(time.Now().UnixNano())
+}

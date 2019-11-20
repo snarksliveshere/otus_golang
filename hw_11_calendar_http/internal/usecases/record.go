@@ -1,10 +1,14 @@
 package usecases
 
-import "github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
+import (
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/helpers"
+)
 
 func (act *Actions) AddRecord(title, description string) (rec entity.Record, err error) {
+	id := helpers.MakeTimestampId()
 	rec = entity.Record{
-		Id:          1,
+		Id:          id,
 		Title:       title,
 		Description: description,
 	}
@@ -19,7 +23,7 @@ func (act *Actions) AddRecord(title, description string) (rec entity.Record, err
 	return rec, nil
 }
 
-func (act *Actions) EditRecord(id int) error {
+func (act *Actions) EditRecord(id uint64) error {
 	rec, err := act.getRecordById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
@@ -33,7 +37,7 @@ func (act *Actions) EditRecord(id int) error {
 	return nil
 }
 
-func (act *Actions) DeleteRecord(id int) error {
+func (act *Actions) DeleteRecord(id uint64) error {
 	rec, err := act.getRecordById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
@@ -47,8 +51,8 @@ func (act *Actions) DeleteRecord(id int) error {
 	return nil
 }
 
-func (act *Actions) getRecordById(id int) (entity.Record, error) {
-	record, err := act.RecordRepository.FindById(uint64(id))
+func (act *Actions) getRecordById(id uint64) (entity.Record, error) {
+	record, err := act.RecordRepository.FindById(id)
 	if err != nil {
 		act.Logger.Info("An error occurred while get record")
 		return entity.Record{}, err

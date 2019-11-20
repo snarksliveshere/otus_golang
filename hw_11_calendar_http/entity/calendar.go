@@ -3,10 +3,10 @@ package entity
 import "time"
 
 type Calendar struct {
-	Dates []Date
+	Dates []Date `json:"dates,omitempty"`
 }
 
 type Date struct {
-	Day     time.Time
-	Records []Record
+	Day     time.Time `json:"day,omitempty"`
+	Records []Record  `json:"records,omitempty"`
 }

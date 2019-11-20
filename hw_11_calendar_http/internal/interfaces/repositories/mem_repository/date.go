@@ -5,8 +5,9 @@ import (
 	"time"
 )
 
-func (d *DateRepo) AddRecordToDate(record entity.Record, day entity.Date) error {
+func (d *DateRepo) AddRecordToDate(record entity.Record, day *entity.Date) error {
 	d.handler.Execute("add record to day")
+	day.Records = append(day.Records, record)
 	return nil
 }
 

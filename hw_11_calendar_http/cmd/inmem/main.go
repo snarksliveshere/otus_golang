@@ -2,6 +2,7 @@ package inmem
 
 import (
 	"fmt"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/interfaces/repositories/mem_repository"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/usecases"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/pkg"
@@ -30,16 +31,16 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	return &Storage{actions: actions}
 }
 
-func (s *Storage) AddRecord(title, desc string, date time.Time) error {
+func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, entity.Date, error) {
 	rec, err := s.actions.AddRecord(title, desc)
 	if err != nil {
-		return err
+		return entity.Record{}, entity.Date{}, err
 	}
-	err = s.actions.AddRecordToDate(int(rec.Id), date)
+	day, err := s.actions.AddRecordToDate(rec, date)
 	if err != nil {
-		return err
+		return rec, entity.Date{}, err
 	}
-	return nil
+	return rec, day, nil
 }
 
 func (s *Storage) FindRecordById(id uint64) string {

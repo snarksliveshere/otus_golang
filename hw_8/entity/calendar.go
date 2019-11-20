@@ -7,6 +7,6 @@ type Calendar struct {
 }
 
 type Date struct {
-	Day     time.Time
-	Records []Record
+	Day     time.Time `json:"day,omitempty"`
+	Records []Record  `json:"records,omitempty"`
 }
