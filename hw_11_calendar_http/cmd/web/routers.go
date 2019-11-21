@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 	"net/http"
 	"time"
@@ -22,8 +23,6 @@ type Response struct {
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
 }
-
-//curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 
 func routesRegister(router *mux.Router) {
 	router.HandleFunc("/", helloHandler)
@@ -58,6 +57,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
@@ -67,15 +67,13 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	if !okTitle || !okDesc {
 		otherErrorHandler(w, r)
 	}
+
 	rec, day, err := storage.AddRecord(title, desc, date)
-	resp := Response{Date: day, Record: rec, Status: statusOK}
-	jResp, _ := json.Marshal(resp)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(jResp)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
+	resp := Response{Date: day, Record: rec, Status: statusOK}
+	sendResponse(resp, w, r)
 }
 
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,14 +94,32 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//curl -d 'eventId=123' -X POST http://localhost:3001/delete-event
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	eventId := ctx.Value("eventId").(uint64)
-	fmt.Println(eventId)
-
-	_, err := w.Write([]byte("hello"))
+	err := storage.DeleteRecordById(eventId)
+	resp := Response{}
 	if err != nil {
-		log.Fatal("An error occurred")
+		resp.Status = statusError
+		resp.Error = err.Error()
+		otherErrorHandler(w, r)
+	} else {
+		resp.Status = statusOK
+	}
+	sendResponse(resp, w, r)
+}
+
+func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
+	jResp, err := json.Marshal(resp)
+	if err != nil {
+		otherErrorHandler(w, r)
+	}
+	w.Header().Set(config.HeaderContentType, config.HeaderContentType)
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(jResp)
+	if err != nil {
+		otherErrorHandler(w, r)
 	}
 }
 
