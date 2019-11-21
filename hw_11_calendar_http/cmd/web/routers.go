@@ -98,7 +98,7 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	eventId := ctx.Value("data").(uint64)
+	eventId := ctx.Value("eventId").(uint64)
 	fmt.Println(eventId)
 
 	_, err := w.Write([]byte("hello"))

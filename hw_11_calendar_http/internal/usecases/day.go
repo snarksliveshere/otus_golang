@@ -20,6 +20,15 @@ func (act *Actions) AddRecordToDate(rec entity.Record, date time.Time) (entity.D
 	return day, nil
 }
 
+func (act *Actions) AddDateToCalendar(date entity.Date) error {
+	err := act.DateRepository.AddDateToCalendar(date)
+	if err != nil {
+		act.Logger.Info("An error occurred while add day records")
+		return err
+	}
+	return nil
+}
+
 func (act *Actions) ShowDayRecords(dateStr string) ([]entity.Record, error) {
 	day, err := act.DateRepository.GetDateFromString(dateStr)
 	if err != nil {
