@@ -38,18 +38,29 @@ func validUpdateEventHandler(h http.HandlerFunc) http.HandlerFunc {
 			r.FormValue("date"),
 			r.FormValue("eventId")
 
-		title, desc, date, n, err := data_handlers.CheckUpdateEvent(title, desc, date, eventId)
+		title, desc, err := data_handlers.CheckUpdateEvent(title, desc)
 		if err != nil {
 			notValidHandler(w, r)
 			return
 		}
+		n, err := data_handlers.ValidateUpdateEventId(eventId)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+		day, err := data_handlers.GetTimeFromString(date)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+
 		m := make(map[string]string, 4)
 		m["title"] = title
 		m["desc"] = desc
-		m["date"] = date
 		ctx := context.WithValue(r.Context(), "data", m)
 		ct := context.WithValue(ctx, "eventId", n)
-		r = r.WithContext(ct)
+		c := context.WithValue(ct, "date", day)
+		r = r.WithContext(c)
 		log.Infof("update-event query with %#v, %v", m, n)
 		h(w, r)
 	}

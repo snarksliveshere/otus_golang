@@ -3,6 +3,7 @@ package inmem
 import (
 	"errors"
 	"fmt"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/interfaces/repositories/mem_repository"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/usecases"
@@ -33,6 +34,8 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 }
 
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, entity.Date, error) {
+	c := s.actions.DateRepository.GetCalendar()
+	fmt.Printf("c before %#v\n", c)
 	rec, err := s.actions.AddRecord(title, desc)
 	if err != nil {
 		return entity.Record{}, entity.Date{}, err
@@ -41,6 +44,7 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	if err != nil {
 		return rec, entity.Date{}, err
 	}
+	fmt.Printf("c after %#v\n", c)
 
 	return rec, day, nil
 }
@@ -65,7 +69,31 @@ func (s *Storage) DeleteRecordById(id uint64) error {
 	if res {
 		return nil
 	} else {
-		err := errors.New("i cant find record with this id")
+		err := errors.New("i cant find record with this id to delete")
+		return err
+	}
+}
+
+func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, description string) error {
+	c := s.actions.DateRepository.GetCalendar()
+	fmt.Printf("c before: %#v\n", c)
+	var res bool
+	for _, z := range c.Dates {
+		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
+			for _, r := range z.Records {
+				if r.Id == recId {
+					r.Title = title
+					r.Description = description
+					res = true
+				}
+			}
+		}
+	}
+	fmt.Printf("c after: %#v\n", c)
+	if res {
+		return nil
+	} else {
+		err := errors.New("i cant find record with this id to update")
 		return err
 	}
 }

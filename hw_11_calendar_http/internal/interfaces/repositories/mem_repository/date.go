@@ -42,8 +42,7 @@ func (d *DateRepo) ShowDayRecords(day entity.Date) ([]entity.Record, error) {
 }
 
 func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
-	layout := "2006-01-02"
-	t, err := time.Parse(layout, date)
+	t, err := time.Parse(config.TimeLayout, date)
 	if err != nil {
 		d.logger.Info("Wrong incoming day pattern")
 		return t, err

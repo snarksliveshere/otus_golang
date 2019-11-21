@@ -61,10 +61,10 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
-	date := ctx.Value("date").(time.Time)
+	date, okDate := ctx.Value("date").(time.Time)
 	title, okTitle := data["title"]
 	desc, okDesc := data["desc"]
-	if !okTitle || !okDesc {
+	if !okTitle || !okDesc || !okDate {
 		otherErrorHandler(w, r)
 	}
 
@@ -76,19 +76,22 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(resp, w, r)
 }
 
+// curl -d 'title=new-title&description=new_desc&date=2019-11-01&eventId=123' -X POST http://localhost:3001/update-event
+
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
-	n := ctx.Value("eventId").(uint64)
+	n, okN := ctx.Value("eventId").(uint64)
+	date, okDate := ctx.Value("date").(time.Time)
 	title, okTitle := data["title"]
 	desc, okDesc := data["desc"]
-	date, okDate := data["date"]
-	fmt.Println(title, desc, date, n)
 
-	if !okTitle || !okDesc || !okDate {
+	if !okTitle || !okDesc || !okDate || !okN {
 		otherErrorHandler(w, r)
 	}
-	_, err := w.Write([]byte("hello"))
+	err := storage.UpdateRecordById(n, date, title, desc)
+
+	_, err = w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
 	}
@@ -97,7 +100,10 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 //curl -d 'eventId=123' -X POST http://localhost:3001/delete-event
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	eventId := ctx.Value("eventId").(uint64)
+	eventId, ok := ctx.Value("eventId").(uint64)
+	if !ok {
+		otherErrorHandler(w, r)
+	}
 	err := storage.DeleteRecordById(eventId)
 	resp := Response{}
 	if err != nil {

@@ -2,13 +2,13 @@ package helpers
 
 import (
 	"errors"
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
 	"strconv"
 	"time"
 )
 
 func GetDateFromString(date string) (time.Time, error) {
-	layout := "2006-01-02"
-	t, err := time.Parse(layout, date)
+	t, err := time.Parse(config.TimeLayout, date)
 	if err != nil {
 		return t, err
 	}

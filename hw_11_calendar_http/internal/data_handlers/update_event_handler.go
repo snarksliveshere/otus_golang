@@ -1,36 +1,40 @@
 package data_handlers
 
-import "github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/helpers"
+import (
+	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/helpers"
+)
 
-func CheckUpdateEvent(title, desc, date, eventId string) (string, string, string, uint64, error) {
-	err := validateUpdateEvent(title, desc, date, eventId)
+func CheckUpdateEvent(title, desc string) (string, string, error) {
+	err := validateUpdateEvent(title, desc)
 	if err != nil {
-		return title, desc, date, 0, err
+		return title, desc, err
 	}
 
-	return modifierUpdateEvent(title, desc, date, eventId)
+	title, desc = modifierUpdateStringEvent(title, desc)
+	return title, desc, nil
 }
 
-func validateUpdateEvent(title, desc, date, eventId string) error {
+func validateUpdateEvent(title, desc string) error {
 	if err := helpers.NotEmpty(title); err != nil {
 		return err
 	}
 	if err := helpers.NotEmpty(desc); err != nil {
 		return err
 	}
-	if err := helpers.NotEmpty(date); err != nil {
-		return err
-	}
-	if err := helpers.CanParseStringToUint64(eventId); err != nil {
-		return err
-	}
 	return nil
 }
 
-func modifierUpdateEvent(title, desc, date, eventId string) (string, string, string, uint64, error) {
+func modifierUpdateStringEvent(title, desc string) (string, string) {
 	title = helpers.Trim(title)
 	desc = helpers.Trim(desc)
-	date = helpers.Trim(date)
-	n, _ := helpers.ParseStringToUint64(eventId)
-	return title, desc, date, n, nil
+	return title, desc
+}
+
+func ValidateUpdateEventId(eventId string) (uint64, error) {
+	n, err := helpers.ParseStringToUint64(eventId)
+	if err != nil {
+		return 0, err
+	}
+
+	return n, nil
 }
