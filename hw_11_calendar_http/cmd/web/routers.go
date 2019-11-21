@@ -9,6 +9,20 @@ import (
 	"time"
 )
 
+const (
+	statusOK    = "success"
+	statusError = "error"
+)
+
+type Response struct {
+	Date       entity.Date   `json:"day,omitempty"`
+	Record     entity.Record `json:"record,omitempty"`
+	Collection []interface{} `json:"collection,omitempty"`
+	//Result     []string      `json:"result,omitempty"`
+	Error  string `json:"error,omitempty"`
+	Status string `json:"status,omitempty"`
+}
+
 //curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 
 func routesRegister(router *mux.Router) {
@@ -44,14 +58,6 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type Response struct {
-	Date       entity.Date   `json:"day,omitempty"`
-	Record     entity.Record `json:"record,omitempty"`
-	Collection []interface{} `json:"collection,omitempty"`
-	Result     string        `json:"result,omitempty"`
-	Error      string        `json:"error,omitempty"`
-}
-
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
@@ -62,7 +68,7 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	}
 	rec, day, err := storage.AddRecord(title, desc, date)
-	resp := Response{Date: day, Record: rec, Result: "success"}
+	resp := Response{Date: day, Record: rec, Status: statusOK}
 	jResp, _ := json.Marshal(resp)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
