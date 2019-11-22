@@ -65,7 +65,7 @@ func (s *Storage) FindRecordById(id uint64) string {
 func (s *Storage) DeleteRecordById(id uint64) error {
 	c := s.actions.DateRepository.GetCalendar()
 	var res bool
-	for _, z := range *c.Dates {
+	for _, z := range c.Dates {
 		for i, r := range z.Records {
 			if r.Id == id {
 				newRecords := removeRecordFromSlice(z.Records, i)
@@ -86,7 +86,7 @@ func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, descript
 	c := s.actions.DateRepository.GetCalendar()
 	fmt.Printf("c before: %#v\n", c)
 	var res bool
-	for _, z := range *c.Dates {
+	for _, z := range c.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
 			for _, r := range z.Records {
 				if r.Id == recId {

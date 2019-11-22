@@ -26,7 +26,7 @@ func (d *DateRepo) GetCalendar() *entity.Calendar {
 
 func (d *DateRepo) AddDateToCalendar(day entity.Date) error {
 	calendar := d.GetCalendar()
-	*calendar.Dates = append(*calendar.Dates, day)
+	calendar.Dates = append(calendar.Dates, &day)
 	d.handler.Execute("add date to calendar")
 	return nil
 }
@@ -82,28 +82,30 @@ func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (entity.
 	var isDateInCalendarIndex int
 	// TODO: first add
 	fmt.Println(*calendar, calendar, &calendar)
-	if calendar == nil {
-		fmt.Println("ollla nil")
+	if calendar.Dates == nil {
+		day := entity.Date{
+			Day:     date,
+			Records: []entity.Record{},
+		}
+		calendar.Dates = []*entity.Date{}
+		calendar.Dates = append(calendar.Dates, &day)
+		return day, nil
 	}
 
-	for i, z := range *calendar.Dates {
+	for i, z := range calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
 			isDateInCalendarIndex = i
 		}
 	}
+	var day entity.Date
 	fmt.Println(isDateInCalendarIndex, "date in calendar")
 	if isDateInCalendarIndex != 0 {
-		d := *calendar.Dates
-		return d[isDateInCalendarIndex], nil
+		ds := calendar.Dates
+		d.handler.Execute("day exist")
+		return *ds[isDateInCalendarIndex], nil
 	}
-
-	day := entity.Date{
-		Day:     date,
-		Records: []entity.Record{},
-	}
-	*calendar.Dates = append(*calendar.Dates, day)
-
-	d.handler.Execute("find by day")
+	calendar.Dates = append(calendar.Dates, &day)
+	d.handler.Execute("add new day")
 	return day, nil
 }
 
