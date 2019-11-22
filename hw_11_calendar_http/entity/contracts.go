@@ -14,7 +14,7 @@ type DateRepository interface {
 	AddRecordToDate(record Record, day *Date) error
 	AddDateToCalendar(day Date) error
 	ShowDayRecords(day Date) ([]Record, error)
-	FindByDay(day time.Time) (Date, error)
+	FindByDay(day time.Time, c *Calendar) (Date, error)
 	GetDateFromString(date string) (time.Time, error)
 	GetCalendar() *Calendar
 }

@@ -12,7 +12,8 @@ import (
 )
 
 type Storage struct {
-	actions *usecases.Actions
+	actions  *usecases.Actions
+	calendar *entity.Calendar
 }
 
 //func InMemFunc() {
@@ -29,22 +30,25 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	actions.Logger = logger
 	actions.DateRepository = mem_repository.GetDateRepo(handler)
 	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
-
-	return &Storage{actions: actions}
+	//c := actions.DateRepository.GetCalendar()
+	c := new(entity.Calendar)
+	return &Storage{actions: actions, calendar: c}
 }
 
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, entity.Date, error) {
-	c := s.actions.DateRepository.GetCalendar()
-	fmt.Printf("c before %#v\n", c)
+	//c := s.calendar
+	fmt.Printf("\nc before ol1 %#v\n", s.calendar)
 	rec, err := s.actions.AddRecord(title, desc)
 	if err != nil {
 		return entity.Record{}, entity.Date{}, err
 	}
+	d, _ := s.actions.DateRepository.FindByDay(date, s.calendar)
+	fmt.Println(d)
 	day, err := s.actions.AddRecordToDate(rec, date)
 	if err != nil {
 		return rec, entity.Date{}, err
 	}
-	fmt.Printf("c after %#v\n", c)
+	fmt.Printf("\nc after ol2 %#v\n", s.calendar)
 
 	return rec, day, nil
 }

@@ -6,12 +6,13 @@ import (
 )
 
 func (act *Actions) AddRecordToDate(rec entity.Record, date time.Time) (entity.Date, error) {
-	day, err := act.getDate(date)
-	if err != nil {
-		act.Logger.Info(err.Error())
-		return entity.Date{}, err
-	}
-	err = act.DateRepository.AddRecordToDate(rec, &day)
+	//day, err := act.getDate(date)
+	//if err != nil {
+	//	act.Logger.Info(err.Error())
+	//	return entity.Date{}, err
+	//}
+	day := entity.Date{}
+	err := act.DateRepository.AddRecordToDate(rec, &day)
 	if err != nil {
 		act.Logger.Info("An error occurred while add day records")
 		return entity.Date{}, err
@@ -35,7 +36,7 @@ func (act *Actions) ShowDayRecords(dateStr string) ([]entity.Record, error) {
 		act.Logger.Info("An error occurred while get day in time.Time")
 		return []entity.Record{}, err
 	}
-	date, err := act.DateRepository.FindByDay(day)
+	date, err := act.DateRepository.FindByDay(day, &entity.Calendar{})
 	records, err := act.DateRepository.ShowDayRecords(date)
 	if err != nil {
 		act.Logger.Info("An error occurred while show day records")
@@ -44,14 +45,14 @@ func (act *Actions) ShowDayRecords(dateStr string) ([]entity.Record, error) {
 	return records, nil
 }
 
-func (act *Actions) getDate(date time.Time) (entity.Date, error) {
-	entityDate, err := act.DateRepository.FindByDay(date)
-	if err != nil {
-		act.Logger.Info("An error occurred while get day")
-		return entity.Date{}, err
-	}
-	return entityDate, nil
-}
+//func (act *Actions) getDate(date time.Time) (entity.Date, error) {
+//	entityDate, err := act.DateRepository.FindByDay(date)
+//	if err != nil {
+//		act.Logger.Info("An error occurred while get day")
+//		return entity.Date{}, err
+//	}
+//	return entityDate, nil
+//}
 
 func (act *Actions) returnDate(day time.Time) entity.Date {
 	date := entity.Date{

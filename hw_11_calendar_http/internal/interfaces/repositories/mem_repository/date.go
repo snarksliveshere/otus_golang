@@ -50,8 +50,30 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 	return t, nil
 }
 
-func (d *DateRepo) FindByDay(date time.Time) (entity.Date, error) {
-	calendar := d.GetCalendar()
+//func (d *DateRepo) FindByDay(date time.Time) (entity.Date, error) {
+//	calendar := d.GetCalendar()
+//	var isDateInCalendarIndex int
+//	for i, z := range calendar.Dates {
+//		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
+//			isDateInCalendarIndex = i
+//		}
+//	}
+//	if isDateInCalendarIndex != 0 {
+//		return calendar.Dates[isDateInCalendarIndex], nil
+//	}
+//
+//	day := entity.Date{
+//		Day:     date,
+//		Records: []entity.Record{},
+//	}
+//	calendar.Dates = append(calendar.Dates, day)
+//
+//	d.handler.Execute("find by day")
+//	return day, nil
+//}
+
+func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (entity.Date, error) {
+	//calendar := d.GetCalendar()
 	var isDateInCalendarIndex int
 	for i, z := range calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
