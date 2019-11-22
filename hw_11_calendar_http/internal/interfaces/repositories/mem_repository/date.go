@@ -1,6 +1,7 @@
 package mem_repository
 
 import (
+	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/config"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/entity"
 	"sync"
@@ -74,6 +75,7 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 
 func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (entity.Date, error) {
 	//calendar := d.GetCalendar()
+	fmt.Printf("\n ent cal %#v\n", calendar)
 	var isDateInCalendarIndex int
 	for i, z := range calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
