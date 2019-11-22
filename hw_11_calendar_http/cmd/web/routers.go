@@ -68,7 +68,8 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	}
 
-	rec, day, err := storage.AddRecord(title, desc, date)
+	rec, day, c, err := storage.AddRecord(title, desc, date)
+	fmt.Println(c)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}

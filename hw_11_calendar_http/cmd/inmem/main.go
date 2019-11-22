@@ -35,12 +35,10 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	return &Storage{actions: actions, calendar: c}
 }
 
-func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, entity.Date, error) {
-	//c := s.calendar
-	fmt.Printf("\nc before ol1 %#v\n", s.calendar)
+func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, entity.Date, *entity.Calendar, error) {
 	rec, err := s.actions.AddRecord(title, desc)
 	if err != nil {
-		return entity.Record{}, entity.Date{}, err
+		return entity.Record{}, entity.Date{}, s.calendar, err
 	}
 	day, _ := s.actions.DateRepository.FindByDay(date, s.calendar)
 	fmt.Printf("\nday with records: %#v\n", day)
@@ -50,11 +48,12 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	fmt.Printf("\ncalendar with day with records: %#v\n", s.calendar)
 	fmt.Printf("\ndate::: %#v\n", day)
 	if err != nil {
-		return rec, entity.Date{}, err
+		fmt.Println("err when addtodate")
+		return rec, entity.Date{}, s.calendar, err
 	}
 	fmt.Printf("\nc after ol2 %#v\n", s.calendar)
 
-	return rec, day, nil
+	return rec, day, s.calendar, nil
 }
 
 func (s *Storage) FindRecordById(id uint64) string {

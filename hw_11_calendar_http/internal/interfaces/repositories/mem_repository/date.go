@@ -77,11 +77,6 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 //}
 
 func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (entity.Date, error) {
-	//calendar := d.GetCalendar()
-	fmt.Printf("\n ent cal %#v\n %s\n", calendar, date)
-	var isDateInCalendarIndex int
-	// TODO: first add
-	fmt.Println(*calendar, calendar, &calendar)
 	if calendar.Dates == nil {
 		day := entity.Date{
 			Day:     date,
@@ -92,13 +87,13 @@ func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (entity.
 		return day, nil
 	}
 
+	var isDateInCalendarIndex int
 	for i, z := range calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
 			isDateInCalendarIndex = i
 		}
 	}
 	var day entity.Date
-	fmt.Println(isDateInCalendarIndex, "date in calendar")
 	if isDateInCalendarIndex != 0 {
 		ds := calendar.Dates
 		d.handler.Execute("day exist")
