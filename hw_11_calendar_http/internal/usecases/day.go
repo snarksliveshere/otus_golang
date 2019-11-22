@@ -5,20 +5,14 @@ import (
 	"time"
 )
 
-func (act *Actions) AddRecordToDate(rec entity.Record, date time.Time) (entity.Date, error) {
-	//day, err := act.getDate(date)
-	//if err != nil {
-	//	act.Logger.Info(err.Error())
-	//	return entity.Date{}, err
-	//}
-	day := entity.Date{}
-	err := act.DateRepository.AddRecordToDate(rec, &day)
+func (act *Actions) AddRecordToDate(rec entity.Record, date *entity.Date) error {
+	err := act.DateRepository.AddRecordToDate(rec, date)
 	if err != nil {
 		act.Logger.Info("An error occurred while add day records")
-		return entity.Date{}, err
+		return err
 	}
 
-	return day, nil
+	return nil
 }
 
 func (act *Actions) AddDateToCalendar(date entity.Date) error {

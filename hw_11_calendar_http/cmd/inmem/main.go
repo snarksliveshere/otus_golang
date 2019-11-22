@@ -42,9 +42,13 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	if err != nil {
 		return entity.Record{}, entity.Date{}, err
 	}
-	d, _ := s.actions.DateRepository.FindByDay(date, s.calendar)
-	fmt.Println(d)
-	day, err := s.actions.AddRecordToDate(rec, date)
+	day, _ := s.actions.DateRepository.FindByDay(date, s.calendar)
+	fmt.Printf("\nday with records: %#v\n", day)
+	fmt.Printf("\ncalendar with day: %#v\n", s.calendar)
+	err = s.actions.DateRepository.AddRecordToDate(rec, &day)
+	// TODO: no date in calendar
+	fmt.Printf("\ncalendar with day with records: %#v\n", s.calendar)
+	fmt.Printf("\ndate::: %#v\n", day)
 	if err != nil {
 		return rec, entity.Date{}, err
 	}
@@ -61,7 +65,7 @@ func (s *Storage) FindRecordById(id uint64) string {
 func (s *Storage) DeleteRecordById(id uint64) error {
 	c := s.actions.DateRepository.GetCalendar()
 	var res bool
-	for _, z := range c.Dates {
+	for _, z := range *c.Dates {
 		for i, r := range z.Records {
 			if r.Id == id {
 				newRecords := removeRecordFromSlice(z.Records, i)
@@ -82,7 +86,7 @@ func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, descript
 	c := s.actions.DateRepository.GetCalendar()
 	fmt.Printf("c before: %#v\n", c)
 	var res bool
-	for _, z := range c.Dates {
+	for _, z := range *c.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
 			for _, r := range z.Records {
 				if r.Id == recId {
