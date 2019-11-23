@@ -30,9 +30,12 @@ func routesRegister(router *mux.Router) {
 	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
-	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).Queries("date", "{date}")
-	router.HandleFunc("/events-for-week", eventsForWeekHandler)
-	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).Queries("month", "{month}")
+	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).
+		Queries("date", "{date}")
+	router.HandleFunc("/events-for-week", validEventsForIntervalHandler(eventsForWeekHandler)).
+		Queries("from", "{from}", "till", "{till}")
+	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).
+		Queries("month", "{month}")
 	//router.HandleFunc("/events-for-month", eventsForMonthHandler).Queries("month", "{month}")
 }
 
@@ -168,7 +171,7 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	if !okDates {
 		otherErrorHandler(w, r)
 	}
-	records, err := storage.GetEventsForMonth(dates["firstDate"], dates["lastDate"])
+	records, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -181,10 +184,24 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(resp, w, r)
 }
 
-// curl 'http://localhost:3001/events-for-week?date=2019-11-01'
+// curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
+// curl 'http://localhost:3001/events-for-week?from=2019-11-01&till=2019-11-08'
+// кто там неделя, это решает передающий данные, я получаю их как интервал
 func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("hello"))
-	if err != nil {
-		log.Fatal("An error occurred")
+	ctx := r.Context()
+	dates, okDates := ctx.Value("dates").(map[string]time.Time)
+	if !okDates {
+		otherErrorHandler(w, r)
 	}
+	records, err := storage.GetEventsForInterval(dates["from"], dates["till"])
+	resp := Response{}
+	if err != nil {
+		resp.Status = statusError
+		resp.Error = err.Error()
+		otherErrorHandler(w, r)
+	} else {
+		resp.Status = statusOK
+		resp.Records = records
+	}
+	sendResponse(resp, w, r)
 }

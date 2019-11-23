@@ -122,7 +122,7 @@ func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
 	return day, nil
 }
 
-func (s *Storage) GetEventsForMonth(from, till time.Time) ([]entity.Record, error) {
+func (s *Storage) GetEventsForInterval(from, till time.Time) ([]entity.Record, error) {
 	if s.calendar.Dates == nil {
 		err := errors.New("there are no records in calendar yet")
 		return nil, err
@@ -140,7 +140,7 @@ func (s *Storage) GetEventsForMonth(from, till time.Time) ([]entity.Record, erro
 	if res {
 		return records, nil
 	} else {
-		err := errors.New("i cant find records for this month")
+		err := errors.New("i cant find records for this interval")
 		return nil, err
 	}
 }

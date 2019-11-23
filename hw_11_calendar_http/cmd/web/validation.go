@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_11_calendar_http/internal/data_handlers"
 	"net/http"
+	"time"
 )
 
 func validCreateEventHandler(h http.HandlerFunc) http.HandlerFunc {
@@ -118,6 +119,31 @@ func validEventsForMonthHandler(h http.HandlerFunc) http.HandlerFunc {
 		ctx := context.WithValue(r.Context(), "dates", m)
 		r = r.WithContext(ctx)
 		log.Infof("events-for-month query with date %v", m)
+		h(w, r)
+	}
+}
+
+func validEventsForIntervalHandler(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		from, okFrom := vars["from"]
+		till, okTill := vars["till"]
+		if !okFrom || !okTill {
+			notValidHandler(w, r)
+			return
+		}
+		tFrom, err := data_handlers.CheckEventsForDay(from)
+		tTill, err := data_handlers.CheckEventsForDay(till)
+		if err != nil {
+			notValidHandler(w, r)
+			return
+		}
+		mt := make(map[string]time.Time, 2)
+		mt["from"] = tFrom
+		mt["till"] = tTill
+		ctx := context.WithValue(r.Context(), "dates", mt)
+		r = r.WithContext(ctx)
+		log.Infof("events-for-day query with date %v", mt)
 		h(w, r)
 	}
 }

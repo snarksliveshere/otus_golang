@@ -22,10 +22,10 @@ func Server(path string) {
 
 	storage = inmem.CreateStorageInstance(log)
 
-	stopch := make(chan os.Signal, 1)
-	signal.Notify(stopch, syscall.SIGINT, syscall.SIGTERM)
+	stopCh := make(chan os.Signal, 1)
+	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
 	webApi(conf)
-	<-stopch
+	<-stopCh
 }
 
 func webApi(conf *config.Config) {
