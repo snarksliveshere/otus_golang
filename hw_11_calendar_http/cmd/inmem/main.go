@@ -78,27 +78,33 @@ func (s *Storage) DeleteRecordById(id uint64) error {
 }
 
 func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, description string) error {
-	c := s.actions.DateRepository.GetCalendar()
-	fmt.Printf("c before: %#v\n", c)
+	if s.calendar.Dates == nil {
+		err := errors.New("there are no records in calendar yet")
+		return err
+	}
 	var res bool
-	for _, z := range c.Dates {
+	for i, z := range s.calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
-			for _, r := range z.Records {
+			for k, r := range z.Records {
 				if r.Id == recId {
-					r.Title = title
-					r.Description = description
+					updRecord(&s.calendar.Dates[i].Records[k], title, description)
 					res = true
 				}
 			}
 		}
 	}
-	fmt.Printf("c after: %#v\n", c)
+
 	if res {
 		return nil
 	} else {
 		err := errors.New("i cant find record with this id to update")
 		return err
 	}
+}
+
+func updRecord(rec *entity.Record, title, desc string) {
+	rec.Title = title
+	rec.Description = desc
 }
 
 func removeRecordFromSlice(records []entity.Record, i int) []entity.Record {
