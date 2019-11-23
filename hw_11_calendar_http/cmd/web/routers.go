@@ -16,9 +16,10 @@ const (
 )
 
 type Response struct {
-	Date       entity.Date   `json:"day,omitempty"`
-	Record     entity.Record `json:"record,omitempty"`
-	Collection []interface{} `json:"collection,omitempty"`
+	Date       entity.Date     `json:"day,omitempty"`
+	Record     entity.Record   `json:"record,omitempty"`
+	Records    []entity.Record `json:"records,omitempty"`
+	Collection []interface{}   `json:"collection,omitempty"`
 	//Result     []string      `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
@@ -77,7 +78,6 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // curl -d 'title=new-title&description=new_desc&date=2019-11-01&eventId=123' -X POST http://localhost:3001/update-event
-
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	data := ctx.Value("data").(map[string]string)
@@ -137,14 +137,25 @@ func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// curl 'http://localhost:3001/events-for-day?date=2019-11-01'
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	date := ctx.Value("date").(time.Time)
-	fmt.Println(date)
-	_, err := w.Write([]byte("hello"))
-	if err != nil {
-		log.Fatal("An error occurred")
+	date, okDate := ctx.Value("date").(time.Time)
+
+	if !okDate {
+		otherErrorHandler(w, r)
 	}
+	day, err := storage.GetEventsForDay(date)
+	resp := Response{}
+	if err != nil {
+		resp.Status = statusError
+		resp.Error = err.Error()
+		otherErrorHandler(w, r)
+	} else {
+		resp.Status = statusOK
+		resp.Records = day.Records
+	}
+	sendResponse(resp, w, r)
 }
 
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {

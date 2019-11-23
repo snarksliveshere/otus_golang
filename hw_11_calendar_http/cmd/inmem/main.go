@@ -30,7 +30,6 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	actions.Logger = logger
 	actions.DateRepository = mem_repository.GetDateRepo(handler)
 	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
-	//c := actions.DateRepository.GetCalendar()
 	c := new(entity.Calendar)
 	return &Storage{actions: actions, calendar: c}
 }
@@ -40,13 +39,24 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	if err != nil {
 		return entity.Record{}, &entity.Date{}, s.calendar, err
 	}
-	day, _ := s.actions.DateRepository.FindByDay(date, s.calendar)
+	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
+	if err != nil {
+		return rec, &entity.Date{}, s.calendar, err
+	}
 	err = s.actions.DateRepository.AddRecordToDate(rec, day)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
 
 	return rec, day, s.calendar, nil
+}
+
+func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
+	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
+	if err != nil {
+		return &entity.Date{}, err
+	}
+	return day, nil
 }
 
 func (s *Storage) FindRecordById(id uint64) string {
