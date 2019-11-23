@@ -33,6 +33,7 @@ func routesRegister(router *mux.Router) {
 	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).Queries("date", "{date}")
 	router.HandleFunc("/events-for-week", eventsForWeekHandler)
 	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).Queries("month", "{month}")
+	//router.HandleFunc("/events-for-month", eventsForMonthHandler).Queries("month", "{month}")
 }
 
 func notValidHandler(w http.ResponseWriter, r *http.Request) {
@@ -158,16 +159,23 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(resp, w, r)
 }
 
+// curl 'http://localhost:3001/events-for-month?month=2019-11'
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	month := ctx.Value("month").(uint8)
-	fmt.Println(month)
+	dates, okDates := ctx.Value("dates").(map[string]time.Time)
+	if !okDates {
+		otherErrorHandler(w, r)
+	}
+	fmt.Println(dates)
+	t, _ := time.Parse("2006-01", "2019-11")
+	fmt.Println(t)
 	_, err := w.Write([]byte("hello"))
 	if err != nil {
 		log.Fatal("An error occurred")
 	}
 }
 
+// curl 'http://localhost:3001/events-for-week?date=2019-11-01'
 func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("hello"))
 	if err != nil {

@@ -110,14 +110,14 @@ func validEventsForMonthHandler(h http.HandlerFunc) http.HandlerFunc {
 			notValidHandler(w, r)
 			return
 		}
-		n, err := data_handlers.CheckEventsForMonth(month)
+		m, err := data_handlers.CheckEventsForMonth(month)
 		if err != nil {
 			notValidHandler(w, r)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "month", n)
+		ctx := context.WithValue(r.Context(), "dates", m)
 		r = r.WithContext(ctx)
-		log.Infof("events-for-month query with date %v", n)
+		log.Infof("events-for-month query with date %v", m)
 		h(w, r)
 	}
 }

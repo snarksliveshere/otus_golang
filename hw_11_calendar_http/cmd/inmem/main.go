@@ -51,14 +51,6 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	return rec, day, s.calendar, nil
 }
 
-func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
-	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
-	if err != nil {
-		return &entity.Date{}, err
-	}
-	return day, nil
-}
-
 func (s *Storage) FindRecordById(id uint64) string {
 	record, _ := s.actions.RecordRepository.FindById(id)
 	return fmt.Sprintf("resccc %#v", record)
@@ -120,4 +112,12 @@ func updRecord(rec *entity.Record, title, desc string) {
 func removeRecordFromSlice(records []entity.Record, i int) []entity.Record {
 	records[i] = records[len(records)-1]
 	return records[:len(records)-1]
+}
+
+func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
+	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
+	if err != nil {
+		return &entity.Date{}, err
+	}
+	return day, nil
 }

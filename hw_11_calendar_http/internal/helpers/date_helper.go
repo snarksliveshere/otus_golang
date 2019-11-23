@@ -30,3 +30,11 @@ func IsNumOfMonthInString(month string) (uint8, error) {
 func MakeTimestampId() uint64 {
 	return uint64(time.Now().UnixNano())
 }
+
+func GetFirstDateFromMonth(date string) (time.Time, error) {
+	t, err := time.Parse(config.TimeMonthLayout, date)
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
