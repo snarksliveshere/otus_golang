@@ -121,3 +121,26 @@ func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
 	}
 	return day, nil
 }
+
+func (s *Storage) GetEventsForMonth(from, till time.Time) ([]entity.Record, error) {
+	if s.calendar.Dates == nil {
+		err := errors.New("there are no records in calendar yet")
+		return nil, err
+	}
+	var res bool
+	var records []entity.Record
+	for _, z := range s.calendar.Dates {
+		if z.Day.Format(config.TimeLayout) >= from.Format(config.TimeLayout) &&
+			z.Day.Format(config.TimeLayout) <= till.Format(config.TimeLayout) {
+			records = append(records, z.Records...)
+			res = true
+		}
+	}
+
+	if res {
+		return records, nil
+	} else {
+		err := errors.New("i cant find records for this month")
+		return nil, err
+	}
+}

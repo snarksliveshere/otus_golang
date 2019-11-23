@@ -138,6 +138,7 @@ func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 // curl 'http://localhost:3001/events-for-day?date=2019-11-01'
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -159,6 +160,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(resp, w, r)
 }
 
+//curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 // curl 'http://localhost:3001/events-for-month?month=2019-11'
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -166,13 +168,17 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	if !okDates {
 		otherErrorHandler(w, r)
 	}
-	fmt.Println(dates)
-	t, _ := time.Parse("2006-01", "2019-11")
-	fmt.Println(t)
-	_, err := w.Write([]byte("hello"))
+	records, err := storage.GetEventsForMonth(dates["firstDate"], dates["lastDate"])
+	resp := Response{}
 	if err != nil {
-		log.Fatal("An error occurred")
+		resp.Status = statusError
+		resp.Error = err.Error()
+		otherErrorHandler(w, r)
+	} else {
+		resp.Status = statusOK
+		resp.Records = records
 	}
+	sendResponse(resp, w, r)
 }
 
 // curl 'http://localhost:3001/events-for-week?date=2019-11-01'
