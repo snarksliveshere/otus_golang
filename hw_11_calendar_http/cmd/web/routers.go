@@ -67,13 +67,12 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	if !okTitle || !okDesc || !okDate {
 		otherErrorHandler(w, r)
 	}
-
 	rec, day, c, err := storage.AddRecord(title, desc, date)
 	fmt.Println(c)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
-	resp := Response{Date: day, Record: rec, Status: statusOK}
+	resp := Response{Date: *day, Record: rec, Status: statusOK}
 	sendResponse(resp, w, r)
 }
 
