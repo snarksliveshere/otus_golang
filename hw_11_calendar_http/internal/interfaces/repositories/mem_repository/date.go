@@ -32,11 +32,8 @@ func (d *DateRepo) AddDateToCalendar(day entity.Date) error {
 }
 
 func (d *DateRepo) AddRecordToDate(record entity.Record, day *entity.Date) error {
-	d.handler.Execute("add record to day")
-	// TODO: EMPTY RECORDS ON DATE!!!
-	fmt.Printf("\nBEFORE date!! %#v \n records !! %#v \n", day, record)
 	day.Records = append(day.Records, record)
-	fmt.Printf("\nAFTER date!! %#v \n records !! %#v \n", day, record)
+	d.handler.Execute("add record to day")
 	return nil
 }
 
@@ -74,8 +71,6 @@ func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (*entity
 			isDateInCalendarBool = true
 		}
 	}
-	fmt.Println("isDateInCalendarIndex", isDateInCalendarIndex)
-
 	if isDateInCalendarBool {
 		d.handler.Execute("day exist")
 		return calendar.Dates[isDateInCalendarIndex], nil
