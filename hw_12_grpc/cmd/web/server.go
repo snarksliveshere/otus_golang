@@ -40,26 +40,32 @@ func webApi(conf *config.Config) {
 
 	grpcServer := grpc.NewServer()
 	proto.RegisterCreateEventServiceServer(grpcServer, ServerCalendar{})
-	_ = grpcServer.Serve(listen)
+	err = grpcServer.Serve(listen)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	log.Infof("Run grpc server on: %s\n", listenAddr)
 }
 
 type ServerCalendar struct {
 }
 
-func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventMessage) (*proto.CreateEventMessage, error) {
-	title, desc, day, err := validCreateEventHandler(ctx)
+func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventMsg) (*proto.CreateEventMessage, error) {
+	fmt.Println("find2")
+	title, desc, day, err := validCreateEventHandler(msg.Title, msg.Description, msg.Date)
 	if err != nil {
 		return nil, err
 	}
 	rec, dt, c, err := storage.AddRecord(title, desc, day)
+	reply := proto.CreateEventMessage{}
+
 	if err != nil {
-		msg.Status = "error"
-		msg.Error = err.Error()
+		reply.Status = "error"
+		reply.Error = err.Error()
 	}
 	fmt.Println(rec, dt, c)
-	msg.Status = "success"
-	return &proto.CreateEventMessage{
-		Status: msg.Status,
-	}, nil
+	reply.Status = "success"
+	return &reply, nil
+
 }

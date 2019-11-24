@@ -10,14 +10,7 @@ import (
 	"time"
 )
 
-func validCreateEventHandler(ctx context.Context) (string, string, time.Time, error) {
-	data := ctx.Value("data").(map[string]string)
-	date, okDate := ctx.Value("date").(string)
-	title, okTitle := data["title"]
-	desc, okDesc := data["desc"]
-	if !okTitle || !okDesc || !okDate {
-		return "", "", time.Time{}, status.Error(codes.InvalidArgument, "invalid arguments")
-	}
+func validCreateEventHandler(title, desc, date string) (string, string, time.Time, error) {
 	day, err := data_handlers.GetTimeFromString(date)
 	if err != nil {
 		return "", "", time.Time{}, status.Error(codes.InvalidArgument, "invalid time string: "+date)

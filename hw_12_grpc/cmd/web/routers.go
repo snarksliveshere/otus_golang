@@ -27,7 +27,7 @@ type Response struct {
 
 func routesRegister(router *mux.Router) {
 	router.HandleFunc("/", helloHandler)
-	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
+	//router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
 	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).

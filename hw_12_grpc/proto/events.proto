@@ -5,10 +5,17 @@ package proto;
 option go_package = "proto";
 
 service CreateEventService {
-    rpc sendCreateEventMessage (CreateEventMessage) returns (CreateEventMessage);
+    rpc sendCreateEventMessage (CreateEventMsg) returns (CreateEventMessage);
 }
 
 message CreateEventMessage {
     string status = 1;
     string error = 2;
+}
+
+message CreateEventMsg {
+    string title = 1;
+    string description = 2;
+    reserved 3 to 100;
+    string date = 102;
 }
