@@ -65,7 +65,7 @@ func main() {
 	}
 
 	if msg != nil {
-		fmt.Printf("error:%v status:%v\n", msg.Error, msg.Status)
+		fmt.Printf("error:%v status:%v\n, record: %#v", msg.Error, msg.Status, msg.Record)
 	}
 }
 

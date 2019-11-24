@@ -34,10 +34,10 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	fmt.Println(rec, dt, c)
 
 	reply.Status = "success"
-	reply.Record = entity.Record{
-		Id:          1,
-		Title:       "title",
-		Description: "description",
+	reply.Record = &proto.Record{
+		Id:          rec.Id,
+		Title:       rec.Title,
+		Description: rec.Description,
 	}
 
 	return &reply, nil
