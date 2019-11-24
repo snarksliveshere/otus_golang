@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
@@ -47,6 +48,17 @@ type ServerCalendar struct {
 }
 
 func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventMessage) (*proto.CreateEventMessage, error) {
+	title, desc, day, err := validCreateEventHandler(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rec, dt, c, err := storage.AddRecord(title, desc, day)
+	if err != nil {
+		msg.Status = "error"
+		msg.Error = err.Error()
+	}
+	fmt.Println(rec, dt, c)
+	msg.Status = "success"
 	return &proto.CreateEventMessage{
 		Status: msg.Status,
 	}, nil

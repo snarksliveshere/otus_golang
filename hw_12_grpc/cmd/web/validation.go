@@ -4,32 +4,30 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net/http"
 	"time"
 )
 
-func validCreateEventHandler(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
-		title, desc, err := data_handlers.CheckCreateEvent(title, desc)
-		if err != nil {
-			notValidHandler(w, r)
-			return
-		}
-		day, err := data_handlers.GetTimeFromString(date)
-		if err != nil {
-			notValidHandler(w, r)
-			return
-		}
-		m := make(map[string]string, 3)
-		m["title"] = title
-		m["desc"] = desc
-		ctx := context.WithValue(r.Context(), "data", m)
-		ct := context.WithValue(ctx, "date", day)
-		r = r.WithContext(ct)
-		log.Infof("create-event query with %#v", m)
-		h(w, r)
+func validCreateEventHandler(ctx context.Context) (string, string, time.Time, error) {
+	data := ctx.Value("data").(map[string]string)
+	date, okDate := ctx.Value("date").(string)
+	title, okTitle := data["title"]
+	desc, okDesc := data["desc"]
+	if !okTitle || !okDesc || !okDate {
+		return "", "", time.Time{}, status.Error(codes.InvalidArgument, "invalid arguments")
 	}
+	day, err := data_handlers.GetTimeFromString(date)
+	if err != nil {
+		return "", "", time.Time{}, status.Error(codes.InvalidArgument, "invalid time string: "+date)
+	}
+	title, desc, err = data_handlers.CheckCreateEvent(title, desc)
+	if err != nil {
+		return title, desc, time.Time{}, status.Error(codes.InvalidArgument, "invalid title, desc string")
+	}
+
+	return title, desc, day, nil
 }
 
 func validUpdateEventHandler(h http.HandlerFunc) http.HandlerFunc {
