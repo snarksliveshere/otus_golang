@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/web"
+	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/grpc"
 )
 
 var (
@@ -19,5 +19,5 @@ func init() {
 
 func main() {
 	flag.Parse()
-	web.Server(pathConfig)
+	grpc.Server(pathConfig)
 }

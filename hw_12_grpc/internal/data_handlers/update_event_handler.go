@@ -2,16 +2,25 @@ package data_handlers
 
 import (
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/helpers"
+	"time"
 )
 
-func CheckUpdateEvent(title, desc string) (string, string, error) {
+func CheckUpdateEvent(title, desc, date, eventId string) (string, string, time.Time, uint64, error) {
 	err := validateUpdateEvent(title, desc)
 	if err != nil {
-		return title, desc, err
+		return title, desc, time.Time{}, 0, err
 	}
 
 	title, desc = modifierUpdateStringEvent(title, desc)
-	return title, desc, nil
+	day, err := GetTimeFromString(date)
+	if err != nil {
+		return title, desc, time.Time{}, 0, err
+	}
+	id, err := ValidateUpdateEventId(eventId)
+	if err != nil {
+		return title, desc, day, 0, err
+	}
+	return title, desc, day, id, nil
 }
 
 func validateUpdateEvent(title, desc string) error {

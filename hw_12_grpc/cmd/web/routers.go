@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
+	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"net/http"
-	"time"
 )
 
 const (
@@ -27,7 +27,7 @@ type Response struct {
 
 func routesRegister(router *mux.Router) {
 	router.HandleFunc("/", helloHandler)
-	//router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
+	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods("POST")
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
 	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).
@@ -36,7 +36,19 @@ func routesRegister(router *mux.Router) {
 		Queries("from", "{from}", "till", "{till}")
 	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).
 		Queries("month", "{month}")
-	//router.HandleFunc("/events-for-month", eventsForMonthHandler).Queries("month", "{month}")
+}
+
+func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
+	jResp, err := json.Marshal(resp)
+	if err != nil {
+		otherErrorHandler(w, r)
+	}
+	w.Header().Set(config.HeaderContentType, config.HeaderContentType)
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(jResp)
+	if err != nil {
+		otherErrorHandler(w, r)
+	}
 }
 
 func notValidHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,36 +76,34 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 //curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	data := ctx.Value("data").(map[string]string)
-	date, okDate := ctx.Value("date").(time.Time)
-	title, okTitle := data["title"]
-	desc, okDesc := data["desc"]
-	if !okTitle || !okDesc || !okDate {
-		otherErrorHandler(w, r)
+	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
+	title, desc, day, err := data_handlers.CheckCreateEvent(title, desc, date)
+	if err != nil {
+		notValidHandler(w, r)
+		return
 	}
-	rec, day, c, err := storage.AddRecord(title, desc, date)
+	rec, d, c, err := storage.AddRecord(title, desc, day)
 	fmt.Println(c)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
-	resp := Response{Date: *day, Record: rec, Status: statusOK}
+	resp := Response{Date: *d, Record: rec, Status: statusOK}
 	sendResponse(resp, w, r)
 }
 
 // curl -d 'title=new-title&description=new_desc&date=2019-11-01&eventId=123' -X POST http://localhost:3001/update-event
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	data := ctx.Value("data").(map[string]string)
-	n, okN := ctx.Value("eventId").(uint64)
-	date, okDate := ctx.Value("date").(time.Time)
-	title, okTitle := data["title"]
-	desc, okDesc := data["desc"]
-
-	if !okTitle || !okDesc || !okDate || !okN {
-		otherErrorHandler(w, r)
+	title, desc, date, eventId := r.FormValue("title"),
+		r.FormValue("description"),
+		r.FormValue("date"),
+		r.FormValue("eventId")
+	title, desc, day, id, err := data_handlers.CheckUpdateEvent(title, desc, date, eventId)
+	if err != nil {
+		notValidHandler(w, r)
+		return
 	}
-	err := storage.UpdateRecordById(n, date, title, desc)
+
+	err = storage.UpdateRecordById(id, day, title, desc)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -103,20 +113,17 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 		resp.Status = statusOK
 	}
 	sendResponse(resp, w, r)
-	_, err = w.Write([]byte("hello"))
-	if err != nil {
-		log.Fatal("An error occurred")
-	}
 }
 
 //curl -d 'eventId=123' -X POST http://localhost:3001/delete-event
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	eventId, ok := ctx.Value("eventId").(uint64)
-	if !ok {
-		otherErrorHandler(w, r)
+	eventId := r.FormValue("eventId")
+	id, err := data_handlers.CheckDeleteEvent(eventId)
+	if err != nil {
+		notValidHandler(w, r)
+		return
 	}
-	err := storage.DeleteRecordById(eventId)
+	err = storage.DeleteRecordById(id)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -126,31 +133,24 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 		resp.Status = statusOK
 	}
 	sendResponse(resp, w, r)
-}
-
-func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
-	jResp, err := json.Marshal(resp)
-	if err != nil {
-		otherErrorHandler(w, r)
-	}
-	w.Header().Set(config.HeaderContentType, config.HeaderContentType)
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(jResp)
-	if err != nil {
-		otherErrorHandler(w, r)
-	}
 }
 
 //curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 // curl 'http://localhost:3001/events-for-day?date=2019-11-01'
 func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	date, okDate := ctx.Value("date").(time.Time)
-
-	if !okDate {
-		otherErrorHandler(w, r)
+	vars := mux.Vars(r)
+	date, ok := vars["date"]
+	if !ok {
+		notValidHandler(w, r)
+		return
 	}
-	day, err := storage.GetEventsForDay(date)
+	t, err := data_handlers.CheckEventsForDay(date)
+	if err != nil {
+		notValidHandler(w, r)
+		return
+	}
+	day, err := storage.GetEventsForDay(t)
+
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -166,11 +166,19 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 //curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 // curl 'http://localhost:3001/events-for-month?month=2019-11'
 func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	dates, okDates := ctx.Value("dates").(map[string]time.Time)
-	if !okDates {
-		otherErrorHandler(w, r)
+	vars := mux.Vars(r)
+
+	month, ok := vars["month"]
+	if !ok {
+		notValidHandler(w, r)
+		return
 	}
+	dates, err := data_handlers.CheckEventsForMonth(month)
+	if err != nil {
+		notValidHandler(w, r)
+		return
+	}
+
 	records, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
 	resp := Response{}
 	if err != nil {
@@ -188,12 +196,16 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 // curl 'http://localhost:3001/events-for-week?from=2019-11-01&till=2019-11-08'
 // кто там неделя, это решает передающий данные, я получаю их как интервал
 func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	dates, okDates := ctx.Value("dates").(map[string]time.Time)
-	if !okDates {
-		otherErrorHandler(w, r)
+	vars := mux.Vars(r)
+	from, okFrom := vars["from"]
+	till, okTill := vars["till"]
+	if !okFrom || !okTill {
+		notValidHandler(w, r)
+		return
 	}
-	records, err := storage.GetEventsForInterval(dates["from"], dates["till"])
+	tFrom, tTill, err := data_handlers.CheckEventsForInterval(from, till)
+
+	records, err := storage.GetEventsForInterval(tFrom, tTill)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError

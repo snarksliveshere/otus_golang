@@ -5,13 +5,20 @@ import (
 	"time"
 )
 
-func CheckCreateEvent(title, desc string) (string, string, error) {
+func CheckCreateEvent(title, desc, date string) (string, string, time.Time, error) {
 	err := validateCreateEvent(title, desc)
 	if err != nil {
-		return title, desc, err
+		return title, desc, time.Time{}, err
 	}
-
-	return modifierCreateEvent(title, desc)
+	title, desc, err = modifierCreateEvent(title, desc)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	day, err := helpers.GetDateFromString(date)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	return title, desc, day, nil
 }
 
 func GetTimeFromString(date string) (time.Time, error) {
