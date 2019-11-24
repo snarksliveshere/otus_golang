@@ -1,21 +1,20 @@
 package grpc
 
 import (
-	"context"
 	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 )
+
+type ServerCalendar struct {
+}
 
 var (
 	log     *pkg.Logger
@@ -51,23 +50,4 @@ func webApi(conf *config.Config) {
 	log.Infof("Run grpc server on: %s\n", listenAddr)
 }
 
-type ServerCalendar struct {
-}
-
-func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventMsg) (*proto.CreateEventMessage, error) {
-	title, desc, day, err := data_handlers.CheckCreateEvent(msg.Title, msg.Description, msg.Date)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
-	}
-	rec, dt, c, err := storage.AddRecord(title, desc, day)
-	reply := proto.CreateEventMessage{}
-
-	if err != nil {
-		reply.Status = "error"
-		reply.Error = err.Error()
-	}
-	fmt.Println(rec, dt, c)
-	reply.Status = "success"
-	return &reply, nil
-
-}
+//protoc ./proto/events.proto --go_out=plugins=grpc:.

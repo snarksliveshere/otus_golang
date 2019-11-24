@@ -4,16 +4,35 @@ package proto;
 
 option go_package = "proto";
 
+import "google/protobuf/timestamp.proto";
+
 service CreateEventService {
-    rpc sendCreateEventMessage (CreateEventMsg) returns (CreateEventMessage);
+    rpc sendCreateEventMessage (CreateEventRequestMessage) returns (CreateEventResponseMessage);
 }
 
-message CreateEventMessage {
+message Record {
+    uint64 id = 1;
+    string title = 2;
+    string description = 3;
+}
+
+message Date {
+    google.protobuf.Timestamp date = 1;
+    repeated Record records = 2;
+}
+
+message Calendar {
+    repeated Date dates = 1;
+}
+
+message CreateEventResponseMessage {
     string status = 1;
     string error = 2;
+    Date date = 3;
+    Record record = 4;
 }
 
-message CreateEventMsg {
+message CreateEventRequestMessage {
     string title = 1;
     string description = 2;
     reserved 3 to 100;

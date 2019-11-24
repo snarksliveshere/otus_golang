@@ -52,7 +52,7 @@ func main() {
 	}
 	defer cc.Close()
 	c := proto.NewCreateEventServiceClient(cc)
-	message := proto.CreateEventMsg{
+	message := proto.CreateEventRequestMessage{
 		Title:       "some title",
 		Description: "some description",
 		Date:        "2019-11-01",
