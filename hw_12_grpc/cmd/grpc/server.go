@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
+	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net"
 	"os"
 	"os/signal"
@@ -52,10 +55,9 @@ type ServerCalendar struct {
 }
 
 func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventMsg) (*proto.CreateEventMessage, error) {
-	fmt.Println("find2")
-	title, desc, day, err := validCreateEventHandler(msg.Title, msg.Description, msg.Date)
+	title, desc, day, err := data_handlers.CheckCreateEvent(msg.Title, msg.Description, msg.Date)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
 	}
 	rec, dt, c, err := storage.AddRecord(title, desc, day)
 	reply := proto.CreateEventMessage{}
