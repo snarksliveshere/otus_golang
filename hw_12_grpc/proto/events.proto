@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "proto";
+
+service CreateEventService {
+    rpc sendCreateEventMessage (CreateEventMessage) returns (CreateEventMessage);
+}
+
+message CreateEventMessage {
+    string status = 1;
+}
