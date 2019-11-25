@@ -68,7 +68,6 @@ func TestSendDeleteEventMessage(t *testing.T) {
 			title:       "some new title",
 			description: "some new description",
 			date:        "2019-11-01",
-			plus:        0,
 		},
 		{
 			status:      "error",
