@@ -28,7 +28,7 @@ func main() {
 
 }
 
-func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn) {
+func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn) *proto.CreateEventResponseMessage {
 	c := proto.NewCreateEventServiceClient(cc)
 	message := proto.CreateEventRequestMessage{
 		Title:       "some title",
@@ -42,6 +42,8 @@ func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn) {
 	if msg != nil {
 		fmt.Printf("error:%v status:%v\n, record: %#v, id %v", msg.Error, msg.Status, msg.Record, msg.Record.Id)
 	}
+
+	return msg
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.
