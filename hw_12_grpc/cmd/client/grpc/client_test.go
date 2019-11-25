@@ -61,18 +61,21 @@ func TestSendCreateEventMessage(t *testing.T) {
 func TestSendDeleteEventMessage(t *testing.T) {
 	cases := []struct {
 		status, title, description, date string
+		plus                             uint64
 	}{
 		{
 			status:      "success",
 			title:       "some new title",
 			description: "some new description",
 			date:        "2019-11-01",
+			plus:        0,
 		},
 		{
-			status:      "success",
+			status:      "error",
 			title:       "new title2",
 			description: "some new description2",
 			date:        "2019-11-01",
+			plus:        1,
 		},
 	}
 
@@ -91,7 +94,7 @@ func TestSendDeleteEventMessage(t *testing.T) {
 		resp := sendCreateEventMessage(ctx, cc, msg)
 
 		delMsg := proto.DeleteEventRequestMessage{
-			EventId: resp.Record.Id,
+			EventId: resp.Record.Id + c.plus,
 		}
 		respDelete := sendDeleteEventMessage(ctx, cc, delMsg)
 
