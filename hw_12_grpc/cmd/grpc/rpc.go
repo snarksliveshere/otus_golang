@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
@@ -27,32 +26,47 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
 	}
-	rec, dt, c, err := storage.AddRecord(title, desc, day)
+	rec, _, _, err := storage.AddRecord(title, desc, day)
 	reply := proto.CreateEventResponseMessage{}
 
 	if err != nil {
 		reply.Status = "error"
 		reply.Error = err.Error()
 	}
-	fmt.Println(rec, dt, c)
 
-	recBytes, err := json.Marshal(&rec)
+	protoRecord, err := recordToProtoStruct(&rec)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, err.Error())
+	}
+	//recBytes, err := json.Marshal(&rec)
+	//if err != nil {
+	//	return nil, status.Error(codes.Aborted, err.Error())
+	//}
+	//
+	//protoRecord := &proto.Record{}
+	//recordBytesReader := strings.NewReader(string(recBytes))
+	//
+	//if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
+	//	return nil, status.Error(codes.Aborted, err.Error())
+	//}
+	reply.Status = "success"
 
+	reply.Record = protoRecord
+
+	return &reply, nil
+}
+
+func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
+	recBytes, err := json.Marshal(record)
+	if err != nil {
+		return nil, err
+	}
 	protoRecord := &proto.Record{}
 	recordBytesReader := strings.NewReader(string(recBytes))
 
 	if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, err
 	}
-	reply.Status = "success"
 
-	reply.Record = protoRecord
-	//reply.Record = &proto.Record{
-	//	Id:          rec.Id,
-	//	Title:       rec.Title,
-	//	Description: rec.Description,
-	//}
-
-	return &reply, nil
-
+	return protoRecord, nil
 }

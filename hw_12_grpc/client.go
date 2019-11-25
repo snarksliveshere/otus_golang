@@ -57,7 +57,6 @@ func main() {
 		Description: "some description",
 		Date:        "2019-11-01",
 	}
-	fmt.Println("find1")
 	msg, err := c.SendCreateEventMessage(ctx, &message)
 
 	if err != nil {
@@ -65,7 +64,7 @@ func main() {
 	}
 
 	if msg != nil {
-		fmt.Printf("error:%v status:%v\n, record: %#v", msg.Error, msg.Status, msg.Record)
+		fmt.Printf("error:%v status:%v\n, record: %#v, id %v", msg.Error, msg.Status, msg.Record, msg.Record.Id)
 	}
 }
 
