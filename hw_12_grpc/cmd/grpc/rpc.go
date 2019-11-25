@@ -38,24 +38,15 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 
 	recBytes, err := json.Marshal(&rec)
 
-	fmt.Println(string(recBytes))
+	protoRecord := &proto.Record{}
+	recordBytesReader := strings.NewReader(string(recBytes))
 
-	mr := &proto.Record{}
-	rN := strings.NewReader(string(recBytes))
-
-	if err := jsonpb.Unmarshal(rN, mr); err != nil {
+	if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-
-	//err = mr.XXX_Unmarshal(recBytes)
-	//if err!= nil {
-	//	fmt.Println("ola")
-	//	return nil, status.Error(codes.InvalidArgument, err.Error())
-	//}
-
 	reply.Status = "success"
 
-	reply.Record = mr
+	reply.Record = protoRecord
 	//reply.Record = &proto.Record{
 	//	Id:          rec.Id,
 	//	Title:       rec.Title,
