@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
@@ -27,14 +26,14 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
 	}
-	rec, dt, c, err := storage.AddRecord(title, desc, day)
+	rec, _, _, err := storage.AddRecord(title, desc, day)
 	reply := proto.CreateEventResponseMessage{}
 
 	if err != nil {
 		reply.Status = "error"
 		reply.Error = err.Error()
 	}
-	fmt.Println(rec, dt, c)
+	//fmt.Println(rec, dt, c)
 
 	recBytes, err := json.Marshal(&rec)
 
