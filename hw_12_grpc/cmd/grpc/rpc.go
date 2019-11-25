@@ -2,12 +2,15 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 )
 
 type Response struct {
@@ -33,12 +36,31 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	}
 	fmt.Println(rec, dt, c)
 
-	reply.Status = "success"
-	reply.Record = &proto.Record{
-		Id:          rec.Id,
-		Title:       rec.Title,
-		Description: rec.Description,
+	recBytes, err := json.Marshal(&rec)
+
+	fmt.Println(string(recBytes))
+
+	mr := &proto.Record{}
+	rN := strings.NewReader(string(recBytes))
+
+	if err := jsonpb.Unmarshal(rN, mr); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
+
+	//err = mr.XXX_Unmarshal(recBytes)
+	//if err!= nil {
+	//	fmt.Println("ola")
+	//	return nil, status.Error(codes.InvalidArgument, err.Error())
+	//}
+
+	reply.Status = "success"
+
+	reply.Record = mr
+	//reply.Record = &proto.Record{
+	//	Id:          rec.Id,
+	//	Title:       rec.Title,
+	//	Description: rec.Description,
+	//}
 
 	return &reply, nil
 
