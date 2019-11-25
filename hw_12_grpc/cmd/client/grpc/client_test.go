@@ -98,7 +98,60 @@ func TestSendDeleteEventMessage(t *testing.T) {
 		respDelete := sendDeleteEventMessage(ctx, cc, delMsg)
 
 		if c.status != respDelete.Status {
-			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
+			t.Errorf("TestSendDeleteEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
+		}
+	}
+}
+
+func TestSendUpdateEventMessage(t *testing.T) {
+	cases := []struct {
+		status, title, description, date string
+		updTitle, updDescription         string
+		plus                             uint64
+	}{
+		{
+			status:         "success",
+			title:          "some new title",
+			description:    "some new description",
+			date:           "2019-11-01",
+			updTitle:       "update_title",
+			updDescription: "update_description",
+		},
+		{
+			status:         "error",
+			title:          "new title2",
+			description:    "some new description2",
+			date:           "2019-11-01",
+			plus:           1,
+			updTitle:       "update_title",
+			updDescription: "update_description",
+		},
+	}
+
+	for _, c := range cases {
+		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		cc, err := grpc.Dial("0.0.0.0:50052", grpc.WithInsecure())
+		if err != nil {
+			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
+		}
+		msg := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Date:        c.date,
+		}
+
+		resp := sendCreateEventMessage(ctx, cc, msg)
+
+		updMsg := proto.UpdateEventRequestMessage{
+			EventId:     resp.Record.Id + c.plus,
+			Title:       c.updTitle,
+			Description: c.updDescription,
+			Date:        c.date,
+		}
+		respUpdate := sendUpdateEventMessage(ctx, cc, updMsg)
+
+		if c.status != respUpdate.Status {
+			t.Errorf("TestSendDeleteEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
 		}
 	}
 }

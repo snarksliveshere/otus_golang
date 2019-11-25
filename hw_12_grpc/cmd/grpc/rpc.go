@@ -76,3 +76,21 @@ func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
 
 	return protoRecord, nil
 }
+
+func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.UpdateEventRequestMessage) (*proto.UpdateEventResponseMessage, error) {
+	title, desc, day, err := data_handlers.CheckUpdateEventWithoutEventId(msg.Title, msg.Description, msg.Date)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, "invalid title, desc, date string")
+	}
+	reply := proto.UpdateEventResponseMessage{}
+	err = storage.UpdateRecordById(msg.EventId, day, title, desc)
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Text = err.Error()
+		return &reply, nil
+	}
+	reply.Status = config.StatusSuccess
+
+	return &reply, nil
+}

@@ -33,6 +33,17 @@ func main() {
 			EventId: rec.Record.Id,
 		}}
 		sendDeleteEventMessage(ctx, cc, msgDeleteEvent.deleteEventReq)
+	case "update-event":
+		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
+		msgUpdateEvent := Dummy{
+			updateEventReq: proto.UpdateEventRequestMessage{
+				EventId:     rec.Record.Id,
+				Title:       "update_title",
+				Description: "update_description",
+				Date:        "2019-11-01",
+			},
+		}
+		sendUpdateEventMessage(ctx, cc, msgUpdateEvent.updateEventReq)
 	default:
 		fmt.Println("bad route")
 	}
@@ -64,9 +75,23 @@ func sendDeleteEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 	return msg
 }
 
+func sendUpdateEventMessage(ctx context.Context, cc *grpc.ClientConn, message proto.UpdateEventRequestMessage) *proto.UpdateEventResponseMessage {
+	c := proto.NewCreateEventServiceClient(cc)
+	msg, err := c.SendUpdateEventMessage(ctx, &message)
+	if err != nil {
+		fmt.Printf("error : %s\n", status.Convert(err).Message())
+	}
+	if msg != nil {
+		fmt.Printf("\nstatus:%v text:%v\n", msg.Status, msg.Text)
+	}
+
+	return msg
+}
+
 type Dummy struct {
 	createEventReq proto.CreateEventRequestMessage
 	deleteEventReq proto.DeleteEventRequestMessage
+	updateEventReq proto.UpdateEventRequestMessage
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.

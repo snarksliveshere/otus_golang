@@ -23,6 +23,20 @@ func CheckUpdateEvent(title, desc, date, eventId string) (string, string, time.T
 	return title, desc, day, id, nil
 }
 
+func CheckUpdateEventWithoutEventId(title, desc, date string) (string, string, time.Time, error) {
+	err := validateUpdateEvent(title, desc)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+
+	title, desc = modifierUpdateStringEvent(title, desc)
+	day, err := GetTimeFromString(date)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	return title, desc, day, nil
+}
+
 func validateUpdateEvent(title, desc string) error {
 	if err := helpers.NotEmpty(title); err != nil {
 		return err
