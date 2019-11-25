@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 
 service CreateEventService {
     rpc sendCreateEventMessage (CreateEventRequestMessage) returns (CreateEventResponseMessage);
+    rpc sendDeleteEventMessage (DeleteEventRequestMessage) returns (DeleteEventResponseMessage);
 }
 
 message Record {
@@ -37,4 +38,13 @@ message CreateEventRequestMessage {
     string description = 2;
     reserved 3 to 100;
     string date = 102;
+}
+
+message DeleteEventRequestMessage {
+    uint64 eventId = 1;
+}
+
+message DeleteEventResponseMessage {
+    string status = 1;
+    string text = 2;
 }

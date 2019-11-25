@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
@@ -30,30 +31,35 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	reply := proto.CreateEventResponseMessage{}
 
 	if err != nil {
-		reply.Status = "error"
+		reply.Status = config.StatusError
 		reply.Error = err.Error()
+		return &reply, nil
 	}
 
 	protoRecord, err := recordToProtoStruct(&rec)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}
-	//recBytes, err := json.Marshal(&rec)
-	//if err != nil {
-	//	return nil, status.Error(codes.Aborted, err.Error())
-	//}
-	//
-	//protoRecord := &proto.Record{}
-	//recordBytesReader := strings.NewReader(string(recBytes))
-	//
-	//if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
-	//	return nil, status.Error(codes.Aborted, err.Error())
-	//}
-	reply.Status = "success"
-
+	reply.Status = config.StatusSuccess
 	reply.Record = protoRecord
 
 	return &reply, nil
+}
+
+func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.DeleteEventRequestMessage) (*proto.DeleteEventResponseMessage, error) {
+	eventId := msg.EventId
+	err := storage.DeleteRecordById(eventId)
+	reply := proto.DeleteEventResponseMessage{}
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Text = err.Error()
+		return &reply, nil
+	}
+	reply.Status = config.StatusSuccess
+
+	return &reply, nil
+
 }
 
 func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
