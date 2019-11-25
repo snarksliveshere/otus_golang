@@ -21,20 +21,19 @@ func main() {
 
 	switch expr := os.Args[1]; expr {
 	case "create-event":
-		sendCreateMessage(ctx, cc)
+		msg := Dummy{createEventReq: proto.CreateEventRequestMessage{
+			Title:       "Some_title",
+			Description: "Some_description",
+			Date:        "2019-11-01",
+		}}
+		sendCreateMessage(ctx, cc, msg.createEventReq)
 	default:
 		fmt.Println("bad route")
 	}
-
 }
 
-func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn) *proto.CreateEventResponseMessage {
+func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn, message proto.CreateEventRequestMessage) *proto.CreateEventResponseMessage {
 	c := proto.NewCreateEventServiceClient(cc)
-	message := proto.CreateEventRequestMessage{
-		Title:       "some title",
-		Description: "some description",
-		Date:        "2019-11-01",
-	}
 	msg, err := c.SendCreateEventMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -44,6 +43,10 @@ func sendCreateMessage(ctx context.Context, cc *grpc.ClientConn) *proto.CreateEv
 	}
 
 	return msg
+}
+
+type Dummy struct {
+	createEventReq proto.CreateEventRequestMessage
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.
