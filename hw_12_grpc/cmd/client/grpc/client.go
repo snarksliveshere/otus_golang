@@ -20,9 +20,24 @@ func main() {
 	defer func() { _ = cc.Close() }()
 
 	msgCreateEvent := Dummy{createEventReq: proto.CreateEventRequestMessage{
-		Title:       "Some_title",
-		Description: "Some_description",
+		Title:       "Some_title1",
+		Description: "Some_description1",
 		Date:        "2019-11-01",
+	}}
+	msgCreateEvent2 := Dummy{createEventReq: proto.CreateEventRequestMessage{
+		Title:       "Some_title2",
+		Description: "Some_description2",
+		Date:        "2019-11-01",
+	}}
+	msgCreateEvent3 := Dummy{createEventReq: proto.CreateEventRequestMessage{
+		Title:       "Some_title3",
+		Description: "Some_description3",
+		Date:        "2019-11-02",
+	}}
+	msgCreateEvent4 := Dummy{createEventReq: proto.CreateEventRequestMessage{
+		Title:       "Some_title4",
+		Description: "Some_description4",
+		Date:        "2019-10-02",
 	}}
 	switch expr := os.Args[1]; expr {
 	case "create-event":
@@ -44,6 +59,19 @@ func main() {
 			},
 		}
 		sendUpdateEventMessage(ctx, cc, msgUpdateEvent.updateEventReq)
+
+	case "get-day-events":
+		msgDayEvent := Dummy{
+			updateEventReq: proto.UpdateEventRequestMessage{
+				Date: "2019-11-01",
+			},
+		}
+
+		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent2.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent3.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent4.createEventReq)
+		sendGetEventsForDayMessage(ctx, cc, msgDayEvent.eventForDayReq)
 	default:
 		fmt.Println("bad route")
 	}
@@ -88,10 +116,25 @@ func sendUpdateEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 	return msg
 }
 
+func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForDateRequestMessage) *proto.GetEventsForDateResponseMessage {
+	c := proto.NewCreateEventServiceClient(cc)
+	msg, err := c.SendGetEventsForDayMessage(ctx, &message)
+	if err != nil {
+		fmt.Printf("error : %s\n", status.Convert(err).Message())
+	}
+
+	if msg != nil {
+		fmt.Printf("\nstatus:%v text:%v, records: %#v\n", msg.Status, msg.Text, msg.Records)
+	}
+
+	return msg
+}
+
 type Dummy struct {
 	createEventReq proto.CreateEventRequestMessage
 	deleteEventReq proto.DeleteEventRequestMessage
 	updateEventReq proto.UpdateEventRequestMessage
+	eventForDayReq proto.GetEventsForDateRequestMessage
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.
