@@ -72,6 +72,29 @@ func main() {
 		sendCreateEventMessage(ctx, cc, msgCreateEvent3.createEventReq)
 		sendCreateEventMessage(ctx, cc, msgCreateEvent4.createEventReq)
 		sendGetEventsForDayMessage(ctx, cc, msgDayEvent.eventForDayReq)
+	case "get-month-event":
+		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent2.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent4.createEventReq)
+		msgMonthEvent := Dummy{
+			eventForMonthReq: proto.GetEventsForMonthRequestMessage{
+				Month: "2019-11",
+			},
+		}
+		sendGetEventsForMonthMessage(ctx, cc, msgMonthEvent.eventForMonthReq)
+
+	case "get-interval-event":
+		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent2.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent3.createEventReq)
+		sendCreateEventMessage(ctx, cc, msgCreateEvent4.createEventReq)
+		msgIntervalEvent := Dummy{
+			eventForIntervalReq: proto.GetEventsForIntervalRequestMessage{
+				From: "2019-10-20",
+				Till: "2019-11-01",
+			},
+		}
+		sendGetEventsForIntervalMessage(ctx, cc, msgIntervalEvent.eventForIntervalReq)
 	default:
 		fmt.Println("bad route")
 	}
@@ -131,11 +154,43 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 	return msg
 }
 
+func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForMonthRequestMessage) *proto.GetEventsForMonthResponseMessage {
+	c := proto.NewCreateEventServiceClient(cc)
+	msg, err := c.SendGetEventsForMonthMessage(ctx, &message)
+	if err != nil {
+		fmt.Printf("error : %s\n", status.Convert(err).Message())
+	}
+
+	if msg != nil {
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
+			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+	}
+
+	return msg
+}
+
+func sendGetEventsForIntervalMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForIntervalRequestMessage) *proto.GetEventsForIntervalResponseMessage {
+	c := proto.NewCreateEventServiceClient(cc)
+	msg, err := c.SendGetEventsForIntervalMessage(ctx, &message)
+	if err != nil {
+		fmt.Printf("error : %s\n", status.Convert(err).Message())
+	}
+
+	if msg != nil {
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
+			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+	}
+
+	return msg
+}
+
 type Dummy struct {
-	createEventReq proto.CreateEventRequestMessage
-	deleteEventReq proto.DeleteEventRequestMessage
-	updateEventReq proto.UpdateEventRequestMessage
-	eventForDayReq proto.GetEventsForDateRequestMessage
+	createEventReq      proto.CreateEventRequestMessage
+	deleteEventReq      proto.DeleteEventRequestMessage
+	updateEventReq      proto.UpdateEventRequestMessage
+	eventForDayReq      proto.GetEventsForDateRequestMessage
+	eventForMonthReq    proto.GetEventsForMonthRequestMessage
+	eventForIntervalReq proto.GetEventsForIntervalRequestMessage
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.
