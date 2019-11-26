@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"context"
 	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/cmd/inmem"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
@@ -42,7 +41,7 @@ func webApi(conf *config.Config) {
 	}
 
 	grpcServer := grpc.NewServer()
-	proto.RegisterCreateEventServiceServer(grpcServer, ServerCalendar{})
+	proto.RegisterEventServiceServer(grpcServer, ServerCalendar{})
 	err = grpcServer.Serve(listen)
 	if err != nil {
 		fmt.Println(err.Error())

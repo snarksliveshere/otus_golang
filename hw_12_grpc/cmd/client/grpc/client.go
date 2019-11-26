@@ -101,7 +101,7 @@ func main() {
 }
 
 func sendCreateEventMessage(ctx context.Context, cc *grpc.ClientConn, message proto.CreateEventRequestMessage) *proto.CreateEventResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendCreateEventMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -114,7 +114,7 @@ func sendCreateEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 }
 
 func sendDeleteEventMessage(ctx context.Context, cc *grpc.ClientConn, message proto.DeleteEventRequestMessage) *proto.DeleteEventResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendDeleteEventMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -127,7 +127,7 @@ func sendDeleteEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 }
 
 func sendUpdateEventMessage(ctx context.Context, cc *grpc.ClientConn, message proto.UpdateEventRequestMessage) *proto.UpdateEventResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendUpdateEventMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -140,7 +140,7 @@ func sendUpdateEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 }
 
 func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForDateRequestMessage) *proto.GetEventsForDateResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendGetEventsForDayMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -155,7 +155,7 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 }
 
 func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForMonthRequestMessage) *proto.GetEventsForMonthResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendGetEventsForMonthMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
@@ -170,7 +170,7 @@ func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, mess
 }
 
 func sendGetEventsForIntervalMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForIntervalRequestMessage) *proto.GetEventsForIntervalResponseMessage {
-	c := proto.NewCreateEventServiceClient(cc)
+	c := proto.NewEventServiceClient(cc)
 	msg, err := c.SendGetEventsForIntervalMessage(ctx, &message)
 	if err != nil {
 		fmt.Printf("error : %s\n", status.Convert(err).Message())

@@ -6,7 +6,7 @@ option go_package = "proto";
 
 import "google/protobuf/timestamp.proto";
 
-service CreateEventService {
+service EventService {
     rpc sendCreateEventMessage (CreateEventRequestMessage) returns (CreateEventResponseMessage);
     rpc sendDeleteEventMessage (DeleteEventRequestMessage) returns (DeleteEventResponseMessage);
     rpc sendUpdateEventMessage (UpdateEventRequestMessage) returns (UpdateEventResponseMessage);
