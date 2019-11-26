@@ -7,4 +7,5 @@ const (
 	HeaderContentType     = "application/json"
 	StatusSuccess         = "success"
 	StatusError           = "error"
+	ConfigPort            = "50053"
 )

@@ -106,6 +106,7 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 
 	reply.Status = config.StatusSuccess
 	reply.Records = protoRecords
+	reply.Date = day.Day.Format(config.TimeLayout)
 
 	return &reply, nil
 }
