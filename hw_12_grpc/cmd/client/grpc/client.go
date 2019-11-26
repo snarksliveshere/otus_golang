@@ -13,7 +13,7 @@ import (
 
 func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-	cc, err := grpc.Dial("0.0.0.0:50052", grpc.WithInsecure())
+	cc, err := grpc.Dial("0.0.0.0:50053", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("could not connect: %v", err)
 	}
@@ -62,7 +62,7 @@ func main() {
 
 	case "get-day-events":
 		msgDayEvent := Dummy{
-			updateEventReq: proto.UpdateEventRequestMessage{
+			eventForDayReq: proto.GetEventsForDateRequestMessage{
 				Date: "2019-11-01",
 			},
 		}
@@ -124,7 +124,8 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v\n", msg.Status, msg.Text, msg.Records)
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v, lengh (must be 2): %d\n",
+			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[2].Title, len(msg.Records))
 	}
 
 	return msg

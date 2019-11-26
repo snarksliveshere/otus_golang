@@ -4,14 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
 	"strings"
 )
 
@@ -64,21 +62,6 @@ func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.D
 
 }
 
-func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
-	recBytes, err := json.Marshal(record)
-	if err != nil {
-		return nil, err
-	}
-	protoRecord := &proto.Record{}
-	recordBytesReader := strings.NewReader(string(recBytes))
-
-	if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
-		return nil, err
-	}
-
-	return protoRecord, nil
-}
-
 func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.UpdateEventRequestMessage) (*proto.UpdateEventResponseMessage, error) {
 	title, desc, day, err := data_handlers.CheckUpdateEventWithoutEventId(msg.Title, msg.Description, msg.Date)
 	if err != nil {
@@ -97,8 +80,8 @@ func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.U
 	return &reply, nil
 }
 
-func (s ServerCalendar) sendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
-	t, err := data_handlers.CheckEventsForDay(msg.date)
+func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
+	t, err := data_handlers.CheckEventsForDay(msg.Date)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid date string")
 	}
@@ -112,17 +95,22 @@ func (s ServerCalendar) sendGetEventsForDayMessage(ctx context.Context, msg *pro
 		return &reply, nil
 	}
 
-	protoRecords, err := recordsToProtoStruct(&day.Records)
-	if err != nil {
-		return nil, status.Error(codes.Aborted, err.Error())
+	var protoRecords []*proto.Record
+	for _, rec := range day.Records {
+		protoRecord, err := recordToProtoStruct(&rec)
+		if err != nil {
+			return nil, status.Error(codes.Aborted, err.Error())
+		}
+		protoRecords = append(protoRecords, protoRecord)
 	}
+
 	reply.Status = config.StatusSuccess
 	reply.Records = protoRecords
 
 	return &reply, nil
 }
 
-func recordsToProtoStruct(record *[]entity.Record) (*proto.Record, error) {
+func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
 	recBytes, err := json.Marshal(record)
 	if err != nil {
 		return nil, err
