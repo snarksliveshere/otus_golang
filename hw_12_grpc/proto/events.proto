@@ -11,6 +11,8 @@ service CreateEventService {
     rpc sendDeleteEventMessage (DeleteEventRequestMessage) returns (DeleteEventResponseMessage);
     rpc sendUpdateEventMessage (UpdateEventRequestMessage) returns (UpdateEventResponseMessage);
     rpc sendGetEventsForDayMessage (GetEventsForDateRequestMessage) returns (GetEventsForDateResponseMessage);
+    rpc sendGetEventsForMonthMessage (GetEventsForMonthRequestMessage) returns (GetEventsForMonthResponseMessage);
+    rpc sendGetEventsForIntervalMessage (GetEventsForIntervalRequestMessage) returns (GetEventsForIntervalResponseMessage);
 }
 
 message Record {
@@ -73,4 +75,25 @@ message GetEventsForDateResponseMessage {
     string text = 2;
     repeated Record records = 3;
     string date = 4;
+}
+
+message GetEventsForMonthRequestMessage {
+    string month = 1;
+}
+
+message GetEventsForMonthResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Record records = 3;
+}
+
+message GetEventsForIntervalRequestMessage {
+    string from = 1;
+    string till = 2;
+}
+
+message GetEventsForIntervalResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Record records = 3;
 }
