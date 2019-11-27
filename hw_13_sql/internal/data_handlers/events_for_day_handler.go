@@ -1,7 +1,7 @@
 package data_handlers
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/helpers"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/helpers"
 	"time"
 )
 

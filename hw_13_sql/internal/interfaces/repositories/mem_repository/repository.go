@@ -1,7 +1,7 @@
 package mem_repository
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
 )
 
 type DateRepo struct {

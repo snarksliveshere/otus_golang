@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/helpers"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/helpers"
 )
 
 func (act *Actions) AddRecord(title, description string) (rec entity.Record, err error) {

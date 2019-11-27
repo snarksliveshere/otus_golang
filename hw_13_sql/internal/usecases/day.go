@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
 	"time"
 )
 

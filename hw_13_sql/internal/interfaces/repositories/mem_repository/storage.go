@@ -3,10 +3,10 @@ package mem_repository
 import (
 	"errors"
 	"fmt"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/usecases"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/usecases"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"errors"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"strconv"
 	"time"
 )

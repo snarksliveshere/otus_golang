@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/data_handlers"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/data_handlers"
 	"net/http"
 )
 

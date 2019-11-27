@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/interfaces/repositories/mem_repository"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/pkg"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/mem_repository"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"google.golang.org/grpc"
 	"net"
 	"os"

@@ -1,6 +1,6 @@
 package data_handlers
 
-import "github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/helpers"
+import "github.com/snarskliveshere/otus_golang/hw_13_sql/internal/helpers"
 
 func CheckDeleteEvent(eventId string) (uint64, error) {
 	n, err := validateDeleteEvent(eventId)

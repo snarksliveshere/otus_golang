@@ -2,8 +2,8 @@ package mem_repository
 
 import (
 	"fmt"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
 	"sync"
 	"time"
 )

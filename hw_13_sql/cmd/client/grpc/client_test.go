@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/config"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"google.golang.org/grpc"
 	"testing"
 	"time"

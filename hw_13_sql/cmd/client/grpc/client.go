@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/snarskliveshere/otus_golang/hw_12_grpc/proto"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 	"log"

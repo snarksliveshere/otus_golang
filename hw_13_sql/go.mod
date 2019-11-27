@@ -1,4 +1,4 @@
-module github.com/snarskliveshere/otus_golang/hw_12_grpc
+module github.com/snarskliveshere/otus_golang/hw_13_sql
 
 go 1.13
 

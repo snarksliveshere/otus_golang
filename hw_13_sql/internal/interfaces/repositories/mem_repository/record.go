@@ -1,6 +1,6 @@
 package mem_repository
 
-import "github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
+import "github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
 
 func (r *RecordRepo) FindById(id uint64) (entity.Record, error) {
 	r.handler.Execute("find by id")
