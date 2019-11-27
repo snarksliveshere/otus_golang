@@ -1,4 +1,4 @@
-package mem_repository
+package pg_repository
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ type Storage struct {
 	calendar *entity.Calendar
 }
 
-func CreateStorageInstance(logger usecases.Logger) *Storage {
+func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
 	handler := pkg.NewStorageHandler()
 	actions := new(usecases.Actions)
 	actions.Logger = logger

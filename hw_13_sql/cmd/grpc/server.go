@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/mem_repository"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/pg_repository"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"google.golang.org/grpc"
@@ -25,7 +26,7 @@ func Server(path string) {
 	conf := config.CreateConfig(path)
 	log = pkg.CreateLog(conf)
 
-	storage = mem_repository.CreateStorageInstance(log)
+	storage = pg_repository.CreateStorageInstance(log, conf)
 
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)

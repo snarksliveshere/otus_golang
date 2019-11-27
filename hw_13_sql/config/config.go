@@ -10,6 +10,10 @@ type Config struct {
 	ListenIp   string `yaml:"listen_ip"`
 	ListenPort string `yaml:"listen_port"`
 	LogLevel   string `yaml:"log_level"`
+	DbName     string `yaml:"db_name"`
+	DbUser     string `yaml:"db_user"`
+	DbPassword string `yaml:"db_password"`
+	DbHost     string `yaml:"db_host"`
 }
 
 func CreateConfig(path string) *Config {
