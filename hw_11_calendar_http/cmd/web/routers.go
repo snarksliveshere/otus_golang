@@ -16,10 +16,10 @@ const (
 )
 
 type Response struct {
-	Date       entity.Date     `json:"day,omitempty"`
-	Record     entity.Record   `json:"record,omitempty"`
-	Records    []entity.Record `json:"records,omitempty"`
-	Collection []interface{}   `json:"collection,omitempty"`
+	Date       entity.Date    `json:"day,omitempty"`
+	Event      entity.Event   `json:"event,omitempty"`
+	Events     []entity.Event `json:"events,omitempty"`
+	Collection []interface{}  `json:"collection,omitempty"`
 	//Result     []string      `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
@@ -72,12 +72,12 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	if !okTitle || !okDesc || !okDate {
 		otherErrorHandler(w, r)
 	}
-	rec, day, c, err := storage.AddRecord(title, desc, date)
+	rec, day, c, err := storage.AddEvent(title, desc, date)
 	fmt.Println(c)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
-	resp := Response{Date: *day, Record: rec, Status: statusOK}
+	resp := Response{Date: *day, Event: rec, Status: statusOK}
 	sendResponse(resp, w, r)
 }
 
@@ -93,7 +93,7 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	if !okTitle || !okDesc || !okDate || !okN {
 		otherErrorHandler(w, r)
 	}
-	err := storage.UpdateRecordById(n, date, title, desc)
+	err := storage.UpdateEventById(n, date, title, desc)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -116,7 +116,7 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		otherErrorHandler(w, r)
 	}
-	err := storage.DeleteRecordById(eventId)
+	err := storage.DeleteEventById(eventId)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -158,7 +158,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
-		resp.Records = day.Records
+		resp.Events = day.Events
 	}
 	sendResponse(resp, w, r)
 }
@@ -171,7 +171,7 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 	if !okDates {
 		otherErrorHandler(w, r)
 	}
-	records, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
+	events, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -179,7 +179,7 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
-		resp.Records = records
+		resp.Events = events
 	}
 	sendResponse(resp, w, r)
 }
@@ -193,7 +193,7 @@ func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 	if !okDates {
 		otherErrorHandler(w, r)
 	}
-	records, err := storage.GetEventsForInterval(dates["from"], dates["till"])
+	events, err := storage.GetEventsForInterval(dates["from"], dates["till"])
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -201,7 +201,7 @@ func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
-		resp.Records = records
+		resp.Events = events
 	}
 	sendResponse(resp, w, r)
 }

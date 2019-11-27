@@ -5,57 +5,57 @@ import (
 	"github.com/snarskliveshere/otus_golang/hw_12_grpc/internal/helpers"
 )
 
-func (act *Actions) AddRecord(title, description string) (rec entity.Record, err error) {
+func (act *Actions) AddEvent(title, description string) (rec entity.Event, err error) {
 	id := helpers.MakeTimestampId()
-	rec = entity.Record{
+	rec = entity.Event{
 		Id:          id,
 		Title:       title,
 		Description: description,
 	}
 
-	err = act.RecordRepository.Save(rec)
+	err = act.EventRepository.Save(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record added")
+		act.Logger.Info("An error occurred while event added")
 		return rec, err
 	}
-	act.Logger.Info("Record added successfully")
+	act.Logger.Info("Event added successfully")
 
 	return rec, nil
 }
 
-func (act *Actions) EditRecord(id uint64) error {
-	rec, err := act.getRecordById(id)
+func (act *Actions) EditEvent(id uint64) error {
+	rec, err := act.getEventById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
 		return err
 	}
-	err = act.RecordRepository.Edit(rec)
+	err = act.EventRepository.Edit(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record updating")
+		act.Logger.Info("An error occurred while event updating")
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) DeleteRecord(id uint64) error {
-	rec, err := act.getRecordById(id)
+func (act *Actions) DeleteEvent(id uint64) error {
+	rec, err := act.getEventById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
 		return err
 	}
-	err = act.RecordRepository.Delete(rec)
+	err = act.EventRepository.Delete(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record deleting")
+		act.Logger.Info("An error occurred while event deleting")
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) getRecordById(id uint64) (entity.Record, error) {
-	record, err := act.RecordRepository.FindById(id)
+func (act *Actions) getEventById(id uint64) (entity.Event, error) {
+	event, err := act.EventRepository.FindById(id)
 	if err != nil {
-		act.Logger.Info("An error occurred while get record")
-		return entity.Record{}, err
+		act.Logger.Info("An error occurred while get event")
+		return entity.Event{}, err
 	}
-	return record, nil
+	return event, nil
 }

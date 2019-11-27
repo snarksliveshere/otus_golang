@@ -12,14 +12,14 @@ func InMemFunc() {
 	actions := new(usecases.Actions)
 	actions.Logger = new(pkg.Logger)
 	actions.DateRepository = mem_repository.GetDateRepo(handler)
-	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
-	err := actions.AddRecord("title1", "descr1")
+	actions.EventRepository = mem_repository.GetEventRepo(handler)
+	err := actions.AddEvent("title1", "descr1")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	record, err := actions.RecordRepository.FindById(1)
+	event, err := actions.EventRepository.FindById(1)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(record)
+	fmt.Println(event)
 }

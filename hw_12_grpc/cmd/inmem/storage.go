@@ -21,7 +21,7 @@ type Storage struct {
 //	actions := new(usecases.Actions)
 //	actions.Logger = new(pkg.Logger)
 //	actions.DateRepository = mem_repository.GetDateRepo(handler)
-//	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
+//	actions.EventRepository = mem_repository.GetEventRepo(handler)
 //}
 
 func CreateStorageInstance(logger usecases.Logger) *Storage {
@@ -29,21 +29,21 @@ func CreateStorageInstance(logger usecases.Logger) *Storage {
 	actions := new(usecases.Actions)
 	actions.Logger = logger
 	actions.DateRepository = mem_repository.GetDateRepo(handler)
-	actions.RecordRepository = mem_repository.GetRecordRepo(handler)
+	actions.EventRepository = mem_repository.GetEventRepo(handler)
 	c := new(entity.Calendar)
 	return &Storage{actions: actions, calendar: c}
 }
 
-func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, *entity.Date, *entity.Calendar, error) {
-	rec, err := s.actions.AddRecord(title, desc)
+func (s *Storage) AddEvent(title, desc string, date time.Time) (entity.Event, *entity.Date, *entity.Calendar, error) {
+	rec, err := s.actions.AddEvent(title, desc)
 	if err != nil {
-		return entity.Record{}, &entity.Date{}, s.calendar, err
+		return entity.Event{}, &entity.Date{}, s.calendar, err
 	}
 	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
-	err = s.actions.DateRepository.AddRecordToDate(rec, day)
+	err = s.actions.DateRepository.AddEventToDate(rec, day)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
@@ -51,22 +51,22 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	return rec, day, s.calendar, nil
 }
 
-func (s *Storage) FindRecordById(id uint64) string {
-	record, _ := s.actions.RecordRepository.FindById(id)
-	return fmt.Sprintf("resccc %#v", record)
+func (s *Storage) FindEventById(id uint64) string {
+	event, _ := s.actions.EventRepository.FindById(id)
+	return fmt.Sprintf("resccc %#v", event)
 }
 
-func (s *Storage) DeleteRecordById(id uint64) error {
+func (s *Storage) DeleteEventById(id uint64) error {
 	if s.calendar.Dates == nil {
-		err := errors.New("there are no records in calendar yet")
+		err := errors.New("there are no events in calendar yet")
 		return err
 	}
 	var res bool
 	for _, z := range s.calendar.Dates {
-		for i, r := range z.Records {
+		for i, r := range z.Events {
 			if r.Id == id {
-				newRecords := removeRecordFromSlice(z.Records, i)
-				z.Records = append([]entity.Record(nil), newRecords...)
+				newEvents := removeEventFromSlice(z.Events, i)
+				z.Events = append([]entity.Event(nil), newEvents...)
 				res = true
 			}
 		}
@@ -74,22 +74,22 @@ func (s *Storage) DeleteRecordById(id uint64) error {
 	if res {
 		return nil
 	} else {
-		err := errors.New("i cant find record with this id to delete")
+		err := errors.New("i cant find event with this id to delete")
 		return err
 	}
 }
 
-func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, description string) error {
+func (s *Storage) UpdateEventById(recId uint64, date time.Time, title, description string) error {
 	if s.calendar.Dates == nil {
-		err := errors.New("there are no records in calendar yet")
+		err := errors.New("there are no events in calendar yet")
 		return err
 	}
 	var res bool
 	for i, z := range s.calendar.Dates {
 		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
-			for k, r := range z.Records {
+			for k, r := range z.Events {
 				if r.Id == recId {
-					updRecord(&s.calendar.Dates[i].Records[k], title, description)
+					updEvent(&s.calendar.Dates[i].Events[k], title, description)
 					res = true
 				}
 			}
@@ -99,19 +99,19 @@ func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, descript
 	if res {
 		return nil
 	} else {
-		err := errors.New("i cant find record with this id to update")
+		err := errors.New("i cant find event with this id to update")
 		return err
 	}
 }
 
-func updRecord(rec *entity.Record, title, desc string) {
+func updEvent(rec *entity.Event, title, desc string) {
 	rec.Title = title
 	rec.Description = desc
 }
 
-func removeRecordFromSlice(records []entity.Record, i int) []entity.Record {
-	records[i] = records[len(records)-1]
-	return records[:len(records)-1]
+func removeEventFromSlice(events []entity.Event, i int) []entity.Event {
+	events[i] = events[len(events)-1]
+	return events[:len(events)-1]
 }
 
 func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
@@ -122,25 +122,25 @@ func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
 	return day, nil
 }
 
-func (s *Storage) GetEventsForInterval(from, till time.Time) ([]entity.Record, error) {
+func (s *Storage) GetEventsForInterval(from, till time.Time) ([]entity.Event, error) {
 	if s.calendar.Dates == nil {
-		err := errors.New("there are no records in calendar yet")
+		err := errors.New("there are no events in calendar yet")
 		return nil, err
 	}
 	var res bool
-	var records []entity.Record
+	var events []entity.Event
 	for _, z := range s.calendar.Dates {
 		if z.Day.Format(config.TimeLayout) >= from.Format(config.TimeLayout) &&
 			z.Day.Format(config.TimeLayout) <= till.Format(config.TimeLayout) {
-			records = append(records, z.Records...)
+			events = append(events, z.Events...)
 			res = true
 		}
 	}
 
 	if res {
-		return records, nil
+		return events, nil
 	} else {
-		err := errors.New("i cant find records for this interval")
+		err := errors.New("i cant find events for this interval")
 		return nil, err
 	}
 }

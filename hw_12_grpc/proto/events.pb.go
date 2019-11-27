@@ -25,7 +25,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type Record struct {
+type Event struct {
 	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title                string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
@@ -34,46 +34,46 @@ type Record struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Record) Reset()         { *m = Record{} }
-func (m *Record) String() string { return proto.CompactTextString(m) }
-func (*Record) ProtoMessage()    {}
-func (*Record) Descriptor() ([]byte, []int) {
+func (m *Event) Reset()         { *m = Event{} }
+func (m *Event) String() string { return proto.CompactTextString(m) }
+func (*Event) ProtoMessage()    {}
+func (*Event) Descriptor() ([]byte, []int) {
 	return fileDescriptor_499cf8c2dd86f7dd, []int{0}
 }
 
-func (m *Record) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Record.Unmarshal(m, b)
+func (m *Event) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Event.Unmarshal(m, b)
 }
-func (m *Record) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Record.Marshal(b, m, deterministic)
+func (m *Event) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Event.Marshal(b, m, deterministic)
 }
-func (m *Record) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Record.Merge(m, src)
+func (m *Event) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Event.Merge(m, src)
 }
-func (m *Record) XXX_Size() int {
-	return xxx_messageInfo_Record.Size(m)
+func (m *Event) XXX_Size() int {
+	return xxx_messageInfo_Event.Size(m)
 }
-func (m *Record) XXX_DiscardUnknown() {
-	xxx_messageInfo_Record.DiscardUnknown(m)
+func (m *Event) XXX_DiscardUnknown() {
+	xxx_messageInfo_Event.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Record proto.InternalMessageInfo
+var xxx_messageInfo_Event proto.InternalMessageInfo
 
-func (m *Record) GetId() uint64 {
+func (m *Event) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *Record) GetTitle() string {
+func (m *Event) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *Record) GetDescription() string {
+func (m *Event) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
@@ -82,7 +82,7 @@ func (m *Record) GetDescription() string {
 
 type Date struct {
 	Date                 *timestamp.Timestamp `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
-	Records              []*Record            `protobuf:"bytes,2,rep,name=records,proto3" json:"records,omitempty"`
+	Events               []*Event             `protobuf:"bytes,2,rep,name=events,proto3" json:"events,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -120,9 +120,9 @@ func (m *Date) GetDate() *timestamp.Timestamp {
 	return nil
 }
 
-func (m *Date) GetRecords() []*Record {
+func (m *Date) GetEvents() []*Event {
 	if m != nil {
-		return m.Records
+		return m.Events
 	}
 	return nil
 }
@@ -170,7 +170,7 @@ type CreateEventResponseMessage struct {
 	Status               string   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	Error                string   `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	Date                 *Date    `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
-	Record               *Record  `protobuf:"bytes,4,opt,name=record,proto3" json:"record,omitempty"`
+	Event                *Event   `protobuf:"bytes,4,opt,name=event,proto3" json:"event,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -222,9 +222,9 @@ func (m *CreateEventResponseMessage) GetDate() *Date {
 	return nil
 }
 
-func (m *CreateEventResponseMessage) GetRecord() *Record {
+func (m *CreateEventResponseMessage) GetEvent() *Event {
 	if m != nil {
-		return m.Record
+		return m.Event
 	}
 	return nil
 }
@@ -520,13 +520,13 @@ func (m *GetEventsForDateRequestMessage) GetDate() string {
 }
 
 type GetEventsForDateResponseMessage struct {
-	Status               string    `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	Text                 string    `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
-	Records              []*Record `protobuf:"bytes,3,rep,name=records,proto3" json:"records,omitempty"`
-	Date                 string    `protobuf:"bytes,4,opt,name=date,proto3" json:"date,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
-	XXX_unrecognized     []byte    `json:"-"`
-	XXX_sizecache        int32     `json:"-"`
+	Status               string   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Text                 string   `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	Events               []*Event `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	Date                 string   `protobuf:"bytes,4,opt,name=date,proto3" json:"date,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *GetEventsForDateResponseMessage) Reset()         { *m = GetEventsForDateResponseMessage{} }
@@ -568,9 +568,9 @@ func (m *GetEventsForDateResponseMessage) GetText() string {
 	return ""
 }
 
-func (m *GetEventsForDateResponseMessage) GetRecords() []*Record {
+func (m *GetEventsForDateResponseMessage) GetEvents() []*Event {
 	if m != nil {
-		return m.Records
+		return m.Events
 	}
 	return nil
 }
@@ -622,12 +622,12 @@ func (m *GetEventsForMonthRequestMessage) GetMonth() string {
 }
 
 type GetEventsForMonthResponseMessage struct {
-	Status               string    `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	Text                 string    `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
-	Records              []*Record `protobuf:"bytes,3,rep,name=records,proto3" json:"records,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
-	XXX_unrecognized     []byte    `json:"-"`
-	XXX_sizecache        int32     `json:"-"`
+	Status               string   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Text                 string   `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	Events               []*Event `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *GetEventsForMonthResponseMessage) Reset()         { *m = GetEventsForMonthResponseMessage{} }
@@ -669,9 +669,9 @@ func (m *GetEventsForMonthResponseMessage) GetText() string {
 	return ""
 }
 
-func (m *GetEventsForMonthResponseMessage) GetRecords() []*Record {
+func (m *GetEventsForMonthResponseMessage) GetEvents() []*Event {
 	if m != nil {
-		return m.Records
+		return m.Events
 	}
 	return nil
 }
@@ -724,12 +724,12 @@ func (m *GetEventsForIntervalRequestMessage) GetTill() string {
 }
 
 type GetEventsForIntervalResponseMessage struct {
-	Status               string    `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	Text                 string    `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
-	Records              []*Record `protobuf:"bytes,3,rep,name=records,proto3" json:"records,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
-	XXX_unrecognized     []byte    `json:"-"`
-	XXX_sizecache        int32     `json:"-"`
+	Status               string   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Text                 string   `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	Events               []*Event `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *GetEventsForIntervalResponseMessage) Reset()         { *m = GetEventsForIntervalResponseMessage{} }
@@ -771,15 +771,15 @@ func (m *GetEventsForIntervalResponseMessage) GetText() string {
 	return ""
 }
 
-func (m *GetEventsForIntervalResponseMessage) GetRecords() []*Record {
+func (m *GetEventsForIntervalResponseMessage) GetEvents() []*Event {
 	if m != nil {
-		return m.Records
+		return m.Events
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterType((*Record)(nil), "proto.Record")
+	proto.RegisterType((*Event)(nil), "proto.Event")
 	proto.RegisterType((*Date)(nil), "proto.Date")
 	proto.RegisterType((*Calendar)(nil), "proto.Calendar")
 	proto.RegisterType((*CreateEventResponseMessage)(nil), "proto.CreateEventResponseMessage")

@@ -8,7 +8,7 @@ type DateRepo struct {
 	*Repo
 }
 
-type RecordRepo struct {
+type EventRepo struct {
 	*Repo
 }
 
@@ -27,7 +27,7 @@ func (r *Repo) Execute(str string) {
 //	m := make(map[string]interface{},2)
 //
 //	m["dayRepo"] = DayRepo{repo}
-//	m["recordRepo"] = RecordRepo{repo}
+//	m["eventRepo"] = EventRepo{repo}
 //
 //	return m
 //}
@@ -38,10 +38,10 @@ func GetDateRepo(handler *pkg.InMemStorage) *DateRepo {
 	return &DateRepo{repo}
 }
 
-func GetRecordRepo(handler *pkg.InMemStorage) *RecordRepo {
+func GetEventRepo(handler *pkg.InMemStorage) *EventRepo {
 	repo := new(Repo)
 	repo.handler = handler
-	return &RecordRepo{repo}
+	return &EventRepo{repo}
 }
 
 //func CreateRepo(handler *drivers.InMemStorage) *Repo {
