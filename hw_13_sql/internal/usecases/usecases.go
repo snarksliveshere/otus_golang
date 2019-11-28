@@ -7,6 +7,8 @@ import (
 type Logger interface {
 	Info(args ...interface{})
 	Infof(pattern string, args ...interface{})
+	Fatal(args ...interface{})
+	Fatalf(pattern string, args ...interface{})
 }
 
 type Actions struct {

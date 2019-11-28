@@ -3,6 +3,7 @@ module github.com/snarskliveshere/otus_golang/hw_13_sql
 go 1.13
 
 require (
+	github.com/go-pg/migrations v6.7.3+incompatible
 	github.com/go-pg/pg v8.0.6+incompatible
 	github.com/golang/protobuf v1.3.2
 	github.com/gorilla/mux v1.7.3

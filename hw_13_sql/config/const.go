@@ -8,4 +8,5 @@ const (
 	StatusSuccess         = "success"
 	StatusError           = "error"
 	ConfigPort            = "50053"
+	MigrationTable        = "gopg_migrations"
 )

@@ -16,11 +16,12 @@ type Storage struct {
 }
 
 func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
-	handler := db.CreatePgConn(conf, logger)
+	_ = db.CreatePgConn(conf, logger)
 	actions := new(usecases.Actions)
 	actions.Logger = logger
-	actions.DateRepository = GetDateRepo(handler)
-	actions.RecordRepository = GetRecordRepo(handler)
+	// TODO: only to check
+	//actions.DateRepository = GetDateRepo(handler)
+	//actions.RecordRepository = GetRecordRepo(handler)
 	c := new(entity.Calendar)
 	return &Storage{actions: actions, calendar: c}
 }
