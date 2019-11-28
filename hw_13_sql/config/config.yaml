@@ -1,7 +1,8 @@
 listen_ip: 0.0.0.0
 listen_port: 50053
 log_level: info
-db_name: dev_md_raw
-db_user: developer
-db_password: RuYPamZOPZ
-db_host: db-dev.mobio.ru
+db_name: md_calendar
+db_user: md
+db_password: secret
+db_host: localhost
+db_port: 54321

@@ -6,7 +6,7 @@ import (
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/usecases"
-	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/tools/db"
 	"time"
 )
 
@@ -16,7 +16,7 @@ type Storage struct {
 }
 
 func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
-	handler := pkg.NewStorageHandler()
+	handler := db.CreatePgConn(conf, logger)
 	actions := new(usecases.Actions)
 	actions.Logger = logger
 	actions.DateRepository = GetDateRepo(handler)

@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/mem_repository"
-	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/tools/logger"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	log     *pkg.Logger
+	log     *logger.Logger
 	storage *mem_repository.Storage
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
-	log = pkg.CreateLog(conf)
+	log = logger.CreateLogrusLog(conf)
 
 	storage = mem_repository.CreateStorageInstance(log)
 

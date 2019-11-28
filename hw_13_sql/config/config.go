@@ -14,6 +14,7 @@ type Config struct {
 	DbUser     string `yaml:"db_user"`
 	DbPassword string `yaml:"db_password"`
 	DbHost     string `yaml:"db_host"`
+	DbPort     string `yaml:"db_port"`
 }
 
 func CreateConfig(path string) *Config {

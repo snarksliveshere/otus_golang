@@ -1,4 +1,4 @@
-package pkg
+package logger
 
 import (
 	"github.com/sirupsen/logrus"
@@ -27,7 +27,7 @@ func (logger *Logger) Fatalf(pattern string, args ...interface{}) {
 	logger.log.Fatalf(pattern, args...)
 }
 
-func CreateLog(config *config.Config) *Logger {
+func CreateLogrusLog(config *config.Config) *Logger {
 	log := logrus.New()
 	logEntry := logrus.NewEntry(log).WithField("app", appName)
 	level, err := logrus.ParseLevel(config.LogLevel)

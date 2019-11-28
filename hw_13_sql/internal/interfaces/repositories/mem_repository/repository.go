@@ -1,7 +1,8 @@
 package mem_repository
 
 import (
-	"github.com/snarskliveshere/otus_golang/hw_13_sql/pkg"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/tools/db"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/tools/logger"
 )
 
 type DateRepo struct {
@@ -13,8 +14,8 @@ type RecordRepo struct {
 }
 
 type Repo struct {
-	handler *pkg.InMemStorage
-	logger  pkg.Logger
+	handler *db.InMemStorage
+	logger  logger.Logger
 }
 
 func (r *Repo) Execute(str string) {
@@ -32,13 +33,13 @@ func (r *Repo) Execute(str string) {
 //	return m
 //}
 
-func GetDateRepo(handler *pkg.InMemStorage) *DateRepo {
+func GetDateRepo(handler *db.InMemStorage) *DateRepo {
 	repo := new(Repo)
 	repo.handler = handler
 	return &DateRepo{repo}
 }
 
-func GetRecordRepo(handler *pkg.InMemStorage) *RecordRepo {
+func GetRecordRepo(handler *db.InMemStorage) *RecordRepo {
 	repo := new(Repo)
 	repo.handler = handler
 	return &RecordRepo{repo}
