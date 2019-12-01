@@ -39,6 +39,11 @@ func main() {
 		Description: "Some_description4",
 		Date:        "2019-10-02",
 	}}
+	if len(os.Args) < 2 {
+		fmt.Println("not enough argument")
+		return
+	}
+
 	switch expr := os.Args[1]; expr {
 	case "create-event":
 		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
