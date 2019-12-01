@@ -8,5 +8,5 @@ type Event struct {
 	Title       string    `sql:"title, notnull"`
 	Description string    `sql:"description"`
 	Time        time.Time `sql:"time,notnull,unique:time_date_uidx"`
-	DateFk      float64   `sql:"date_fk,notnull,unique:time_date_uidx"`
+	DateFk      uint32    `sql:"date_fk,notnull,unique:time_date_uidx"`
 }

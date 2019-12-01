@@ -4,13 +4,14 @@ import (
 	"errors"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"strings"
 	"time"
 )
 
 func (act *Actions) CreateEvent(title, description string, t time.Time) (uint64, error) {
 	date := t.Format(config.TimeLayout)
 	day, err := act.DateRepository.FindByDay(date)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "no rows in result set") {
 		return 0, err
 	}
 	var dateId uint32
@@ -23,27 +24,27 @@ func (act *Actions) CreateEvent(title, description string, t time.Time) (uint64,
 	} else {
 		dateId = day.Id
 	}
-	rec, err := act.AddRecord(title, description, dateId, t)
+	recId, err := act.AddRecord(title, description, dateId, t)
 
-	return rec.Id, nil
+	return recId, nil
 }
 
-func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.Time) (rec entity.Record, err error) {
-	rec = entity.Record{
+func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.Time) (id uint64, err error) {
+	rec := entity.Record{
 		Title:       title,
 		Description: description,
 		Time:        t,
 		DateFk:      dateFk,
 	}
 
-	recId, err = act.RecordRepository.Save(rec)
+	_, err = act.RecordRepository.Save(rec)
 	if err != nil {
 		act.Logger.Info("An error occurred while record added")
-		return rec, err
+		return 0, err
 	}
 	act.Logger.Info("Record added successfully")
 
-	return rec, nil
+	return 0, nil
 }
 
 func (act *Actions) GetEventsByDay(date string) ([]entity.Record, error) {

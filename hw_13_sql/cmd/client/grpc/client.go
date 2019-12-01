@@ -25,7 +25,7 @@ func createTimeStampFromTimeString(timeStr string) (*timestamp.Timestamp, error)
 
 func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-	cc, err := grpc.Dial("0.0.0.0:50052", grpc.WithInsecure())
+	cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("could not connect: %v", err)
 	}
@@ -64,14 +64,14 @@ func main() {
 	case "delete-event":
 		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 		msgDeleteEvent := Dummy{deleteEventReq: proto.DeleteEventRequestMessage{
-			EventId: rec.Record.Id,
+			EventId: rec.Id,
 		}}
 		sendDeleteEventMessage(ctx, cc, msgDeleteEvent.deleteEventReq)
 	case "update-event":
 		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 		msgUpdateEvent := Dummy{
 			updateEventReq: proto.UpdateEventRequestMessage{
-				EventId:     rec.Record.Id,
+				EventId:     rec.Id,
 				Title:       "update_title",
 				Description: "update_description",
 				Date:        "2019-11-01",

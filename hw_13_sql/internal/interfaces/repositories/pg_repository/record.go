@@ -2,7 +2,9 @@ package pg_repository
 
 import (
 	"errors"
+	"github.com/go-pg/pg"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/pg_repository/pg_models"
 )
 
 func (r *RecordRepo) FindById(id uint64) (entity.Record, error) {
@@ -43,9 +45,26 @@ func (r *RecordRepo) GetEventsByDay(dateFk uint32) ([]entity.Record, error) {
 	return records, nil
 }
 
-func (r *RecordRepo) Save(record entity.Record) (uint64, error) {
+func (r *RecordRepo) Save(rec entity.Record) (pg.Result, error) {
+	m := pg_models.Event{
+		Title:       rec.Title,
+		Description: rec.Description,
+		Time:        rec.Time,
+		DateFk:      rec.DateFk,
+	}
+	//err := r.db.Insert(&m)
+	rr, _ := r.db.Model(&m).
+		OnConflict("(date_fk, time) DO UPDATE").
+		Set("title = EXCLUDED.title").
+		Set("description = EXCLUDED.description").
+		Returning("id").
+		Insert()
 
-	return 0, nil
+	return rr, nil
+	//if err != nil {
+	//	return 0, err
+	//}
+	//return m.Id, nil
 }
 
 func (r *RecordRepo) Delete(record entity.Record) error {

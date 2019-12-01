@@ -40,20 +40,7 @@ func (s *Storage) GetEventsForDay(date string) ([]entity.Record, error) {
 }
 
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, *entity.Date, *entity.Calendar, error) {
-	rec, err := s.Actions.AddRecord(title, desc)
-	if err != nil {
-		return entity.Record{}, &entity.Date{}, s.calendar, err
-	}
-	day, err := s.Actions.DateRepository.FindByDay(config.TimeLayout)
-	if err != nil {
-		return rec, &entity.Date{}, s.calendar, err
-	}
-	err = s.Actions.DateRepository.AddRecordToDate(rec, &day)
-	if err != nil {
-		return rec, &entity.Date{}, s.calendar, err
-	}
-
-	return rec, &day, s.calendar, nil
+	return entity.Record{}, &entity.Date{}, s.calendar, nil
 }
 
 func (s *Storage) FindRecordById(id uint64) string {
