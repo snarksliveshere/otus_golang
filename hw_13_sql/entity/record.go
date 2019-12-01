@@ -7,4 +7,5 @@ type Record struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description,omitempty"`
 	Time        time.Time `json:"time"`
+	DateFk      uint32    `json:"date_fk"`
 }

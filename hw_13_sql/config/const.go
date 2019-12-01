@@ -9,4 +9,5 @@ const (
 	StatusError           = "error"
 	ConfigPort            = "50052"
 	MigrationTable        = "gopg_migrations"
+	EventTimeLayout       = "2006-01-02T15:04-0700"
 )

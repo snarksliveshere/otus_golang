@@ -35,15 +35,15 @@ message Calendar {
 message CreateEventResponseMessage {
     string status = 1;
     string error = 2;
-    Date date = 3;
-    Record record = 4;
+    uint64 id = 3;
 }
 
 message CreateEventRequestMessage {
     string title = 1;
     string description = 2;
     reserved 3 to 100;
-    string date = 102;
+    google.protobuf.Timestamp time = 102;
+
 }
 
 message DeleteEventRequestMessage {

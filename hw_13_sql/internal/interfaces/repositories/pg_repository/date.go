@@ -3,6 +3,7 @@ package pg_repository
 import (
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
+	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/pg_repository/pg_models"
 	"sync"
 	"time"
 )
@@ -24,6 +25,21 @@ func (d *DateRepo) FindByDay(date string) (entity.Date, error) {
 		Records:       nil,
 	}
 	return day, nil
+}
+
+func (d *DateRepo) Save(date entity.Date) (uint32, error) {
+	m := pg_models.Calendar{
+		Date:          date.Day,
+		Description:   date.Description,
+		IsCelebration: date.IsCelebration,
+	}
+	err := d.db.Insert(&m)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return m.Id, nil
 }
 
 var (
@@ -67,9 +83,4 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 		return t, err
 	}
 	return t, nil
-}
-
-func (d *DateRepo) Save(record entity.Date) error {
-
-	return nil
 }

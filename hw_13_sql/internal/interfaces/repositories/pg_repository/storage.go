@@ -11,7 +11,7 @@ import (
 )
 
 type Storage struct {
-	actions  *usecases.Actions
+	Actions  *usecases.Actions
 	calendar *entity.Calendar
 }
 
@@ -22,15 +22,15 @@ func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage
 	actions.DateRepository = GetDateRepo(dbHandler)
 	actions.RecordRepository = GetRecordRepo(dbHandler)
 	c := new(entity.Calendar)
-	return &Storage{actions: actions, calendar: c}
+	return &Storage{Actions: actions, calendar: c}
 }
 
 func (s *Storage) FindByDay(date string) (entity.Date, error) {
-	return s.actions.DateRepository.FindByDay(date)
+	return s.Actions.DateRepository.FindByDay(date)
 }
 
 func (s *Storage) GetEventsForDay(date string) ([]entity.Record, error) {
-	records, err := s.actions.GetEventsByDay(date)
+	records, err := s.Actions.GetEventsByDay(date)
 
 	if err != nil {
 		return []entity.Record{}, err
@@ -40,15 +40,15 @@ func (s *Storage) GetEventsForDay(date string) ([]entity.Record, error) {
 }
 
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, *entity.Date, *entity.Calendar, error) {
-	rec, err := s.actions.AddRecord(title, desc)
+	rec, err := s.Actions.AddRecord(title, desc)
 	if err != nil {
 		return entity.Record{}, &entity.Date{}, s.calendar, err
 	}
-	day, err := s.actions.DateRepository.FindByDay(config.TimeLayout)
+	day, err := s.Actions.DateRepository.FindByDay(config.TimeLayout)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
-	err = s.actions.DateRepository.AddRecordToDate(rec, &day)
+	err = s.Actions.DateRepository.AddRecordToDate(rec, &day)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
@@ -57,7 +57,7 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 }
 
 func (s *Storage) FindRecordById(id uint64) string {
-	record, _ := s.actions.RecordRepository.FindById(id)
+	record, _ := s.Actions.RecordRepository.FindById(id)
 	return fmt.Sprintf("resccc %#v", record)
 }
 

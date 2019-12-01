@@ -43,6 +43,11 @@ func (r *RecordRepo) GetEventsByDay(dateFk uint32) ([]entity.Record, error) {
 	return records, nil
 }
 
+func (r *RecordRepo) Save(record entity.Record) (uint64, error) {
+
+	return 0, nil
+}
+
 func (r *RecordRepo) Delete(record entity.Record) error {
 
 	return nil
@@ -56,9 +61,4 @@ func (r *RecordRepo) Edit(record entity.Record) error {
 func (r *RecordRepo) Show() []entity.Record {
 
 	return []entity.Record{}
-}
-
-func (r *RecordRepo) Save(record entity.Record) error {
-
-	return nil
 }

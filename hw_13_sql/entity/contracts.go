@@ -5,15 +5,17 @@ import "time"
 type RecordRepository interface {
 	FindById(id uint64) (Record, error)
 	GetEventsByDay(dayFk uint32) ([]Record, error)
+	CreateEvent(title, description string, time time.Time) (uint64, error)
+	Save(record Record) (uint64, error)
 
 	Delete(record Record) error
 	Edit(record Record) error
 	Show() []Record
-	Save(record Record) error
 }
 
 type DateRepository interface {
 	FindByDay(day string) (Date, error)
+	Save(date Date) (uint32, error)
 
 	AddRecordToDate(record Record, day *Date) error
 	AddDateToCalendar(day Date) error

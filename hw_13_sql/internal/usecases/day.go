@@ -14,6 +14,21 @@ func (act *Actions) FindByDay(day string) (entity.Date, error) {
 	return date, nil
 }
 
+func (act *Actions) CreateEmptyDate(day string) (uint32, error) {
+	date := entity.Date{
+		Day:           day,
+		Description:   "",
+		IsCelebration: false,
+		Records:       nil,
+	}
+	dayId, err := act.DateRepository.Save(date)
+	if err != nil {
+		act.Logger.Info("An error occurred while create day")
+		return 0, err
+	}
+	return dayId, nil
+}
+
 func (act *Actions) AddRecordToDate(rec entity.Record, date *entity.Date) error {
 	err := act.DateRepository.AddRecordToDate(rec, date)
 	if err != nil {

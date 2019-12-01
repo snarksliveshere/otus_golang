@@ -1,6 +1,8 @@
 package data_handlers
 
 import (
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/helpers"
 	"time"
 )
@@ -19,6 +21,22 @@ func CheckCreateEvent(title, desc, date string) (string, string, time.Time, erro
 		return title, desc, time.Time{}, err
 	}
 	return title, desc, day, nil
+}
+
+func CheckCreateEventProtoTimestamp(title, desc string, t *timestamp.Timestamp) (string, string, time.Time, error) {
+	err := validateCreateEvent(title, desc)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	title, desc, err = modifierCreateEvent(title, desc)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	timeT, err := ptypes.Timestamp(t)
+	if err != nil {
+		return title, desc, time.Time{}, err
+	}
+	return title, desc, timeT, nil
 }
 
 func GetTimeFromString(date string) (time.Time, error) {
