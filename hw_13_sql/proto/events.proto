@@ -17,8 +17,10 @@ service EventService {
 
 message Record {
     uint64 id = 1;
-    string title = 2;
-    string description = 3;
+    uint32 dateFk = 2;
+    string title = 3;
+    string description = 4;
+    google.protobuf.Timestamp time = 5;
 }
 
 message Date {
@@ -74,7 +76,6 @@ message GetEventsForDateResponseMessage {
     string status = 1;
     string text = 2;
     repeated Record records = 3;
-    string date = 4;
 }
 
 message GetEventsForMonthRequestMessage {

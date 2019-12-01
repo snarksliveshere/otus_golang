@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
@@ -24,11 +23,7 @@ type Response struct {
 }
 
 func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
-	day, err := storage.FindByDay(msg.Date)
-	fmt.Printf("day : %#v", day)
 	records, err := storage.GetEventsForDay(msg.Date)
-	fmt.Print(msg.Date, " get fo day")
-
 	reply := proto.GetEventsForDateResponseMessage{}
 
 	if err != nil {
@@ -38,8 +33,8 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 	}
 
 	var protoRecords []*proto.Record
-	for _, _ = range records {
-		protoRecord, err := recordToProtoStruct(nil)
+	for _, record := range records {
+		protoRecord, err := recordToProtoStruct(&record)
 		if err != nil {
 			return nil, status.Error(codes.Aborted, err.Error())
 		}
