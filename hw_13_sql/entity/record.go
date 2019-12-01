@@ -1,7 +1,10 @@
 package entity
 
+import "time"
+
 type Record struct {
-	Id          uint64 `json:"id,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
+	Id          uint64    `json:"id,omitempty"`
+	Title       string    `json:"title"`
+	Description string    `json:"description,omitempty"`
+	Time        time.Time `json:"time"`
 }

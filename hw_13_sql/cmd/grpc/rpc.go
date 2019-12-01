@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
@@ -17,9 +18,38 @@ type Response struct {
 	Date    entity.Date     `json:"day,omitempty"`
 	Record  entity.Record   `json:"record,omitempty"`
 	Records []entity.Record `json:"records,omitempty"`
+	Error   string          `json:"error,omitempty"`
+	Status  string          `json:"status,omitempty"`
 	//Result     []string      `json:"result,omitempty"`
-	Error  string `json:"error,omitempty"`
-	Status string `json:"status,omitempty"`
+}
+
+func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
+	day, err := storage.FindByDay(msg.Date)
+	fmt.Printf("day : %#v", day)
+	records, err := storage.GetEventsForDay(msg.Date)
+	fmt.Print(msg.Date, " get fo day")
+
+	reply := proto.GetEventsForDateResponseMessage{}
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Text = err.Error()
+		return &reply, nil
+	}
+
+	var protoRecords []*proto.Record
+	for _, _ = range records {
+		protoRecord, err := recordToProtoStruct(nil)
+		if err != nil {
+			return nil, status.Error(codes.Aborted, err.Error())
+		}
+		protoRecords = append(protoRecords, protoRecord)
+	}
+
+	reply.Status = config.StatusSuccess
+	reply.Records = protoRecords
+
+	return &reply, nil
 }
 
 func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventRequestMessage) (*proto.CreateEventResponseMessage, error) {
@@ -76,37 +106,6 @@ func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.U
 		return &reply, nil
 	}
 	reply.Status = config.StatusSuccess
-
-	return &reply, nil
-}
-
-func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
-	t, err := data_handlers.CheckEventsForDay(msg.Date)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid date string")
-	}
-	day, err := storage.GetEventsForDay(t)
-
-	reply := proto.GetEventsForDateResponseMessage{}
-
-	if err != nil {
-		reply.Status = config.StatusError
-		reply.Text = err.Error()
-		return &reply, nil
-	}
-
-	var protoRecords []*proto.Record
-	for _, rec := range day.Records {
-		protoRecord, err := recordToProtoStruct(&rec)
-		if err != nil {
-			return nil, status.Error(codes.Aborted, err.Error())
-		}
-		protoRecords = append(protoRecords, protoRecord)
-	}
-
-	reply.Status = config.StatusSuccess
-	reply.Records = protoRecords
-	reply.Date = day.Day.Format(config.TimeLayout)
 
 	return &reply, nil
 }

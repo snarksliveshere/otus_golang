@@ -16,14 +16,27 @@ type Storage struct {
 }
 
 func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
-	_ = db.CreatePgConn(conf, logger)
+	dbHandler := db.CreatePgConn(conf, logger)
 	actions := new(usecases.Actions)
 	actions.Logger = logger
-	// TODO: only to check
-	//actions.DateRepository = GetDateRepo(handler)
-	//actions.RecordRepository = GetRecordRepo(handler)
+	actions.DateRepository = GetDateRepo(dbHandler)
+	actions.RecordRepository = GetRecordRepo(dbHandler)
 	c := new(entity.Calendar)
 	return &Storage{actions: actions, calendar: c}
+}
+
+func (s *Storage) FindByDay(date string) (entity.Date, error) {
+	return s.actions.DateRepository.FindByDay(date)
+}
+
+func (s *Storage) GetEventsForDay(date string) ([]entity.Record, error) {
+	records, err := s.actions.GetEventsByDay(date)
+
+	if err != nil {
+		return []entity.Record{}, err
+	}
+
+	return records, nil
 }
 
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, *entity.Date, *entity.Calendar, error) {
@@ -31,36 +44,34 @@ func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, 
 	if err != nil {
 		return entity.Record{}, &entity.Date{}, s.calendar, err
 	}
-	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
+	day, err := s.actions.DateRepository.FindByDay(config.TimeLayout)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
-	err = s.actions.DateRepository.AddRecordToDate(rec, day)
+	err = s.actions.DateRepository.AddRecordToDate(rec, &day)
 	if err != nil {
 		return rec, &entity.Date{}, s.calendar, err
 	}
 
-	return rec, day, s.calendar, nil
+	return rec, &day, s.calendar, nil
 }
 
-func (s *Storage) FindRecordById(id uint64) (string, error) {
-	record, err := s.actions.RecordRepository.FindById(id)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("resccc %#v", record), nil
+func (s *Storage) FindRecordById(id uint64) string {
+	record, _ := s.actions.RecordRepository.FindById(id)
+	return fmt.Sprintf("resccc %#v", record)
 }
 
 func (s *Storage) DeleteRecordById(id uint64) error {
 	if s.calendar.Dates == nil {
-		return errors.New("there are no records in calendar yet")
+		err := errors.New("there are no records in calendar yet")
+		return err
 	}
 	var res bool
 	for _, z := range s.calendar.Dates {
 		for i, r := range z.Records {
 			if r.Id == id {
 				newRecords := removeRecordFromSlice(z.Records, i)
-				z.Records = append(z.Records, newRecords...)
+				z.Records = append([]entity.Record(nil), newRecords...)
 				res = true
 			}
 		}
@@ -68,17 +79,19 @@ func (s *Storage) DeleteRecordById(id uint64) error {
 	if res {
 		return nil
 	} else {
-		return errors.New("i cant find record with this id to delete")
+		err := errors.New("i cant find record with this id to delete")
+		return err
 	}
 }
 
 func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, description string) error {
 	if s.calendar.Dates == nil {
-		return errors.New("there are no records in calendar yet")
+		err := errors.New("there are no records in calendar yet")
+		return err
 	}
 	var res bool
 	for i, z := range s.calendar.Dates {
-		if z.Day.Format(config.TimeLayout) == date.Format(config.TimeLayout) {
+		if z.Day == date.Format(config.TimeLayout) {
 			for k, r := range z.Records {
 				if r.Id == recId {
 					updRecord(&s.calendar.Dates[i].Records[k], title, description)
@@ -106,14 +119,6 @@ func removeRecordFromSlice(records []entity.Record, i int) []entity.Record {
 	return records[:len(records)-1]
 }
 
-func (s *Storage) GetEventsForDay(date time.Time) (*entity.Date, error) {
-	day, err := s.actions.DateRepository.FindByDay(date, s.calendar)
-	if err != nil {
-		return nil, err
-	}
-	return day, nil
-}
-
 func (s *Storage) GetEventsForInterval(from, till time.Time) ([]entity.Record, error) {
 	if s.calendar.Dates == nil {
 		err := errors.New("there are no records in calendar yet")
@@ -122,8 +127,8 @@ func (s *Storage) GetEventsForInterval(from, till time.Time) ([]entity.Record, e
 	var res bool
 	var records []entity.Record
 	for _, z := range s.calendar.Dates {
-		if z.Day.Format(config.TimeLayout) >= from.Format(config.TimeLayout) &&
-			z.Day.Format(config.TimeLayout) <= till.Format(config.TimeLayout) {
+		if z.Day >= from.Format(config.TimeLayout) &&
+			z.Day <= till.Format(config.TimeLayout) {
 			records = append(records, z.Records...)
 			res = true
 		}

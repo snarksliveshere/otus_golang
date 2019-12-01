@@ -3,7 +3,6 @@ package grpc
 import (
 	"fmt"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
-	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/mem_repository"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/interfaces/repositories/pg_repository"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/tools/logger"
@@ -19,7 +18,7 @@ type ServerCalendar struct {
 
 var (
 	log     *logger.Logger
-	storage *mem_repository.Storage
+	storage *pg_repository.Storage
 )
 
 func Server(path string) {

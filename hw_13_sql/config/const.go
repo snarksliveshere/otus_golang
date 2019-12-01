@@ -7,6 +7,6 @@ const (
 	HeaderContentType     = "application/json"
 	StatusSuccess         = "success"
 	StatusError           = "error"
-	ConfigPort            = "50053"
+	ConfigPort            = "50052"
 	MigrationTable        = "gopg_migrations"
 )

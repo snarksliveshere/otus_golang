@@ -36,13 +36,13 @@ SELECT add_time_fields('calendar');
 
 CREATE TABLE event
 (
-    id        BIGSERIAL PRIMARY KEY,
-    date_fk INT NOT NULL,
-    time TIMESTAMP WITH TIME ZONE,
-    title TEXT NOT NULL ,
-    description TEXT NOT NULL ,
+    id          BIGSERIAL PRIMARY KEY,
+    date_fk     INT  NOT NULL,
+    time        TIMESTAMP WITH TIME ZONE,
+    title       TEXT NOT NULL,
+    description TEXT,
     CONSTRAINT public_event_time_date_uidx UNIQUE (time, date_fk),
-    CONSTRAINT public_event_date_calendar_fk FOREIGN KEY (date_fk) REFERENCES calendar(id)
+    CONSTRAINT public_event_date_calendar_fk FOREIGN KEY (date_fk) REFERENCES calendar (id)
 );
 SELECT add_time_fields('event');
 

@@ -1,9 +1,29 @@
 package usecases
 
 import (
+	"errors"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/internal/helpers"
 )
+
+func (act *Actions) GetEventsByDay(date string) ([]entity.Record, error) {
+	day, err := act.DateRepository.FindByDay(date)
+	if err != nil {
+		act.Logger.Info("An error occurred while record added")
+		return []entity.Record{}, err
+	}
+	if day.Id == 0 {
+		act.Logger.Info("An empty ady")
+		return []entity.Record{}, errors.New("i cant find this day")
+	}
+	records, err := act.RecordRepository.GetEventsByDay(day.Id)
+	if err != nil {
+		act.Logger.Info("An error occurred while record added")
+		return []entity.Record{}, err
+	}
+
+	return records, nil
+}
 
 func (act *Actions) AddRecord(title, description string) (rec entity.Record, err error) {
 	id := helpers.MakeTimestampId()
