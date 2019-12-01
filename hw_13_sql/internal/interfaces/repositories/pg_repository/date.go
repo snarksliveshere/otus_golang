@@ -33,7 +33,12 @@ func (d *DateRepo) Save(date entity.Date) (uint32, error) {
 		Description:   date.Description,
 		IsCelebration: date.IsCelebration,
 	}
-	err := d.db.Insert(&m)
+	_, err := d.db.Model(&m).
+		OnConflict("(date) DO UPDATE").
+		Set("description = EXCLUDED.description").
+		Set("is_celebration = EXCLUDED.is_celebration").
+		Insert()
+	//err := d.db.Insert(&m)
 
 	if err != nil {
 		return 0, err

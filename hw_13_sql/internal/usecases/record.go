@@ -37,14 +37,14 @@ func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.T
 		DateFk:      dateFk,
 	}
 
-	_, err = act.RecordRepository.Save(rec)
+	recId, err := act.RecordRepository.Save(rec)
 	if err != nil {
 		act.Logger.Info("An error occurred while record added")
 		return 0, err
 	}
 	act.Logger.Info("Record added successfully")
 
-	return 0, nil
+	return recId, nil
 }
 
 func (act *Actions) GetEventsByDay(date string) ([]entity.Record, error) {

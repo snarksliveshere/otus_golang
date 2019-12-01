@@ -1,14 +1,13 @@
 package entity
 
 import (
-	"github.com/go-pg/pg"
 	"time"
 )
 
 type RecordRepository interface {
 	FindById(id uint64) (Record, error)
 	GetEventsByDay(dayFk uint32) ([]Record, error)
-	Save(record Record) (pg.Result, error)
+	Save(record Record) (uint64, error)
 	//Save(record Record) (uint64, error)
 
 	Delete(record Record) error
