@@ -183,8 +183,8 @@ func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, mess
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, length %v",
+			msg.Status, msg.Text, msg.Records, len(msg.Records))
 	}
 
 	return msg
@@ -198,8 +198,8 @@ func sendGetEventsForIntervalMessage(ctx context.Context, cc *grpc.ClientConn, m
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, length records: %d\n",
+			msg.Status, msg.Text, msg.Records, len(msg.Records))
 	}
 
 	return msg

@@ -226,3 +226,136 @@ func TestSendGetEventsForDayMessage(t *testing.T) {
 		}
 	}
 }
+
+func TestSendGetEventsForMonthMessage(t *testing.T) {
+	cases := []struct {
+		status, title, description, time, time2, date string
+		length                                        int
+	}{
+		{
+			status:      "success",
+			title:       "some new title",
+			description: "some new description",
+			time:        "1984-01-02T20:03+0300",
+			time2:       "1984-01-03T20:03+0300",
+			date:        "1984-01",
+			length:      2,
+		},
+		{
+			status:      "error",
+			title:       "some new title2",
+			description: "some new description2",
+			time:        "1985-01-01T20:03+0300",
+			time2:       "1985-01-03T20:03+0300",
+			date:        "1985-02",
+		},
+	}
+
+	for _, c := range cases {
+		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
+		if err != nil {
+			t.Errorf("TestSendGetEventsForMonthMessage(), resp.status: %s", c.status)
+		}
+		timeS, err := createTimeStampFromTimeString(c.time)
+		if err != nil {
+			t.Errorf("TestSendGetEventsForMonthMessage(),  err time: %s", c.time)
+		}
+		timeS2, err := createTimeStampFromTimeString(c.time2)
+		if err != nil {
+			t.Errorf("TestSendGetEventsForMonthMessage(),  err time: %s", c.time2)
+		}
+		msg := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Time:        timeS,
+		}
+		msg2 := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Time:        timeS2,
+		}
+
+		sendCreateEventMessage(ctx, cc, msg)
+		sendCreateEventMessage(ctx, cc, msg2)
+
+		dateMsg := proto.GetEventsForMonthRequestMessage{
+			Month: c.date,
+		}
+		respRecords := sendGetEventsForMonthMessage(ctx, cc, dateMsg)
+		if c.status != respRecords.Status {
+			t.Errorf("sendGetEventsForMonthMessage() status compare, c.status: %s, resp.status: %v", c.status, respRecords.Status)
+		}
+		if c.length != len(respRecords.Records) {
+			t.Errorf("sendGetEventsForMonthMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respRecords.Records))
+		}
+	}
+}
+
+func TestSendGetEventsForIntervalMessage(t *testing.T) {
+	cases := []struct {
+		status, title, description, time, time2, from, till string
+		length                                              int
+	}{
+		{
+			status:      "success",
+			title:       "some new title",
+			description: "some new description",
+			time:        "1979-01-02T20:03+0300",
+			time2:       "1979-03-03T20:03+0300",
+			from:        "1979-01-02",
+			till:        "1979-03-04",
+			length:      2,
+		},
+		{
+			status:      "error",
+			title:       "some new title2",
+			description: "some new description2",
+			time:        "1968-01-01T20:03+0300",
+			time2:       "1968-01-03T20:03+0300",
+			from:        "1969-01-02",
+			till:        "1969-03-04",
+		},
+	}
+
+	for _, c := range cases {
+		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
+		if err != nil {
+			t.Errorf("TestSendGetEventsForIntervalMessage(), resp.status: %s", c.status)
+		}
+		timeS, err := createTimeStampFromTimeString(c.time)
+		if err != nil {
+			t.Errorf("TestSendGetEventsForIntervalMessage(),  err time: %s", c.time)
+		}
+		timeS2, err := createTimeStampFromTimeString(c.time2)
+		if err != nil {
+			t.Errorf("TestSendGetEventsForIntervalMessage(),  err time: %s", c.time2)
+		}
+		msg := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Time:        timeS,
+		}
+		msg2 := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Time:        timeS2,
+		}
+
+		sendCreateEventMessage(ctx, cc, msg)
+		sendCreateEventMessage(ctx, cc, msg2)
+
+		dateMsg := proto.GetEventsForIntervalRequestMessage{
+			From: c.from,
+			Till: c.till,
+		}
+		respRecords := sendGetEventsForIntervalMessage(ctx, cc, dateMsg)
+		if c.status != respRecords.Status {
+			t.Errorf("TestSendGetEventsForIntervalMessage() status compare, c.status: %s, resp.status: %v", c.status, respRecords.Status)
+		}
+		if c.length != len(respRecords.Records) {
+			t.Errorf("TestSendGetEventsForIntervalMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respRecords.Records))
+		}
+	}
+}
