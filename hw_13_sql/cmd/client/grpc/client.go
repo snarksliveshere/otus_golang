@@ -97,8 +97,8 @@ func main() {
 	case "get-interval-event":
 		msgIntervalEvent := Dummy{
 			eventForIntervalReq: proto.GetEventsForIntervalRequestMessage{
-				From: "2019-10-20",
-				Till: "2019-11-01",
+				From: "2019-05-09",
+				Till: "2019-10-20",
 			},
 		}
 		sendGetEventsForIntervalMessage(ctx, cc, msgIntervalEvent.eventForIntervalReq)

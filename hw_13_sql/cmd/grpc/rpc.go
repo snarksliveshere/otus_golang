@@ -145,11 +145,7 @@ func (s ServerCalendar) SendGetEventsForMonthMessage(ctx context.Context, msg *p
 }
 
 func (s ServerCalendar) SendGetEventsForIntervalMessage(ctx context.Context, msg *proto.GetEventsForIntervalRequestMessage) (*proto.GetEventsForIntervalResponseMessage, error) {
-	tFrom, tTill, err := data_handlers.CheckEventsForInterval(msg.From, msg.Till)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid date from date till arguments")
-	}
-	records, err := storage.GetEventsForInterval(tFrom, tTill)
+	records, err := storage.Actions.RecordRepository.GetEventsByDateInterval(msg.From, msg.Till)
 
 	reply := proto.GetEventsForIntervalResponseMessage{}
 
