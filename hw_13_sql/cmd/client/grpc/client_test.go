@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/proto"
 	"google.golang.org/grpc"
@@ -11,19 +14,19 @@ import (
 
 func TestSendCreateEventMessage(t *testing.T) {
 	cases := []struct {
-		status, title, description, date string
+		status, title, description, time string
 	}{
 		{
 			status:      "success",
 			title:       "some new title",
 			description: "some new description",
-			date:        "2019-11-01",
+			time:        "2019-05-10T20:03+0300",
 		},
 		{
 			status:      "success",
 			title:       "new title2",
 			description: "some new description2",
-			date:        "2019-11-01",
+			time:        "2019-06-10T20:03+0300",
 		},
 	}
 
@@ -33,28 +36,20 @@ func TestSendCreateEventMessage(t *testing.T) {
 		if err != nil {
 			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
 		}
+		timeS, err := createTimeStampFromTimeString(c.time)
+		if err != nil {
+			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
+		}
 		msg := proto.CreateEventRequestMessage{
 			Title:       c.title,
 			Description: c.description,
-			Date:        c.date,
+			Time:        timeS,
 		}
 
 		resp := sendCreateEventMessage(ctx, cc, msg)
 
 		if c.status != resp.Status {
-			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
-		}
-
-		if c.title != resp.Record.Title {
-			t.Errorf("TestSendCreateEventMessage() title compare, c.title: %s, resp.title: %v", c.title, resp.Record.Title)
-		}
-
-		if c.description != resp.Record.Description {
-			t.Errorf("TestSendCreateEventMessage() description compare, c.description: %s, resp.description: %v", c.description, resp.Record.Description)
-		}
-
-		if resp.Record.Id <= 0 {
-			t.Errorf("TestSendCreateEventMessage() must be id, resp id: %v", resp.Record.Id)
+			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v, resp ID: %d", c.status, resp.Status, resp.Id)
 		}
 	}
 }

@@ -22,26 +22,26 @@ type Response struct {
 	//Result     []string      `json:"result,omitempty"`
 }
 
-func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventRequestMessage) (*proto.CreateEventResponseMessage, error) {
-	title, desc, time, err := data_handlers.CheckCreateEventProtoTimestamp(msg.Title, msg.Description, msg.Time)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
-	}
-
-	id, err := storage.Actions.CreateEvent(title, desc, time)
-	reply := proto.CreateEventResponseMessage{}
+func (s ServerCalendar) SendGetEventsByIdMessage(ctx context.Context, msg *proto.GetEventByIdRequestMessage) (*proto.GetEventByIdResponseMessage, error) {
+	record, err := storage.Actions.RecordRepository.FindById(msg.EventId)
+	reply := proto.GetEventByIdResponseMessage{}
 
 	if err != nil {
 		reply.Status = config.StatusError
 		reply.Error = err.Error()
 		return &reply, nil
 	}
+	protoRecord, err := recordToProtoStruct(&record)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, err.Error())
+	}
+
 	reply.Status = config.StatusSuccess
-	reply.Id = id
+	reply.Record = protoRecord
 
 	return &reply, nil
-}
 
+}
 func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
 	records, err := storage.Actions.GetEventsByDay(msg.Date)
 	reply := proto.GetEventsForDateResponseMessage{}
@@ -63,6 +63,26 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 
 	reply.Status = config.StatusSuccess
 	reply.Records = protoRecords
+
+	return &reply, nil
+}
+
+func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventRequestMessage) (*proto.CreateEventResponseMessage, error) {
+	title, desc, time, err := data_handlers.CheckCreateEventProtoTimestamp(msg.Title, msg.Description, msg.Time)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
+	}
+
+	id, err := storage.Actions.CreateEvent(title, desc, time)
+	reply := proto.CreateEventResponseMessage{}
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Error = err.Error()
+		return &reply, nil
+	}
+	reply.Status = config.StatusSuccess
+	reply.Id = id
 
 	return &reply, nil
 }

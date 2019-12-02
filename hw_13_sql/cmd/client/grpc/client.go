@@ -31,8 +31,6 @@ func main() {
 	}
 	defer func() { _ = cc.Close() }()
 	time1, err := createTimeStampFromTimeString("2019-05-10T20:03+0300")
-	//time2, err := createTimeStampFromTimeString("2019-11-02T18:03+0300")
-	//time3, err := createTimeStampFromTimeString("2019-10-02T14:03+0300")
 	timeDelete, err := createTimeStampFromTimeString("2019-09-02T14:03+0300")
 	if err != nil {
 		fmt.Println("cant convert time to proto timestamp")
@@ -43,15 +41,14 @@ func main() {
 		Description: "Some_description1",
 		Time:        time1,
 	}}
-	//msgCreateEvent2 := Dummy{createEventReq: proto.CreateEventRequestMessage{
-	//	Title:       "Some_title2",
-	//	Description: "Some_description2",
-	//	Time:        time2,
-	//}}
 	msgCreateEventDelete := Dummy{createEventReq: proto.CreateEventRequestMessage{
 		Title:       "Some_title delete",
 		Description: "Some_description delete",
 		Time:        timeDelete,
+	}}
+
+	msgGetByIdEventDelete := Dummy{eventById: proto.GetEventByIdRequestMessage{
+		EventId: 27,
 	}}
 
 	if len(os.Args) < 2 {
@@ -60,6 +57,8 @@ func main() {
 	}
 
 	switch expr := os.Args[1]; expr {
+	case "get-event-by-id":
+		sendGetEventsByIdMessage(ctx, cc, msgGetByIdEventDelete.eventById)
 	case "create-event":
 		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 	case "delete-event":
@@ -105,6 +104,21 @@ func main() {
 	default:
 		fmt.Println("bad route")
 	}
+}
+
+func sendGetEventsByIdMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventByIdRequestMessage) *proto.GetEventByIdResponseMessage {
+	c := proto.NewEventServiceClient(cc)
+	msg, err := c.SendGetEventsByIdMessage(ctx, &message)
+	if err != nil {
+		fmt.Printf("error : %s\n", status.Convert(err).Message())
+	}
+
+	if msg != nil {
+		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v,  record time: %#v",
+			msg.Status, msg.Error, msg.Record.Title, msg.Record.Time)
+	}
+
+	return msg
 }
 
 func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, message proto.GetEventsForDateRequestMessage) *proto.GetEventsForDateResponseMessage {
@@ -198,6 +212,7 @@ type Dummy struct {
 	eventForDayReq      proto.GetEventsForDateRequestMessage
 	eventForMonthReq    proto.GetEventsForMonthRequestMessage
 	eventForIntervalReq proto.GetEventsForIntervalRequestMessage
+	eventById           proto.GetEventByIdRequestMessage
 }
 
 //protoc ./proto/events.proto --go_out=plugins=grpc:.
