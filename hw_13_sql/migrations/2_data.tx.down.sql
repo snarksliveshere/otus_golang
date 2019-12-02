@@ -1,0 +1,4 @@
+TRUNCATE event CASCADE;
+TRUNCATE calendar CASCADE;
+
+
