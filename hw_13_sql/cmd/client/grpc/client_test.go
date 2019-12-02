@@ -179,45 +179,50 @@ func TestSendUpdateEventMessage(t *testing.T) {
 	}
 }
 
-//
-//func TestSendGetEventsForDayMessage(t *testing.T) {
-//	cases := []struct {
-//		status, title, description, date string
-//	}{
-//		{
-//			status:      "success",
-//			title:       "some new title",
-//			description: "some new description",
-//			date:        "2019-11-01",
-//		},
-//		{
-//			status:      "success",
-//			title:       "some new title2",
-//			description: "some new description2",
-//			date:        "2019-11-01",
-//		},
-//	}
-//
-//	for _, c := range cases {
-//		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-//		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-//		if err != nil {
-//			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
-//		}
-//		msg := proto.CreateEventRequestMessage{
-//			Title:       c.title,
-//			Description: c.description,
-//			Date:        c.date,
-//		}
-//
-//		resp := sendCreateEventMessage(ctx, cc, msg)
-//
-//		dateMsg := proto.GetEventsForDateRequestMessage{
-//			Date: c.date,
-//		}
-//		respRecords := sendGetEventsForDayMessage(ctx, cc, dateMsg)
-//		if c.date != respRecords.Date {
-//			t.Errorf("sendGetEventsForDayMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
-//		}
-//	}
-//}
+func TestSendGetEventsForDayMessage(t *testing.T) {
+	cases := []struct {
+		status, title, description, time, date string
+	}{
+		{
+			status:      "success",
+			title:       "some new title",
+			description: "some new description",
+			time:        "2018-05-02T20:03+0300",
+			date:        "2018-05-02",
+		},
+		{
+			status:      "error",
+			title:       "some new title2",
+			description: "some new description2",
+			time:        "2018-05-03T18:03+0300",
+			date:        "2018-05-04",
+		},
+	}
+
+	for _, c := range cases {
+		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
+		if err != nil {
+			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
+		}
+		timeS, err := createTimeStampFromTimeString(c.time)
+		if err != nil {
+			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
+		}
+		msg := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+			Time:        timeS,
+		}
+
+		resp := sendCreateEventMessage(ctx, cc, msg)
+
+		dateMsg := proto.GetEventsForDateRequestMessage{
+			Date: c.date,
+		}
+		respRecords := sendGetEventsForDayMessage(ctx, cc, dateMsg)
+		if c.status != respRecords.Status {
+			t.Errorf("sendGetEventsForDayMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
+		}
+	}
+}

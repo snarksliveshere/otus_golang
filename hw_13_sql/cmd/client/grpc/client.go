@@ -129,8 +129,8 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v,  record time: %#v",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[0].Time)
+		fmt.Printf("\nstatus:%v text:%v, records: %#v",
+			msg.Status, msg.Text, msg.Records)
 	}
 
 	return msg
