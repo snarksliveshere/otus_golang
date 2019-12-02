@@ -82,7 +82,7 @@ func main() {
 	case "get-day-events":
 		msgDayEvent := Dummy{
 			eventForDayReq: proto.GetEventsForDateRequestMessage{
-				Date: "2019-11-01",
+				Date: "2019-11-10",
 			},
 		}
 		sendGetEventsForDayMessage(ctx, cc, msgDayEvent.eventForDayReq)
