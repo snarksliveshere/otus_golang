@@ -43,7 +43,7 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 }
 
 func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *proto.GetEventsForDateRequestMessage) (*proto.GetEventsForDateResponseMessage, error) {
-	records, err := storage.GetEventsForDay(msg.Date)
+	records, err := storage.Actions.GetEventsByDay(msg.Date)
 	reply := proto.GetEventsForDateResponseMessage{}
 
 	if err != nil {

@@ -29,16 +29,6 @@ func (s *Storage) FindByDay(date string) (entity.Date, error) {
 	return s.Actions.DateRepository.FindByDay(date)
 }
 
-func (s *Storage) GetEventsForDay(date string) ([]entity.Record, error) {
-	records, err := s.Actions.GetEventsByDay(date)
-
-	if err != nil {
-		return []entity.Record{}, err
-	}
-
-	return records, nil
-}
-
 func (s *Storage) AddRecord(title, desc string, date time.Time) (entity.Record, *entity.Date, *entity.Calendar, error) {
 	return entity.Record{}, &entity.Date{}, s.calendar, nil
 }
