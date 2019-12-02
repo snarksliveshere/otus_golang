@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("could not connect: %v", err)
 	}
 	defer func() { _ = cc.Close() }()
-	time1, err := createTimeStampFromTimeString("2019-11-10T20:03+0300")
+	time1, err := createTimeStampFromTimeString("2019-05-10T20:03+0300")
 	time2, err := createTimeStampFromTimeString("2019-11-02T18:03+0300")
 	time3, err := createTimeStampFromTimeString("2019-10-02T14:03+0300")
 	timeDelete, err := createTimeStampFromTimeString("2019-09-02T14:03+0300")
@@ -78,9 +78,8 @@ func main() {
 		msgUpdateEvent := Dummy{
 			updateEventReq: proto.UpdateEventRequestMessage{
 				EventId:     rec.Id,
-				Title:       "update_title",
-				Description: "update_description",
-				Date:        "2019-11-01",
+				Title:       "update_title11",
+				Description: "update_description11",
 			},
 		}
 		sendUpdateEventMessage(ctx, cc, msgUpdateEvent.updateEventReq)

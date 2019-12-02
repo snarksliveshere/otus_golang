@@ -38,59 +38,6 @@ func (s *Storage) FindRecordById(id uint64) string {
 	return fmt.Sprintf("resccc %#v", record)
 }
 
-func (s *Storage) DeleteRecordById(id uint64) error {
-	if s.calendar.Dates == nil {
-		err := errors.New("there are no records in calendar yet")
-		return err
-	}
-	var res bool
-	for _, z := range s.calendar.Dates {
-		for i, r := range z.Records {
-			if r.Id == id {
-				newRecords := removeRecordFromSlice(z.Records, i)
-				z.Records = append([]entity.Record(nil), newRecords...)
-				res = true
-			}
-		}
-	}
-	if res {
-		return nil
-	} else {
-		err := errors.New("i cant find record with this id to delete")
-		return err
-	}
-}
-
-func (s *Storage) UpdateRecordById(recId uint64, date time.Time, title, description string) error {
-	if s.calendar.Dates == nil {
-		err := errors.New("there are no records in calendar yet")
-		return err
-	}
-	var res bool
-	for i, z := range s.calendar.Dates {
-		if z.Day == date.Format(config.TimeLayout) {
-			for k, r := range z.Records {
-				if r.Id == recId {
-					updRecord(&s.calendar.Dates[i].Records[k], title, description)
-					res = true
-				}
-			}
-		}
-	}
-
-	if res {
-		return nil
-	} else {
-		err := errors.New("i cant find record with this id to update")
-		return err
-	}
-}
-
-func updRecord(rec *entity.Record, title, desc string) {
-	rec.Title = title
-	rec.Description = desc
-}
-
 func removeRecordFromSlice(records []entity.Record, i int) []entity.Record {
 	records[i] = records[len(records)-1]
 	return records[:len(records)-1]

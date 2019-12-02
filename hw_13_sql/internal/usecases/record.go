@@ -41,6 +41,21 @@ func (act *Actions) DeleteRecordById(id uint64) error {
 	return nil
 }
 
+func (act *Actions) UpdateRecordById(id uint64, title, description string) error {
+	rec, err := act.RecordRepository.FindById(id)
+	if err != nil {
+		return err
+	}
+	rec.Title = title
+	rec.Description = description
+
+	err = act.RecordRepository.Edit(rec)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.Time) (id uint64, err error) {
 	rec := entity.Record{
 		Title:       title,

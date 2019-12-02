@@ -82,13 +82,13 @@ func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.D
 }
 
 func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.UpdateEventRequestMessage) (*proto.UpdateEventResponseMessage, error) {
-	title, desc, day, err := data_handlers.CheckUpdateEventWithoutEventId(msg.Title, msg.Description, msg.Date)
+	title, desc, err := data_handlers.CheckUpdateEventWithoutEventId(msg.Title, msg.Description)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, "invalid title, desc, date string")
 	}
-	reply := proto.UpdateEventResponseMessage{}
-	err = storage.UpdateRecordById(msg.EventId, day, title, desc)
+	err = storage.Actions.UpdateRecordById(msg.EventId, title, desc)
 
+	reply := proto.UpdateEventResponseMessage{}
 	if err != nil {
 		reply.Status = config.StatusError
 		reply.Text = err.Error()

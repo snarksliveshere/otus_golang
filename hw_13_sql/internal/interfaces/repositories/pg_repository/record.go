@@ -37,6 +37,19 @@ func (r *RecordRepo) Delete(record entity.Record) error {
 	return nil
 }
 
+func (r *RecordRepo) Edit(record entity.Record) error {
+	_, err := r.db.Model(r.row).
+		Set("title = ?", record.Title).
+		Set("description = ?", record.Description).
+		Where("id = ?", record.Id).
+		Update()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *RecordRepo) GetEventsByDay(dateFk uint32) ([]entity.Record, error) {
 	err := r.db.Model(&r.rows).
 		Column("time", "title", "description", "time", "id", "date_fk").
@@ -82,11 +95,6 @@ func (r *RecordRepo) Save(rec entity.Record) (uint64, error) {
 		return 0, err
 	}
 	return m.Id, nil
-}
-
-func (r *RecordRepo) Edit(record entity.Record) error {
-
-	return nil
 }
 
 func (r *RecordRepo) Show() []entity.Record {
