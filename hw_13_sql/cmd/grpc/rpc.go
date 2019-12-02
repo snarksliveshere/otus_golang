@@ -115,11 +115,11 @@ func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
 }
 
 func (s ServerCalendar) SendGetEventsForMonthMessage(ctx context.Context, msg *proto.GetEventsForMonthRequestMessage) (*proto.GetEventsForMonthResponseMessage, error) {
-	dates, err := data_handlers.CheckEventsForMonth(msg.Month)
+	dates, err := data_handlers.CheckEventsForMonthString(msg.Month)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid month string")
 	}
-	records, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
+	records, err := storage.Actions.RecordRepository.GetEventsByDateInterval(dates["firstDate"], dates["lastDate"])
 
 	reply := proto.GetEventsForMonthResponseMessage{}
 

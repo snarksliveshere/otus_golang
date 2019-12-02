@@ -78,6 +78,36 @@ func (r *RecordRepo) GetEventsByDay(dateFk uint32) ([]entity.Record, error) {
 	return records, nil
 }
 
+func (r *RecordRepo) GetEventsByDateInterval(from, till string) ([]entity.Record, error) {
+	err := r.db.Model(&r.rows).
+		Column("event.time", "event.title", "event.description", "event.time", "event.id", "event.date_fk").
+		Join("JOIN calendar.calendar ON event.date_fk = calendar.id").
+		Where("calendar.date >= ?", from).
+		Where("calendar.date <= ?", till).
+		Select()
+	if err != nil {
+		return nil, err
+	}
+
+	var records []entity.Record
+
+	for _, v := range r.rows {
+		rec := entity.Record{
+			Id:          v.Id,
+			Title:       v.Title,
+			Description: v.Description,
+			Time:        v.Time,
+		}
+		records = append(records, rec)
+	}
+
+	if len(records) == 0 {
+		return []entity.Record{}, errors.New("there are no records in this day")
+	}
+
+	return records, nil
+}
+
 func (r *RecordRepo) Save(rec entity.Record) (uint64, error) {
 	m := pg_models.Event{
 		Title:       rec.Title,

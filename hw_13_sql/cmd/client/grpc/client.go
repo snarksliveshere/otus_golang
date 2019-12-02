@@ -31,8 +31,8 @@ func main() {
 	}
 	defer func() { _ = cc.Close() }()
 	time1, err := createTimeStampFromTimeString("2019-05-10T20:03+0300")
-	time2, err := createTimeStampFromTimeString("2019-11-02T18:03+0300")
-	time3, err := createTimeStampFromTimeString("2019-10-02T14:03+0300")
+	//time2, err := createTimeStampFromTimeString("2019-11-02T18:03+0300")
+	//time3, err := createTimeStampFromTimeString("2019-10-02T14:03+0300")
 	timeDelete, err := createTimeStampFromTimeString("2019-09-02T14:03+0300")
 	if err != nil {
 		fmt.Println("cant convert time to proto timestamp")
@@ -43,20 +43,15 @@ func main() {
 		Description: "Some_description1",
 		Time:        time1,
 	}}
-	msgCreateEvent2 := Dummy{createEventReq: proto.CreateEventRequestMessage{
-		Title:       "Some_title2",
-		Description: "Some_description2",
-		Time:        time2,
-	}}
+	//msgCreateEvent2 := Dummy{createEventReq: proto.CreateEventRequestMessage{
+	//	Title:       "Some_title2",
+	//	Description: "Some_description2",
+	//	Time:        time2,
+	//}}
 	msgCreateEventDelete := Dummy{createEventReq: proto.CreateEventRequestMessage{
 		Title:       "Some_title delete",
 		Description: "Some_description delete",
 		Time:        timeDelete,
-	}}
-	msgCreateEvent4 := Dummy{createEventReq: proto.CreateEventRequestMessage{
-		Title:       "Some_title4",
-		Description: "Some_description4",
-		Time:        time3,
 	}}
 
 	if len(os.Args) < 2 {
@@ -92,9 +87,6 @@ func main() {
 		}
 		sendGetEventsForDayMessage(ctx, cc, msgDayEvent.eventForDayReq)
 	case "get-month-event":
-		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
-		sendCreateEventMessage(ctx, cc, msgCreateEvent2.createEventReq)
-		sendCreateEventMessage(ctx, cc, msgCreateEvent4.createEventReq)
 		msgMonthEvent := Dummy{
 			eventForMonthReq: proto.GetEventsForMonthRequestMessage{
 				Month: "2019-11",
