@@ -47,10 +47,6 @@ func main() {
 		Time:        timeDelete,
 	}}
 
-	msgGetByIdEventDelete := Dummy{eventById: proto.GetEventByIdRequestMessage{
-		EventId: 27,
-	}}
-
 	if len(os.Args) < 2 {
 		fmt.Println("not enough arguments")
 		return
@@ -58,6 +54,10 @@ func main() {
 
 	switch expr := os.Args[1]; expr {
 	case "get-event-by-id":
+		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
+		msgGetByIdEventDelete := Dummy{eventById: proto.GetEventByIdRequestMessage{
+			EventId: rec.Id,
+		}}
 		sendGetEventsByIdMessage(ctx, cc, msgGetByIdEventDelete.eventById)
 	case "create-event":
 		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
@@ -114,7 +114,7 @@ func sendGetEventsByIdMessage(ctx context.Context, cc *grpc.ClientConn, message 
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v,  record time: %#v",
+		fmt.Printf("\nstatus:%v error:%v, records title1: %#v,  record time: %#v",
 			msg.Status, msg.Error, msg.Record.Title, msg.Record.Time)
 	}
 
