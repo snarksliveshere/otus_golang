@@ -33,6 +33,7 @@ func main() {
 	time1, err := createTimeStampFromTimeString("2019-11-10T20:03+0300")
 	time2, err := createTimeStampFromTimeString("2019-11-02T18:03+0300")
 	time3, err := createTimeStampFromTimeString("2019-10-02T14:03+0300")
+	timeDelete, err := createTimeStampFromTimeString("2019-09-02T14:03+0300")
 	if err != nil {
 		fmt.Println("cant convert time to proto timestamp")
 	}
@@ -46,6 +47,11 @@ func main() {
 		Title:       "Some_title2",
 		Description: "Some_description2",
 		Time:        time2,
+	}}
+	msgCreateEventDelete := Dummy{createEventReq: proto.CreateEventRequestMessage{
+		Title:       "Some_title delete",
+		Description: "Some_description delete",
+		Time:        timeDelete,
 	}}
 	msgCreateEvent4 := Dummy{createEventReq: proto.CreateEventRequestMessage{
 		Title:       "Some_title4",
@@ -62,8 +68,9 @@ func main() {
 	case "create-event":
 		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 	case "delete-event":
+		rec := sendCreateEventMessage(ctx, cc, msgCreateEventDelete.createEventReq)
 		msgDeleteEvent := Dummy{deleteEventReq: proto.DeleteEventRequestMessage{
-			EventId: 24,
+			EventId: rec.Id,
 		}}
 		sendDeleteEventMessage(ctx, cc, msgDeleteEvent.deleteEventReq)
 	case "update-event":
