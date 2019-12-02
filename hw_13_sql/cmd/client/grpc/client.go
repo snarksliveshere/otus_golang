@@ -62,9 +62,8 @@ func main() {
 	case "create-event":
 		sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 	case "delete-event":
-		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 		msgDeleteEvent := Dummy{deleteEventReq: proto.DeleteEventRequestMessage{
-			EventId: rec.Id,
+			EventId: 24,
 		}}
 		sendDeleteEventMessage(ctx, cc, msgDeleteEvent.deleteEventReq)
 	case "update-event":

@@ -7,18 +7,39 @@ import (
 )
 
 func (r *RecordRepo) FindById(id uint64) (entity.Record, error) {
+	err := r.db.Model(r.row).
+		Column("time", "title", "description", "time", "id", "date_fk").
+		Where("id = ?", id).
+		Select()
+	if err != nil {
+		return entity.Record{}, err
+	}
 
 	rec := entity.Record{
-		Id:          id,
-		Title:       "Title1",
-		Description: "Desc",
+		Id:          r.row.Id,
+		Title:       r.row.Title,
+		Description: r.row.Description,
+		Time:        r.row.Time,
+		DateFk:      r.row.DateFk,
 	}
+
 	return rec, nil
+}
+
+func (r *RecordRepo) Delete(record entity.Record) error {
+	_, err := r.db.Model(r.row).
+		Where("id = ?", record.Id).
+		Delete()
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *RecordRepo) GetEventsByDay(dateFk uint32) ([]entity.Record, error) {
 	err := r.db.Model(&r.rows).
-		Column("time", "title", "description", "time", "id").
+		Column("time", "title", "description", "time", "id", "date_fk").
 		Where("date_fk = ?", dateFk).
 		Select()
 	if err != nil {
@@ -61,11 +82,6 @@ func (r *RecordRepo) Save(rec entity.Record) (uint64, error) {
 		return 0, err
 	}
 	return m.Id, nil
-}
-
-func (r *RecordRepo) Delete(record entity.Record) error {
-
-	return nil
 }
 
 func (r *RecordRepo) Edit(record entity.Record) error {

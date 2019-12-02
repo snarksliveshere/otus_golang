@@ -29,6 +29,18 @@ func (act *Actions) CreateEvent(title, description string, t time.Time) (uint64,
 	return recId, nil
 }
 
+func (act *Actions) DeleteRecordById(id uint64) error {
+	rec, err := act.RecordRepository.FindById(id)
+	if err != nil {
+		return err
+	}
+	err = act.RecordRepository.Delete(rec)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.Time) (id uint64, err error) {
 	rec := entity.Record{
 		Title:       title,

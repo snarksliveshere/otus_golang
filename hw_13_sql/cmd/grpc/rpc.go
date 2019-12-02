@@ -68,8 +68,7 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 }
 
 func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.DeleteEventRequestMessage) (*proto.DeleteEventResponseMessage, error) {
-	eventId := msg.EventId
-	err := storage.DeleteRecordById(eventId)
+	err := storage.Actions.DeleteRecordById(msg.EventId)
 	reply := proto.DeleteEventResponseMessage{}
 
 	if err != nil {
@@ -80,7 +79,6 @@ func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.D
 	reply.Status = config.StatusSuccess
 
 	return &reply, nil
-
 }
 
 func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.UpdateEventRequestMessage) (*proto.UpdateEventResponseMessage, error) {
