@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/config"
 	"github.com/snarskliveshere/otus_golang/hw_13_sql/entity"
@@ -77,17 +76,20 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 //curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
-	title, desc, day, err := data_handlers.CheckCreateEvent(title, desc, date)
+	title, desc, time, err := data_handlers.CheckCreateEvent(title, desc, date)
 	if err != nil {
 		notValidHandler(w, r)
 		return
 	}
-	rec, d, c, err := storage.AddEvent(title, desc, day)
-	fmt.Println(c)
+	recId, err := storage.Actions.CreateEvent(title, desc, time)
 	if err != nil {
 		otherErrorHandler(w, r)
 	}
-	resp := Response{Date: *d, Event: rec, Status: statusOK}
+	rec, err := storage.Actions.EventRepository.FindById(recId)
+	if err != nil {
+		otherErrorHandler(w, r)
+	}
+	resp := Response{Event: rec, Status: statusOK}
 	sendResponse(resp, w, r)
 }
 
@@ -97,13 +99,13 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 		r.FormValue("description"),
 		r.FormValue("date"),
 		r.FormValue("eventId")
-	title, desc, day, id, err := data_handlers.CheckUpdateEvent(title, desc, date, eventId)
+	title, desc, _, id, err := data_handlers.CheckUpdateEvent(title, desc, date, eventId)
 	if err != nil {
 		notValidHandler(w, r)
 		return
 	}
 
-	err = storage.UpdateEventById(id, day, title, desc)
+	err = storage.Actions.UpdateEventById(id, title, desc)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -123,7 +125,7 @@ func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 		notValidHandler(w, r)
 		return
 	}
-	err = storage.DeleteEventById(id)
+	err = storage.Actions.DeleteEventById(id)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -144,12 +146,8 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 		notValidHandler(w, r)
 		return
 	}
-	t, err := data_handlers.CheckEventsForDay(date)
-	if err != nil {
-		notValidHandler(w, r)
-		return
-	}
-	day, err := storage.GetEventsForDay(t)
+
+	day, err := storage.Actions.GetEventsByDay(date)
 
 	resp := Response{}
 	if err != nil {
@@ -158,7 +156,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
-		resp.Events = day.Events
+		resp.Events = day
 	}
 	sendResponse(resp, w, r)
 }
@@ -173,13 +171,13 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 		notValidHandler(w, r)
 		return
 	}
-	dates, err := data_handlers.CheckEventsForMonth(month)
+	dates, err := data_handlers.CheckEventsForMonthString(month)
 	if err != nil {
 		notValidHandler(w, r)
 		return
 	}
 
-	events, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
+	events, err := storage.Actions.EventRepository.GetEventsByDateInterval(dates["firstDate"], dates["lastDate"])
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
@@ -203,9 +201,9 @@ func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 		notValidHandler(w, r)
 		return
 	}
-	tFrom, tTill, err := data_handlers.CheckEventsForInterval(from, till)
+	//tFrom, tTill, err := data_handlers.CheckEventsForInterval(from, till)
 
-	events, err := storage.GetEventsForInterval(tFrom, tTill)
+	events, err := storage.Actions.EventRepository.GetEventsByDateInterval(from, till)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
