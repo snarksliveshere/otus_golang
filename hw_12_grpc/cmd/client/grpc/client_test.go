@@ -45,16 +45,16 @@ func TestSendCreateEventMessage(t *testing.T) {
 			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
 		}
 
-		if c.title != resp.Record.Title {
-			t.Errorf("TestSendCreateEventMessage() title compare, c.title: %s, resp.title: %v", c.title, resp.Record.Title)
+		if c.title != resp.Event.Title {
+			t.Errorf("TestSendCreateEventMessage() title compare, c.title: %s, resp.title: %v", c.title, resp.Event.Title)
 		}
 
-		if c.description != resp.Record.Description {
-			t.Errorf("TestSendCreateEventMessage() description compare, c.description: %s, resp.description: %v", c.description, resp.Record.Description)
+		if c.description != resp.Event.Description {
+			t.Errorf("TestSendCreateEventMessage() description compare, c.description: %s, resp.description: %v", c.description, resp.Event.Description)
 		}
 
-		if resp.Record.Id <= 0 {
-			t.Errorf("TestSendCreateEventMessage() must be id, resp id: %v", resp.Record.Id)
+		if resp.Event.Id <= 0 {
+			t.Errorf("TestSendCreateEventMessage() must be id, resp id: %v", resp.Event.Id)
 		}
 	}
 }
@@ -94,7 +94,7 @@ func TestSendDeleteEventMessage(t *testing.T) {
 		resp := sendCreateEventMessage(ctx, cc, msg)
 
 		delMsg := proto.DeleteEventRequestMessage{
-			EventId: resp.Record.Id + c.plus,
+			EventId: resp.Event.Id + c.plus,
 		}
 		respDelete := sendDeleteEventMessage(ctx, cc, delMsg)
 
@@ -144,7 +144,7 @@ func TestSendUpdateEventMessage(t *testing.T) {
 		resp := sendCreateEventMessage(ctx, cc, msg)
 
 		updMsg := proto.UpdateEventRequestMessage{
-			EventId:     resp.Record.Id + c.plus,
+			EventId:     resp.Event.Id + c.plus,
 			Title:       c.updTitle,
 			Description: c.updDescription,
 			Date:        c.date,
@@ -192,8 +192,8 @@ func TestSendGetEventsForDayMessage(t *testing.T) {
 		dateMsg := proto.GetEventsForDateRequestMessage{
 			Date: c.date,
 		}
-		respRecords := sendGetEventsForDayMessage(ctx, cc, dateMsg)
-		if c.date != respRecords.Date {
+		respEvents := sendGetEventsForDayMessage(ctx, cc, dateMsg)
+		if c.date != respEvents.Date {
 			t.Errorf("sendGetEventsForDayMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
 		}
 	}

@@ -9,7 +9,7 @@ type Logger interface {
 }
 
 type Actions struct {
-	RecordRepository entity.RecordRepository
-	DateRepository   entity.DateRepository
-	Logger           Logger
+	EventRepository entity.EventRepository
+	DateRepository  entity.DateRepository
+	Logger          Logger
 }

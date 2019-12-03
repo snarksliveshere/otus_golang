@@ -15,6 +15,6 @@ func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage
 	actions := new(usecases.Actions)
 	actions.Logger = logger
 	actions.DateRepository = GetDateRepo(dbHandler)
-	actions.RecordRepository = GetRecordRepo(dbHandler)
+	actions.EventRepository = GetEventRepo(dbHandler)
 	return &Storage{Actions: actions}
 }

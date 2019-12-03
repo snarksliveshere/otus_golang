@@ -114,8 +114,8 @@ func sendGetEventsByIdMessage(ctx context.Context, cc *grpc.ClientConn, message 
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v error:%v, records title1: %#v,  record time: %#v",
-			msg.Status, msg.Error, msg.Record.Title, msg.Record.Time)
+		fmt.Printf("\nstatus:%v error:%v, events title1: %#v,  event time: %#v",
+			msg.Status, msg.Error, msg.Event.Title, msg.Event.Time)
 	}
 
 	return msg
@@ -129,8 +129,8 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v",
-			msg.Status, msg.Text, msg.Records)
+		fmt.Printf("\nstatus:%v text:%v, events: %#v",
+			msg.Status, msg.Text, msg.Events)
 	}
 
 	return msg
@@ -183,8 +183,8 @@ func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, mess
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, length %v",
-			msg.Status, msg.Text, msg.Records, len(msg.Records))
+		fmt.Printf("\nstatus:%v text:%v, events: %#v, length %v",
+			msg.Status, msg.Text, msg.Events, len(msg.Events))
 	}
 
 	return msg
@@ -198,8 +198,8 @@ func sendGetEventsForIntervalMessage(ctx context.Context, cc *grpc.ClientConn, m
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, length records: %d\n",
-			msg.Status, msg.Text, msg.Records, len(msg.Records))
+		fmt.Printf("\nstatus:%v text:%v, events: %#v, length events: %d\n",
+			msg.Status, msg.Text, msg.Events, len(msg.Events))
 	}
 
 	return msg

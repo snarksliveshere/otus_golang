@@ -9,5 +9,5 @@ type Date struct {
 	Day           string `json:"day,omitempty"`
 	Description   string
 	IsCelebration bool
-	Records       []Record `json:"records,omitempty"`
+	Events        []Event `json:"events,omitempty"`
 }

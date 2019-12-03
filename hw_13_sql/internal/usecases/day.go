@@ -17,7 +17,7 @@ func (act *Actions) CreateEmptyDate(day string) (uint32, error) {
 		Day:           day,
 		Description:   "",
 		IsCelebration: false,
-		Records:       nil,
+		Events:        nil,
 	}
 	dayId, err := act.DateRepository.Save(date)
 	if err != nil {

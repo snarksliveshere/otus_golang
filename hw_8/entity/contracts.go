@@ -2,17 +2,17 @@ package entity
 
 import "time"
 
-type RecordRepository interface {
-	FindById(id uint64) (Record, error)
-	Delete(record Record) error
-	Edit(record Record) error
-	Show() []Record
-	Save(record Record) error
+type EventRepository interface {
+	FindById(id uint64) (Event, error)
+	Delete(event Event) error
+	Edit(event Event) error
+	Show() []Event
+	Save(event Event) error
 }
 
 type DateRepository interface {
-	AddRecordToDate(record Record, day Date) error
-	ShowDayRecords(day Date) ([]Record, error)
+	AddEventToDate(event Event, day Date) error
+	ShowDayEvents(day Date) ([]Event, error)
 	FindByDay(day time.Time) (Date, error)
 	GetDateFromString(date string) (time.Time, error)
 }

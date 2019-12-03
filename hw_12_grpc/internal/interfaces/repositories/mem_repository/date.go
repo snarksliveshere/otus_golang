@@ -31,14 +31,14 @@ func (d *DateRepo) AddDateToCalendar(day entity.Date) error {
 	return nil
 }
 
-func (d *DateRepo) AddRecordToDate(record entity.Record, day *entity.Date) error {
-	day.Records = append(day.Records, record)
-	d.handler.Execute("add record to day")
+func (d *DateRepo) AddEventToDate(event entity.Event, day *entity.Date) error {
+	day.Events = append(day.Events, event)
+	d.handler.Execute("add event to day")
 	return nil
 }
 
-func (d *DateRepo) ShowDayRecords(day *entity.Date) ([]entity.Record, error) {
-	d.handler.Execute("show day record")
+func (d *DateRepo) ShowDayEvents(day *entity.Date) ([]entity.Event, error) {
+	d.handler.Execute("show day event")
 	return nil, nil
 }
 
@@ -53,8 +53,8 @@ func (d *DateRepo) GetDateFromString(date string) (time.Time, error) {
 
 func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (*entity.Date, error) {
 	day := entity.Date{
-		Day:     date,
-		Records: []entity.Record{},
+		Day:    date,
+		Events: []entity.Event{},
 	}
 	if calendar.Dates == nil {
 		calendar.Dates = []*entity.Date{}
@@ -80,7 +80,7 @@ func (d *DateRepo) FindByDay(date time.Time, calendar *entity.Calendar) (*entity
 	return &day, nil
 }
 
-func (d *DateRepo) Save(record entity.Date) error {
+func (d *DateRepo) Save(event entity.Date) error {
 
 	d.handler.Execute("save")
 	return nil

@@ -14,9 +14,9 @@ import (
 )
 
 type Response struct {
-	Date    entity.Date     `json:"day,omitempty"`
-	Record  entity.Record   `json:"record,omitempty"`
-	Records []entity.Record `json:"records,omitempty"`
+	Date   entity.Date    `json:"day,omitempty"`
+	Event  entity.Event   `json:"event,omitempty"`
+	Events []entity.Event `json:"events,omitempty"`
 	//Result     []string      `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
@@ -27,7 +27,7 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
 	}
-	rec, _, _, err := storage.AddRecord(title, desc, day)
+	rec, _, _, err := storage.AddEvent(title, desc, day)
 	reply := proto.CreateEventResponseMessage{}
 
 	if err != nil {
@@ -36,19 +36,19 @@ func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.C
 		return &reply, nil
 	}
 
-	protoRecord, err := recordToProtoStruct(&rec)
+	protoEvent, err := eventToProtoStruct(&rec)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}
 	reply.Status = config.StatusSuccess
-	reply.Record = protoRecord
+	reply.Event = protoEvent
 
 	return &reply, nil
 }
 
 func (s ServerCalendar) SendDeleteEventMessage(ctx context.Context, msg *proto.DeleteEventRequestMessage) (*proto.DeleteEventResponseMessage, error) {
 	eventId := msg.EventId
-	err := storage.DeleteRecordById(eventId)
+	err := storage.DeleteEventById(eventId)
 	reply := proto.DeleteEventResponseMessage{}
 
 	if err != nil {
@@ -68,7 +68,7 @@ func (s ServerCalendar) SendUpdateEventMessage(ctx context.Context, msg *proto.U
 		return nil, status.Error(codes.Aborted, "invalid title, desc, date string")
 	}
 	reply := proto.UpdateEventResponseMessage{}
-	err = storage.UpdateRecordById(msg.EventId, day, title, desc)
+	err = storage.UpdateEventById(msg.EventId, day, title, desc)
 
 	if err != nil {
 		reply.Status = config.StatusError
@@ -95,35 +95,35 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 		return &reply, nil
 	}
 
-	var protoRecords []*proto.Record
-	for _, rec := range day.Records {
-		protoRecord, err := recordToProtoStruct(&rec)
+	var protoEvents []*proto.Event
+	for _, rec := range day.Events {
+		protoEvent, err := eventToProtoStruct(&rec)
 		if err != nil {
 			return nil, status.Error(codes.Aborted, err.Error())
 		}
-		protoRecords = append(protoRecords, protoRecord)
+		protoEvents = append(protoEvents, protoEvent)
 	}
 
 	reply.Status = config.StatusSuccess
-	reply.Records = protoRecords
+	reply.Events = protoEvents
 	reply.Date = day.Day.Format(config.TimeLayout)
 
 	return &reply, nil
 }
 
-func recordToProtoStruct(record *entity.Record) (*proto.Record, error) {
-	recBytes, err := json.Marshal(record)
+func eventToProtoStruct(event *entity.Event) (*proto.Event, error) {
+	recBytes, err := json.Marshal(event)
 	if err != nil {
 		return nil, err
 	}
-	protoRecord := &proto.Record{}
-	recordBytesReader := strings.NewReader(string(recBytes))
+	protoEvent := &proto.Event{}
+	eventBytesReader := strings.NewReader(string(recBytes))
 
-	if err := jsonpb.Unmarshal(recordBytesReader, protoRecord); err != nil {
+	if err := jsonpb.Unmarshal(eventBytesReader, protoEvent); err != nil {
 		return nil, err
 	}
 
-	return protoRecord, nil
+	return protoEvent, nil
 }
 
 func (s ServerCalendar) SendGetEventsForMonthMessage(ctx context.Context, msg *proto.GetEventsForMonthRequestMessage) (*proto.GetEventsForMonthResponseMessage, error) {
@@ -131,7 +131,7 @@ func (s ServerCalendar) SendGetEventsForMonthMessage(ctx context.Context, msg *p
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid month string")
 	}
-	records, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
+	events, err := storage.GetEventsForInterval(dates["firstDate"], dates["lastDate"])
 
 	reply := proto.GetEventsForMonthResponseMessage{}
 
@@ -141,17 +141,17 @@ func (s ServerCalendar) SendGetEventsForMonthMessage(ctx context.Context, msg *p
 		return &reply, nil
 	}
 
-	var protoRecords []*proto.Record
-	for _, rec := range records {
-		protoRecord, err := recordToProtoStruct(&rec)
+	var protoEvents []*proto.Event
+	for _, rec := range events {
+		protoEvent, err := eventToProtoStruct(&rec)
 		if err != nil {
 			return nil, status.Error(codes.Aborted, err.Error())
 		}
-		protoRecords = append(protoRecords, protoRecord)
+		protoEvents = append(protoEvents, protoEvent)
 	}
 
 	reply.Status = config.StatusSuccess
-	reply.Records = protoRecords
+	reply.Events = protoEvents
 
 	return &reply, nil
 }
@@ -161,7 +161,7 @@ func (s ServerCalendar) SendGetEventsForIntervalMessage(ctx context.Context, msg
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid date from date till arguments")
 	}
-	records, err := storage.GetEventsForInterval(tFrom, tTill)
+	events, err := storage.GetEventsForInterval(tFrom, tTill)
 
 	reply := proto.GetEventsForIntervalResponseMessage{}
 
@@ -171,17 +171,17 @@ func (s ServerCalendar) SendGetEventsForIntervalMessage(ctx context.Context, msg
 		return &reply, nil
 	}
 
-	var protoRecords []*proto.Record
-	for _, rec := range records {
-		protoRecord, err := recordToProtoStruct(&rec)
+	var protoEvents []*proto.Event
+	for _, rec := range events {
+		protoEvent, err := eventToProtoStruct(&rec)
 		if err != nil {
 			return nil, status.Error(codes.Aborted, err.Error())
 		}
-		protoRecords = append(protoRecords, protoRecord)
+		protoEvents = append(protoEvents, protoEvent)
 	}
 
 	reply.Status = config.StatusSuccess
-	reply.Records = protoRecords
+	reply.Events = protoEvents
 
 	return &reply, nil
 }

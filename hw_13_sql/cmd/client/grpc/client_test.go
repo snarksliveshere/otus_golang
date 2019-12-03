@@ -53,9 +53,9 @@ func TestSendCreateEventMessage(t *testing.T) {
 			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v, resp ID: %d", c.status, resp.Status, resp.Id)
 		}
 
-		if rec.Record.Title != c.title && rec.Record.Description != c.description && c.status != resp.Status {
+		if rec.Event.Title != c.title && rec.Event.Description != c.description && c.status != resp.Status {
 			t.Errorf("TestSendCreateEventMessage() title, description compare, c.title: %s, resp.title: %v, c.description: %v, resp description: %v. resp ID: %d",
-				c.title, rec.Record.Title, c.description, rec.Record.Description, rec.Record.Id)
+				c.title, rec.Event.Title, c.description, rec.Event.Description, rec.Event.Id)
 		}
 	}
 }
@@ -165,13 +165,13 @@ func TestSendUpdateEventMessage(t *testing.T) {
 		if c.status != respUpdate.Status {
 			t.Errorf("TestSendUpdateEventMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
 		}
-		if c.updTitle != rec.Record.Title && c.status != respUpdate.Status {
+		if c.updTitle != rec.Event.Title && c.status != respUpdate.Status {
 			t.Errorf("TestSendUpdateEventMessage() title compare, c.title: %s, rec title: %v",
-				c.title, rec.Record.Title)
+				c.title, rec.Event.Title)
 		}
-		if c.updDescription != rec.Record.Description && c.status != respUpdate.Status {
+		if c.updDescription != rec.Event.Description && c.status != respUpdate.Status {
 			t.Errorf("TestSendUpdateEventMessage() description compare, c.description: %s, rec description: %v",
-				c.description, rec.Record.Description)
+				c.description, rec.Event.Description)
 		}
 
 	}
@@ -218,8 +218,8 @@ func TestSendGetEventsForDayMessage(t *testing.T) {
 		dateMsg := proto.GetEventsForDateRequestMessage{
 			Date: c.date,
 		}
-		respRecords := sendGetEventsForDayMessage(ctx, cc, dateMsg)
-		if c.status != respRecords.Status {
+		respEvents := sendGetEventsForDayMessage(ctx, cc, dateMsg)
+		if c.status != respEvents.Status {
 			t.Errorf("sendGetEventsForDayMessage() status compare, c.status: %s, resp.status: %v", c.status, resp.Status)
 		}
 	}
@@ -280,12 +280,12 @@ func TestSendGetEventsForMonthMessage(t *testing.T) {
 		dateMsg := proto.GetEventsForMonthRequestMessage{
 			Month: c.date,
 		}
-		respRecords := sendGetEventsForMonthMessage(ctx, cc, dateMsg)
-		if c.status != respRecords.Status {
-			t.Errorf("sendGetEventsForMonthMessage() status compare, c.status: %s, resp.status: %v", c.status, respRecords.Status)
+		respEvents := sendGetEventsForMonthMessage(ctx, cc, dateMsg)
+		if c.status != respEvents.Status {
+			t.Errorf("sendGetEventsForMonthMessage() status compare, c.status: %s, resp.status: %v", c.status, respEvents.Status)
 		}
-		if c.length != len(respRecords.Records) {
-			t.Errorf("sendGetEventsForMonthMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respRecords.Records))
+		if c.length != len(respEvents.Events) {
+			t.Errorf("sendGetEventsForMonthMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respEvents.Events))
 		}
 	}
 }
@@ -348,12 +348,12 @@ func TestSendGetEventsForIntervalMessage(t *testing.T) {
 			From: c.from,
 			Till: c.till,
 		}
-		respRecords := sendGetEventsForIntervalMessage(ctx, cc, dateMsg)
-		if c.status != respRecords.Status {
-			t.Errorf("TestSendGetEventsForIntervalMessage() status compare, c.status: %s, resp.status: %v", c.status, respRecords.Status)
+		respEvents := sendGetEventsForIntervalMessage(ctx, cc, dateMsg)
+		if c.status != respEvents.Status {
+			t.Errorf("TestSendGetEventsForIntervalMessage() status compare, c.status: %s, resp.status: %v", c.status, respEvents.Status)
 		}
-		if c.length != len(respRecords.Records) {
-			t.Errorf("TestSendGetEventsForIntervalMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respRecords.Records))
+		if c.length != len(respEvents.Events) {
+			t.Errorf("TestSendGetEventsForIntervalMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respEvents.Events))
 		}
 	}
 }

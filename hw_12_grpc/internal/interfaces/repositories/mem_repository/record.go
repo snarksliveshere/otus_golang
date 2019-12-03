@@ -2,9 +2,9 @@ package mem_repository
 
 import "github.com/snarskliveshere/otus_golang/hw_12_grpc/entity"
 
-func (r *RecordRepo) FindById(id uint64) (entity.Record, error) {
+func (r *EventRepo) FindById(id uint64) (entity.Event, error) {
 	r.handler.Execute("find by id")
-	rec := entity.Record{
+	rec := entity.Event{
 		Id:          id,
 		Title:       "Title1",
 		Description: "Desc",
@@ -12,22 +12,22 @@ func (r *RecordRepo) FindById(id uint64) (entity.Record, error) {
 	return rec, nil
 }
 
-func (r *RecordRepo) Delete(record entity.Record) error {
+func (r *EventRepo) Delete(event entity.Event) error {
 	r.handler.Execute("delete")
 	return nil
 }
 
-func (r *RecordRepo) Edit(record entity.Record) error {
+func (r *EventRepo) Edit(event entity.Event) error {
 	r.handler.Execute("edit")
 	return nil
 }
 
-func (r *RecordRepo) Show() []entity.Record {
+func (r *EventRepo) Show() []entity.Event {
 	r.handler.Execute("show")
-	return []entity.Record{}
+	return []entity.Event{}
 }
 
-func (r *RecordRepo) Save(record entity.Record) error {
+func (r *EventRepo) Save(event entity.Event) error {
 
 	r.handler.Execute("save")
 	return nil

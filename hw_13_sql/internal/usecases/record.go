@@ -24,108 +24,108 @@ func (act *Actions) CreateEvent(title, description string, t time.Time) (uint64,
 	} else {
 		dateId = day.Id
 	}
-	recId, err := act.AddRecord(title, description, dateId, t)
+	recId, err := act.AddEvent(title, description, dateId, t)
 
 	return recId, nil
 }
 
-func (act *Actions) DeleteRecordById(id uint64) error {
-	rec, err := act.RecordRepository.FindById(id)
+func (act *Actions) DeleteEventById(id uint64) error {
+	rec, err := act.EventRepository.FindById(id)
 	if err != nil {
 		return err
 	}
-	err = act.RecordRepository.Delete(rec)
+	err = act.EventRepository.Delete(rec)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) UpdateRecordById(id uint64, title, description string) error {
-	rec, err := act.RecordRepository.FindById(id)
+func (act *Actions) UpdateEventById(id uint64, title, description string) error {
+	rec, err := act.EventRepository.FindById(id)
 	if err != nil {
 		return err
 	}
 	rec.Title = title
 	rec.Description = description
 
-	err = act.RecordRepository.Edit(rec)
+	err = act.EventRepository.Edit(rec)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) AddRecord(title, description string, dateFk uint32, t time.Time) (id uint64, err error) {
-	rec := entity.Record{
+func (act *Actions) AddEvent(title, description string, dateFk uint32, t time.Time) (id uint64, err error) {
+	rec := entity.Event{
 		Title:       title,
 		Description: description,
 		Time:        t,
 		DateFk:      dateFk,
 	}
 
-	recId, err := act.RecordRepository.Save(rec)
+	recId, err := act.EventRepository.Save(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record added")
+		act.Logger.Info("An error occurred while event added")
 		return 0, err
 	}
-	act.Logger.Info("Record added successfully")
+	act.Logger.Info("Event added successfully")
 
 	return recId, nil
 }
 
-func (act *Actions) GetEventsByDay(date string) ([]entity.Record, error) {
+func (act *Actions) GetEventsByDay(date string) ([]entity.Event, error) {
 	day, err := act.DateRepository.FindByDay(date)
 	if err != nil {
-		act.Logger.Info("An error occurred while record added")
-		return []entity.Record{}, err
+		act.Logger.Info("An error occurred while event added")
+		return []entity.Event{}, err
 	}
 	if day.Id == 0 {
 		act.Logger.Info("An empty ady")
-		return []entity.Record{}, errors.New("i cant find this day")
+		return []entity.Event{}, errors.New("i cant find this day")
 	}
-	records, err := act.RecordRepository.GetEventsByDay(day.Id)
+	events, err := act.EventRepository.GetEventsByDay(day.Id)
 	if err != nil {
-		act.Logger.Info("An error occurred while record added")
-		return []entity.Record{}, err
+		act.Logger.Info("An error occurred while event added")
+		return []entity.Event{}, err
 	}
 
-	return records, nil
+	return events, nil
 }
 
-func (act *Actions) EditRecord(id uint64) error {
-	rec, err := act.getRecordById(id)
+func (act *Actions) EditEvent(id uint64) error {
+	rec, err := act.getEventById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
 		return err
 	}
-	err = act.RecordRepository.Edit(rec)
+	err = act.EventRepository.Edit(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record updating")
+		act.Logger.Info("An error occurred while event updating")
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) DeleteRecord(id uint64) error {
-	rec, err := act.getRecordById(id)
+func (act *Actions) DeleteEvent(id uint64) error {
+	rec, err := act.getEventById(id)
 	if err != nil {
 		act.Logger.Info(err.Error())
 		return err
 	}
-	err = act.RecordRepository.Delete(rec)
+	err = act.EventRepository.Delete(rec)
 	if err != nil {
-		act.Logger.Info("An error occurred while record deleting")
+		act.Logger.Info("An error occurred while event deleting")
 		return err
 	}
 	return nil
 }
 
-func (act *Actions) getRecordById(id uint64) (entity.Record, error) {
-	record, err := act.RecordRepository.FindById(id)
+func (act *Actions) getEventById(id uint64) (entity.Event, error) {
+	event, err := act.EventRepository.FindById(id)
 	if err != nil {
-		act.Logger.Info("An error occurred while get record")
-		return entity.Record{}, err
+		act.Logger.Info("An error occurred while get event")
+		return entity.Event{}, err
 	}
-	return record, nil
+	return event, nil
 }

@@ -19,7 +19,7 @@ func (d *DateRepo) FindByDay(date string) (entity.Date, error) {
 		Day:           d.row.Date,
 		Description:   d.row.Description,
 		IsCelebration: d.row.IsCelebration,
-		Records:       nil,
+		Events:        nil,
 	}
 	return day, nil
 }

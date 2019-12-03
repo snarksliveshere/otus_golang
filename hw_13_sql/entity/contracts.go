@@ -1,13 +1,13 @@
 package entity
 
-type RecordRepository interface {
-	FindById(id uint64) (Record, error)
-	GetEventsByDay(dayFk uint32) ([]Record, error)
-	Save(record Record) (uint64, error)
-	Delete(record Record) error
-	Edit(record Record) error
-	GetEventsByDateInterval(from, till string) ([]Record, error)
-	Show() []Record
+type EventRepository interface {
+	FindById(id uint64) (Event, error)
+	GetEventsByDay(dayFk uint32) ([]Event, error)
+	Save(event Event) (uint64, error)
+	Delete(event Event) error
+	Edit(event Event) error
+	GetEventsByDateInterval(from, till string) ([]Event, error)
+	Show() []Event
 }
 
 type DateRepository interface {

@@ -45,14 +45,14 @@ func main() {
 	case "delete-event":
 		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 		msgDeleteEvent := Dummy{deleteEventReq: proto.DeleteEventRequestMessage{
-			EventId: rec.Record.Id,
+			EventId: rec.Event.Id,
 		}}
 		sendDeleteEventMessage(ctx, cc, msgDeleteEvent.deleteEventReq)
 	case "update-event":
 		rec := sendCreateEventMessage(ctx, cc, msgCreateEvent.createEventReq)
 		msgUpdateEvent := Dummy{
 			updateEventReq: proto.UpdateEventRequestMessage{
-				EventId:     rec.Record.Id,
+				EventId:     rec.Event.Id,
 				Title:       "update_title",
 				Description: "update_description",
 				Date:        "2019-11-01",
@@ -107,7 +107,7 @@ func sendCreateEventMessage(ctx context.Context, cc *grpc.ClientConn, message pr
 		fmt.Printf("error : %s\n", status.Convert(err).Message())
 	}
 	if msg != nil {
-		fmt.Printf("\nerror:%v status:%v\n, record: %#v, id %v\n", msg.Error, msg.Status, msg.Record, msg.Record.Id)
+		fmt.Printf("\nerror:%v status:%v\n, event: %#v, id %v\n", msg.Error, msg.Status, msg.Event, msg.Event.Id)
 	}
 
 	return msg
@@ -147,8 +147,8 @@ func sendGetEventsForDayMessage(ctx context.Context, cc *grpc.ClientConn, messag
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v, date: %v\n",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title, msg.Date)
+		fmt.Printf("\nstatus:%v text:%v, events: %#v, events title1: %#v, events title2: %#v, date: %v\n",
+			msg.Status, msg.Text, msg.Events, msg.Events[0].Title, msg.Events[1].Title, msg.Date)
 	}
 
 	return msg
@@ -162,8 +162,8 @@ func sendGetEventsForMonthMessage(ctx context.Context, cc *grpc.ClientConn, mess
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+		fmt.Printf("\nstatus:%v text:%v, events: %#v, events title1: %#v, events title2: %#v\n",
+			msg.Status, msg.Text, msg.Events, msg.Events[0].Title, msg.Events[1].Title)
 	}
 
 	return msg
@@ -177,8 +177,8 @@ func sendGetEventsForIntervalMessage(ctx context.Context, cc *grpc.ClientConn, m
 	}
 
 	if msg != nil {
-		fmt.Printf("\nstatus:%v text:%v, records: %#v, records title1: %#v, records title2: %#v\n",
-			msg.Status, msg.Text, msg.Records, msg.Records[0].Title, msg.Records[1].Title)
+		fmt.Printf("\nstatus:%v text:%v, events: %#v, events title1: %#v, events title2: %#v\n",
+			msg.Status, msg.Text, msg.Events, msg.Events[0].Title, msg.Events[1].Title)
 	}
 
 	return msg

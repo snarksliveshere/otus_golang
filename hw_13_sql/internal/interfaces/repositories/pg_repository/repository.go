@@ -12,7 +12,7 @@ type DateRepo struct {
 	rows []*pg_models.Calendar
 }
 
-type RecordRepo struct {
+type EventRepo struct {
 	*Repo
 	row  *pg_models.Event
 	rows []*pg_models.Event
@@ -33,10 +33,10 @@ func GetDateRepo(db *pg.DB) *DateRepo {
 	}
 }
 
-func GetRecordRepo(db *pg.DB) *RecordRepo {
+func GetEventRepo(db *pg.DB) *EventRepo {
 	repo := new(Repo)
 	repo.db = db
-	return &RecordRepo{
+	return &EventRepo{
 		Repo: repo,
 		row:  new(pg_models.Event),
 		rows: []*pg_models.Event{},
