@@ -113,7 +113,6 @@ func TestSendUpdateEventMessage(t *testing.T) {
 	cases := []struct {
 		status, title, description, time string
 		updTitle, updDescription         string
-		plus                             uint64
 	}{
 		{
 			status:         "success",
@@ -124,11 +123,10 @@ func TestSendUpdateEventMessage(t *testing.T) {
 			updDescription: "update_description",
 		},
 		{
-			status:         "error",
+			status:         "success",
 			title:          "new title2",
 			description:    "some new description2",
 			time:           "2019-03-01T20:03+0300",
-			plus:           1,
 			updTitle:       "update_title",
 			updDescription: "update_description",
 		},
@@ -153,7 +151,7 @@ func TestSendUpdateEventMessage(t *testing.T) {
 		resp := sendCreateEventMessage(ctx, cc, msg)
 
 		updMsg := proto.UpdateEventRequestMessage{
-			EventId:     resp.Id + c.plus,
+			EventId:     resp.Id,
 			Title:       c.updTitle,
 			Description: c.updDescription,
 		}

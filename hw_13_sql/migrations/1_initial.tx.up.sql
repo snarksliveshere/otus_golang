@@ -28,7 +28,7 @@ CREATE TABLE calendar
 (
     id             SERIAL PRIMARY KEY,
     date           DATE    NOT NULL,
-    description    TEXT    NOT NULL,
+    description    TEXT,
     is_celebration BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT public_date_date_uidx UNIQUE (date)
 );
