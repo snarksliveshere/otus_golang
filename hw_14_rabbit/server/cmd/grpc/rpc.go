@@ -25,7 +25,7 @@ type Response struct {
 func (s ServerCalendar) SendGetEventsForTimeIntervalMessage(ctx context.Context, msg *proto.GetEventsForTimeIntervalRequestMessage) (*proto.GetEventsForTimeIntervalResponseMessage, error) {
 	from, till, err := data_handlers.CheckGetEventByTimeIntervalFromProtoTimestamp(msg.From, msg.Till)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
+		return nil, status.Error(codes.InvalidArgument, "invalid incoming times")
 	}
 	events, err := storage.Actions.EventRepository.GetEventsByTimeInterval(from, till)
 	reply := proto.GetEventsForTimeIntervalResponseMessage{}
@@ -35,16 +35,12 @@ func (s ServerCalendar) SendGetEventsForTimeIntervalMessage(ctx context.Context,
 		reply.Text = err.Error()
 		return &reply, nil
 	}
-	var protoEvents []*proto.Event
-	for _, event := range events {
-		protoEvent, err := eventToProtoStruct(&event)
-		if err != nil {
-			return nil, status.Error(codes.Aborted, err.Error())
-		}
-		protoEvents = append(protoEvents, protoEvent)
-	}
 	reply.Status = config.StatusSuccess
-	reply.Events = protoEvents
+	eventsJson, err := json.Marshal(&events)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid json marshall")
+	}
+	reply.Events = string(eventsJson)
 
 	return &reply, nil
 }

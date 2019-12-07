@@ -2,10 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/go-pg/pg"
 	"github.com/robfig/cron"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/scheduler/config"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/scheduler/pkg/database/postgres"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/scheduler/pkg/logger"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/scheduler/tasks"
 	"github.com/streadway/amqp"
@@ -36,19 +34,17 @@ func failOnError(err error, msg string) {
 func main() {
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
-
 	flag.Parse()
 	config.CreateConfig(pathConfig)
 	conf := config.CreateConfig(pathConfig)
 	logg := logger.CreateLogrusLog(conf)
-	dbHandler := postgres.CreatePgConn(conf, logg)
 	conn := createRabbitConn()
 	defer func() { _ = conn.Close() }()
 	ch := createChannel(conn)
 	defer func() { _ = ch.Close() }()
 	rk := "events"
-	server(logg, ch, rk)
-	scheduler(logg, dbHandler, ch, rk)
+	rabbitServer(logg, ch, rk)
+	scheduler(logg, ch, rk)
 
 	<-stopCh
 
@@ -66,7 +62,7 @@ func createChannel(conn *amqp.Connection) *amqp.Channel {
 	return ch
 }
 
-func server(log *logger.Logger, ch *amqp.Channel, rk string) {
+func rabbitServer(log *logger.Logger, ch *amqp.Channel, rk string) {
 	_, err := ch.QueueDeclare(
 		rk,    // name
 		true,  // durable
@@ -78,12 +74,12 @@ func server(log *logger.Logger, ch *amqp.Channel, rk string) {
 	failOnError(err, "Failed to declare a queue")
 }
 
-func scheduler(log *logger.Logger, dbHandler *pg.DB, ch *amqp.Channel, rk string) {
+func scheduler(log *logger.Logger, ch *amqp.Channel, rk string) {
 	var errs []error
 	crontab := cron.New()
 
 	errs = append(errs, crontab.AddFunc("*/10 * * * * *", func() {
-		tasks.EventReminder(log, dbHandler, ch, rk)
+		tasks.EventReminder(log, ch, rk)
 	}))
 
 	crontab.Start()

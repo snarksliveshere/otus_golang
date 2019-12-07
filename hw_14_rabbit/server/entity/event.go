@@ -9,3 +9,7 @@ type Event struct {
 	Time        time.Time `json:"time"`
 	DateFk      uint32    `json:"dateFk"`
 }
+
+type Events struct {
+	Events []Event `json:"events,omitempty"`
+}
