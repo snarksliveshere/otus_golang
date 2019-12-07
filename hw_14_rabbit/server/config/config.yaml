@@ -1,0 +1,8 @@
+listen_ip: 0.0.0.0
+listen_port: 50054
+log_level: info
+db_name: md_calendar
+db_user: md
+db_password: secret
+db_host: localhost
+db_port: 54321
