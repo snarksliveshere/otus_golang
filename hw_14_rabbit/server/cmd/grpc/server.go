@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
 	pg_repository2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository"

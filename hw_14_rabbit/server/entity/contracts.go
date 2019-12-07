@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type EventRepository interface {
 	FindById(id uint64) (Event, error)
 	GetEventsByDay(dayFk uint32) ([]Event, error)
@@ -7,7 +9,7 @@ type EventRepository interface {
 	Delete(event Event) error
 	Edit(event Event) error
 	GetEventsByDateInterval(from, till string) ([]Event, error)
-	Show() []Event
+	GetEventsByTimeInterval(from, till time.Time) ([]Event, error)
 }
 
 type DateRepository interface {

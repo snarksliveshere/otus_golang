@@ -14,6 +14,7 @@ service EventService {
     rpc sendGetEventsForMonthMessage (GetEventsForMonthRequestMessage) returns (GetEventsForMonthResponseMessage);
     rpc sendGetEventsForIntervalMessage (GetEventsForIntervalRequestMessage) returns (GetEventsForIntervalResponseMessage);
     rpc sendGetEventsByIdMessage (GetEventByIdRequestMessage) returns (GetEventByIdResponseMessage);
+    rpc sendGetEventsForTimeIntervalMessage (GetEventsForTimeIntervalRequestMessage) returns (GetEventsForTimeIntervalResponseMessage);
 }
 
 message Event {
@@ -107,4 +108,15 @@ message GetEventByIdResponseMessage {
 
 message GetEventByIdRequestMessage {
     uint64 eventId = 1;
+}
+
+message GetEventsForTimeIntervalRequestMessage {
+    google.protobuf.Timestamp from = 1;
+    google.protobuf.Timestamp till = 2;
+}
+
+message GetEventsForTimeIntervalResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Event events = 3;
 }

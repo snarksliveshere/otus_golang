@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/entity"
 	pg_models2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository/pg_models"
+	"time"
 )
 
 func (r *EventRepo) FindById(id uint64) (entity.Event, error) {
@@ -78,6 +79,35 @@ func (r *EventRepo) GetEventsByDay(dateFk uint32) ([]entity.Event, error) {
 	return events, nil
 }
 
+func (r *EventRepo) GetEventsByTimeInterval(from, till time.Time) ([]entity.Event, error) {
+	err := r.db.Model(&r.rows).
+		Column("event.time", "event.title", "event.description", "event.time", "event.id", "event.date_fk").
+		Where("time >= ?", from).
+		Where("time <= ?", till).
+		Select()
+	if err != nil {
+		return nil, err
+	}
+
+	var events []entity.Event
+
+	for _, v := range r.rows {
+		rec := entity.Event{
+			Id:          v.Id,
+			Title:       v.Title,
+			Description: v.Description,
+			Time:        v.Time,
+		}
+		events = append(events, rec)
+	}
+
+	if len(events) == 0 {
+		return []entity.Event{}, errors.New("there are no events in this day")
+	}
+
+	return events, nil
+}
+
 func (r *EventRepo) GetEventsByDateInterval(from, till string) ([]entity.Event, error) {
 	err := r.db.Model(&r.rows).
 		Column("event.time", "event.title", "event.description", "event.time", "event.id", "event.date_fk").
@@ -125,9 +155,4 @@ func (r *EventRepo) Save(rec entity.Event) (uint64, error) {
 		return 0, err
 	}
 	return m.Id, nil
-}
-
-func (r *EventRepo) Show() []entity.Event {
-
-	return []entity.Event{}
 }

@@ -22,6 +22,53 @@ type Response struct {
 	//Result     []string      `json:"result,omitempty"`
 }
 
+func (s ServerCalendar) SendGetEventsForTimeIntervalMessage(ctx context.Context, msg *proto.GetEventsForTimeIntervalRequestMessage) (*proto.GetEventsForTimeIntervalResponseMessage, error) {
+	from, till, err := data_handlers.CheckGetEventByTimeIntervalFromProtoTimestamp(msg.From, msg.Till)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
+	}
+	events, err := storage.Actions.EventRepository.GetEventsByTimeInterval(from, till)
+	reply := proto.GetEventsForTimeIntervalResponseMessage{}
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Text = err.Error()
+		return &reply, nil
+	}
+	var protoEvents []*proto.Event
+	for _, event := range events {
+		protoEvent, err := eventToProtoStruct(&event)
+		if err != nil {
+			return nil, status.Error(codes.Aborted, err.Error())
+		}
+		protoEvents = append(protoEvents, protoEvent)
+	}
+	reply.Status = config.StatusSuccess
+	reply.Events = protoEvents
+
+	return &reply, nil
+}
+
+func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventRequestMessage) (*proto.CreateEventResponseMessage, error) {
+	title, desc, time, err := data_handlers.CheckCreateEventProtoTimestamp(msg.Title, msg.Description, msg.Time)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
+	}
+
+	id, err := storage.Actions.CreateEvent(title, desc, time)
+	reply := proto.CreateEventResponseMessage{}
+
+	if err != nil {
+		reply.Status = config.StatusError
+		reply.Error = err.Error()
+		return &reply, nil
+	}
+	reply.Status = config.StatusSuccess
+	reply.Id = id
+
+	return &reply, nil
+}
+
 func (s ServerCalendar) SendGetEventsByIdMessage(ctx context.Context, msg *proto.GetEventByIdRequestMessage) (*proto.GetEventByIdResponseMessage, error) {
 	event, err := storage.Actions.EventRepository.FindById(msg.EventId)
 	reply := proto.GetEventByIdResponseMessage{}
@@ -63,26 +110,6 @@ func (s ServerCalendar) SendGetEventsForDayMessage(ctx context.Context, msg *pro
 
 	reply.Status = config.StatusSuccess
 	reply.Events = protoEvents
-
-	return &reply, nil
-}
-
-func (s ServerCalendar) SendCreateEventMessage(ctx context.Context, msg *proto.CreateEventRequestMessage) (*proto.CreateEventResponseMessage, error) {
-	title, desc, time, err := data_handlers.CheckCreateEventProtoTimestamp(msg.Title, msg.Description, msg.Time)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid title, desc string")
-	}
-
-	id, err := storage.Actions.CreateEvent(title, desc, time)
-	reply := proto.CreateEventResponseMessage{}
-
-	if err != nil {
-		reply.Status = config.StatusError
-		reply.Error = err.Error()
-		return &reply, nil
-	}
-	reply.Status = config.StatusSuccess
-	reply.Id = id
 
 	return &reply, nil
 }
