@@ -17,13 +17,19 @@ func TestSendCreateEventMessage(t *testing.T) {
 			status:      "success",
 			title:       "some new title",
 			description: "some new description",
-			time:        "2019-05-02T20:03+0300",
+			time:        "2019-12-07T20:03+0300",
 		},
 		{
 			status:      "success",
 			title:       "new title2",
 			description: "some new description2",
-			time:        "2019-06-10T20:03+0300",
+			time:        "2019-12-07T19:03+0300",
+		},
+		{
+			status:      "success",
+			title:       "new title3",
+			description: "some new description3",
+			time:        "2019-12-07T19:30+0300",
 		},
 	}
 

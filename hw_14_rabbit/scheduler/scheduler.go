@@ -12,7 +12,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 )
 
@@ -43,65 +42,48 @@ func main() {
 	conf := config.CreateConfig(pathConfig)
 	logg := logger.CreateLogrusLog(conf)
 	dbHandler := postgres.CreatePgConn(conf, logg)
-	server(logg, dbHandler)
-	scheduler(logg)
+	conn := createRabbitConn()
+	defer func() { _ = conn.Close() }()
+	ch := createChannel(conn)
+	defer func() { _ = ch.Close() }()
+	rk := "events"
+	server(logg, ch, rk)
+	scheduler(logg, dbHandler, ch, rk)
 
 	<-stopCh
 
 }
 
-func server(log *logger.Logger, dbHandler *pg.DB) {
-
+func createRabbitConn() *amqp.Connection {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
-	defer func() { _ = conn.Close() }()
+	return conn
+}
 
+func createChannel(conn *amqp.Connection) *amqp.Channel {
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	defer func() { _ = ch.Close() }()
+	return ch
+}
 
-	q, err := ch.QueueDeclare(
-		"messages", // name
-		true,       // durable
-		false,      // delete when unused
-		false,      // exclusive
-		false,      // no-wait
-		nil,        // arguments
+func server(log *logger.Logger, ch *amqp.Channel, rk string) {
+	_, err := ch.QueueDeclare(
+		rk,    // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
-
-	body := bodyFrom(os.Args)
-	err = ch.Publish(
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,
-		amqp.Publishing{
-			DeliveryMode: amqp.Persistent,
-			ContentType:  "text/plain",
-			Body:         []byte(body),
-		})
-	failOnError(err, "Failed to publish a message")
-	log.Infof(" [x] Sent %s", body)
 }
 
-func bodyFrom(args []string) string {
-	var s string
-	if (len(args) < 2) || os.Args[1] == "" {
-		s = "hello"
-	} else {
-		s = strings.Join(args[1:], " ")
-	}
-	return s
-}
-
-func scheduler(log *logger.Logger) {
+func scheduler(log *logger.Logger, dbHandler *pg.DB, ch *amqp.Channel, rk string) {
 	var errs []error
-
 	crontab := cron.New()
 
-	errs = append(errs, crontab.AddFunc("0 * * * * *", func() {
-		tasks.ReportTask()
+	errs = append(errs, crontab.AddFunc("*/10 * * * * *", func() {
+		tasks.EventReminder(log, dbHandler, ch, rk)
 	}))
 
 	crontab.Start()
