@@ -3,7 +3,7 @@ package pg_repository
 import (
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/usecases"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/db"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/databases/postgres"
 )
 
 type Storage struct {
@@ -11,7 +11,7 @@ type Storage struct {
 }
 
 func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
-	dbHandler := db.CreatePgConn(conf, logger)
+	dbHandler := postgres.CreatePgConn(conf, logger)
 	actions := new(usecases.Actions)
 	actions.Logger = logger
 	actions.DateRepository = GetDateRepo(dbHandler)
