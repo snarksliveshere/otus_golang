@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/client/config"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/client/proto"
 	"google.golang.org/grpc"
@@ -30,6 +32,12 @@ func TestSendCreateEventMessage(t *testing.T) {
 			title:       "new title3",
 			description: "some new description3",
 			time:        "2019-12-07T19:30+0300",
+		},
+		{
+			status:      "success",
+			title:       "new title3",
+			description: "some new description3",
+			time:        "2019-12-08T11:33+0300",
 		},
 	}
 
@@ -362,4 +370,68 @@ func TestSendGetEventsForIntervalMessage(t *testing.T) {
 			t.Errorf("TestSendGetEventsForIntervalMessage() length compare, c.length: %d, resp.length: %d", c.length, len(respEvents.Events))
 		}
 	}
+}
+
+func TestDummyGetEventForTimeIntervalMessage(t *testing.T) {
+	cases := []struct {
+		status, title, description, add string
+	}{
+		{
+			status:      "success",
+			title:       "some new title",
+			description: "some new description",
+		},
+		{
+			status:      "success",
+			title:       "new title2",
+			description: "some new description2",
+			add:         "+8",
+		},
+	}
+
+	for _, c := range cases {
+		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
+		if err != nil {
+			t.Errorf("TestDummyCreateEvent(), resp.status: %s", c.status)
+		}
+		from, till, err := getTimestampsInterval()
+		if err != nil {
+			t.Errorf("TestDummyCreateEvent(), resp.status: %s", c.status)
+		}
+		msg := proto.CreateEventRequestMessage{
+			Title:       c.title,
+			Description: c.description,
+		}
+
+		if c.add == "" {
+			msg.Time = from
+		} else {
+			msg.Time = till
+		}
+
+		resp := sendCreateEventMessage(ctx, cc, msg)
+		msgId := proto.GetEventByIdRequestMessage{
+			EventId: resp.Id,
+		}
+		sendGetEventsByIdMessage(ctx, cc, msgId)
+
+		if c.status != resp.Status {
+			t.Errorf("TestSendCreateEventMessage() status compare, c.status: %s, resp.status: %v, resp ID: %d", c.status, resp.Status, resp.Id)
+		}
+	}
+}
+
+func getTimestampsInterval() (*timestamp.Timestamp, *timestamp.Timestamp, error) {
+	from := time.Now()
+	till := from.Add(8 * time.Minute)
+	fromT, err := ptypes.TimestampProto(from)
+	if err != nil {
+		return nil, nil, err
+	}
+	tillT, err := ptypes.TimestampProto(till)
+	if err != nil {
+		return nil, nil, err
+	}
+	return fromT, tillT, nil
 }

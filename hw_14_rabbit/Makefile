@@ -1,12 +1,15 @@
-up: docker-up
+up: docker-up rabbit-up
+rabbit-up:
+	docker run -d --name rb -p 15672:15672
+docker-up:
+	docker-compose up -d
 down: docker-down
 init: docker-down-clear docker-pull docker-build docker-up
 
 
 
 
-docker-up:
-	docker-compose up -d
+
 
 docker-down:
 	docker-compose down --remove-orphans
