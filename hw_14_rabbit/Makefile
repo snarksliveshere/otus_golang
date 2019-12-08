@@ -1,4 +1,10 @@
-up: docker-up rabbit-up
+up-all: docker-up migrations-up
+up: docker-up
+
+test-all: build-server run-server test
+
+test:
+	cd $(CURDIR)/client/grpc && go test 
 
 rabbit-up:
 	docker run -d --name rb -p 15672:15672
@@ -13,6 +19,12 @@ run-worker:
 	cd $(CURDIR)/message_office && ./message_office
 
 init: build-worker build-server build-scheduler
+
+migrations-up:
+	cd $(CURDIR)/server/ && go run migrations/main.go
+
+migrations-down:
+	cd $(CURDIR)/server/migrations && ./migrations down
 
 build-server:
 	cd $(CURDIR)/server && go build
