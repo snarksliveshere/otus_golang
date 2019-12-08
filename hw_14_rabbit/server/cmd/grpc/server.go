@@ -3,7 +3,7 @@ package grpc
 import (
 	"fmt"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
-	pg_repository2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository"
+	pg_repository "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/proto"
 	"google.golang.org/grpc"
@@ -18,14 +18,14 @@ type ServerCalendar struct {
 
 var (
 	log     *logrus.Logger
-	storage *pg_repository2.Storage
+	storage *pg_repository.Storage
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
 	log = logrus.CreateLogrusLog(conf)
 
-	storage = pg_repository2.CreateStorageInstance(log, conf)
+	storage = pg_repository.CreateStorageInstance(log, conf)
 
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
