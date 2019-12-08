@@ -1,12 +1,23 @@
 package main
 
 import (
-	"bytes"
-	"log"
-	"time"
-
+	"flag"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/message_office/config"
 	"github.com/streadway/amqp"
+	"log"
 )
+
+var (
+	pathConfig string
+)
+
+const (
+	confFile = "./config/config.yaml"
+)
+
+func init() {
+	flag.StringVar(&pathConfig, "config", confFile, "path config")
+}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -15,13 +26,16 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	flag.Parse()
+	conf := config.CreateConfig(pathConfig)
+	strDial := "amqp://" + conf.RabbitUser + ":" + conf.RabbitPassword + "@localhost:" + conf.RabbitPort + "/"
+	conn, err := amqp.Dial(strDial)
 	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
+	defer func() { _ = ch.Close() }()
 
 	q, err := ch.QueueDeclare(
 		"events", // name
@@ -56,11 +70,10 @@ func main() {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-			dot_count := bytes.Count(d.Body, []byte("."))
-			t := time.Duration(dot_count)
-			time.Sleep(t * time.Second)
-			log.Printf("Done")
-			d.Ack(false)
+			err := d.Ack(false)
+			if err != nil {
+				log.Printf("error: %v", err.Error())
+			}
 		}
 	}()
 

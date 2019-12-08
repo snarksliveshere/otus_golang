@@ -32,13 +32,13 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	flag.Parse()
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
-	flag.Parse()
 	config.CreateConfig(pathConfig)
 	conf := config.CreateConfig(pathConfig)
 	logg := logger.CreateLogrusLog(conf)
-	conn := createRabbitConn()
+	conn := createRabbitConn(conf)
 	defer func() { _ = conn.Close() }()
 	ch := createChannel(conn)
 	defer func() { _ = ch.Close() }()
@@ -50,8 +50,9 @@ func main() {
 
 }
 
-func createRabbitConn() *amqp.Connection {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+func createRabbitConn(conf *config.Config) *amqp.Connection {
+	strDial := "amqp://" + conf.RabbitUser + ":" + conf.RabbitPassword + "@localhost:" + conf.RabbitPort + "/"
+	conn, err := amqp.Dial(strDial)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	return conn
 }
