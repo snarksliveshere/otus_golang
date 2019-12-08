@@ -3,7 +3,7 @@ package pg_repository
 import (
 	"github.com/go-pg/pg"
 	pg_models2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository/pg_models"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/logger"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/logger/logrus"
 )
 
 type DateRepo struct {
@@ -20,7 +20,7 @@ type EventRepo struct {
 
 type Repo struct {
 	db     *pg.DB
-	logger logger.Logger
+	logger logrus.Logger
 }
 
 func GetDateRepo(db *pg.DB) *DateRepo {

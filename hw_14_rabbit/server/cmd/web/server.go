@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
 	pg_repository2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/logger"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/logger/logrus"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	log     *logger.Logger
+	log     *logrus.Logger
 	storage *pg_repository2.Storage
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
-	log = logger.CreateLogrusLog(conf)
+	log = logrus.CreateLogrusLog(conf)
 
 	storage = pg_repository2.CreateStorageInstance(log, conf)
 

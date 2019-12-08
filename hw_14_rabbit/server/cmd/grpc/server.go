@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
 	pg_repository2 "github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/interfaces/repositories/pg_repository"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/proto"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/logger"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -17,13 +17,13 @@ type ServerCalendar struct {
 }
 
 var (
-	log     *logger.Logger
+	log     *logrus.Logger
 	storage *pg_repository2.Storage
 )
 
 func Server(path string) {
 	conf := config.CreateConfig(path)
-	log = logger.CreateLogrusLog(conf)
+	log = logrus.CreateLogrusLog(conf)
 
 	storage = pg_repository2.CreateStorageInstance(log, conf)
 

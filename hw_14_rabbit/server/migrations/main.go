@@ -6,8 +6,8 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/internal/usecases"
+	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/db"
-	"github.com/snarksliveshere/otus_golang/hw_14_rabbit/server/tools/logger"
 	"os"
 )
 
@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 
 	conf := config.CreateConfig("./config/config.yaml")
-	log := logger.CreateLogrusLog(conf)
+	log := logrus.CreateLogrusLog(conf)
 	db := db.CreatePgConn(conf, log)
 	initMigrationTableIfNeeded(db, log)
 	oldVersion, newVersion, err := migrations.Run(db, flag.Args()...)
