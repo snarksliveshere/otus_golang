@@ -11,6 +11,7 @@ services:
     image: postgres:11.3-alpine
     container_name: dbpg
     volumes:
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
       - ./storage/docker/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: md

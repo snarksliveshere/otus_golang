@@ -9,7 +9,12 @@ test:
 rabbit-up:
 	docker run -d --name rb -p 15672:15672
 docker-up:
+	docker-compose up -d
+
+up-build:
 	docker-compose up -d --build
+
+down-all: migrations-down docker-down
 down: docker-down
 
 build-worker:
