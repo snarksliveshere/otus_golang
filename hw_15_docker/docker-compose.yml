@@ -3,8 +3,8 @@ version: '3'
 networks:
   db:
     driver: bridge
-#  grpc_server:
-#    driver: bridge
+  grpc_server:
+    driver: bridge
 
 services:
   manager-postgres:
@@ -21,13 +21,22 @@ services:
     networks:
       - db
 
-#  grpc_server:
-#    build: ./server
-#    container_name: grpc
-#    depends_on:
-#      - manager-postgres
-#    ports:
-#      - "8888:8888"
-#    networks:
-#      - grpc_server
-#      - db
+  grpc_server:
+    build: ./server
+    container_name: grpc
+    depends_on:
+      - manager-postgres
+    environment:
+      REG_SERVICE_DB_USER: md
+      REG_SERVICE_DB_PASSWORD: secret
+      REG_SERVICE_DB_NAME: md_calendar
+      REG_SERVICE_DB_HOST: dbpg
+      REG_SERVICE_DB_PORT: 5432
+      REG_SERVICE_LOG_LEVEL: info
+      REG_SERVICE_WEB_PORT: 8888
+      REG_SERVICE_LISTEN_IP: 0.0.0.0
+    ports:
+      - "8888:8888"
+    networks:
+      - grpc_server
+      - db
