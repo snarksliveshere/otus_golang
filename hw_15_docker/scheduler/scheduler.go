@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/robfig/cron"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/scheduler/config"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/scheduler/pkg/logger"
@@ -9,21 +9,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 )
-
-var (
-	pathConfig string
-)
-
-const (
-	confFile = "./config/config.yaml"
-)
-
-func init() {
-	flag.StringVar(&pathConfig, "config", confFile, "path config")
-}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -32,26 +18,24 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	flag.Parse()
+	var conf config.AppConfig
+	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
+	logg := logger.CreateLogrusLog(conf.LogLevel)
+	conn := createRabbitConn(&conf)
 	stopCh := make(chan os.Signal, 1)
-	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
-	config.CreateConfig(pathConfig)
-	conf := config.CreateConfig(pathConfig)
-	logg := logger.CreateLogrusLog(conf)
-	conn := createRabbitConn(conf)
 	defer func() { _ = conn.Close() }()
 	ch := createChannel(conn)
 	defer func() { _ = ch.Close() }()
 	rk := "events"
 	rabbitServer(logg, ch, rk)
-	scheduler(logg, ch, rk)
+	scheduler(logg, ch, rk, &conf)
 
 	<-stopCh
 
 }
 
-func createRabbitConn(conf *config.Config) *amqp.Connection {
-	strDial := "amqp://" + conf.RabbitUser + ":" + conf.RabbitPassword + "@localhost:" + conf.RabbitPort + "/"
+func createRabbitConn(conf *config.AppConfig) *amqp.Connection {
+	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
 	conn, err := amqp.Dial(strDial)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	return conn
@@ -75,12 +59,12 @@ func rabbitServer(log *logger.Logger, ch *amqp.Channel, rk string) {
 	failOnError(err, "Failed to declare a queue")
 }
 
-func scheduler(log *logger.Logger, ch *amqp.Channel, rk string) {
+func scheduler(log *logger.Logger, ch *amqp.Channel, rk string, conf *config.AppConfig) {
 	var errs []error
 	crontab := cron.New()
 
 	errs = append(errs, crontab.AddFunc("*/10 * * * * *", func() {
-		tasks.EventReminder(log, ch, rk)
+		tasks.EventReminder(log, ch, rk, conf)
 	}))
 
 	crontab.Start()

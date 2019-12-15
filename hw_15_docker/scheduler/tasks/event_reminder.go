@@ -14,8 +14,8 @@ import (
 	"time"
 )
 
-func EventReminder(log *logger.Logger, ch *amqp.Channel, rk string) {
-	cc := startGRPCClient(log)
+func EventReminder(log *logger.Logger, ch *amqp.Channel, rk string, conf *config.AppConfig) {
+	cc := startGRPCClient(log, conf)
 	defer func() { _ = cc.Close() }()
 	resp, err := sendGetEventsForTimeIntervalMs(cc)
 	if err == nil && resp.Status == config.StatusSuccess {
@@ -37,8 +37,8 @@ func getTimestampsInterval() (*timestamp.Timestamp, *timestamp.Timestamp, error)
 	return fromT, tillT, nil
 }
 
-func startGRPCClient(log *logger.Logger) *grpc.ClientConn {
-	cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
+func startGRPCClient(log *logger.Logger, conf *config.AppConfig) *grpc.ClientConn {
+	cc, err := grpc.Dial(conf.GRPCHost+":"+conf.GRPCPort, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err.Error())
 	}

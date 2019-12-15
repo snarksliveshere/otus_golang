@@ -2,7 +2,6 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/snarksliveshere/otus_golang/hw_15_docker/scheduler/config"
 )
 
 const appName = "simple_app_calendar"
@@ -27,10 +26,10 @@ func (logger *Logger) Fatalf(pattern string, args ...interface{}) {
 	logger.log.Fatalf(pattern, args...)
 }
 
-func CreateLogrusLog(config *config.Config) *Logger {
+func CreateLogrusLog(logLevel string) *Logger {
 	log := logrus.New()
 	logEntry := logrus.NewEntry(log).WithField("app", appName)
-	level, err := logrus.ParseLevel(config.LogLevel)
+	level, err := logrus.ParseLevel(logLevel)
 	if err != nil {
 		log.Fatal("An error occurred during the logLevelAssertion")
 	}

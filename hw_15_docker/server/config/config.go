@@ -20,14 +20,3 @@ type AppConfig struct {
 	Addr
 	LogLevel string `envconfig:"LOG_LEVEL" required:"true"`
 }
-
-//DB_DSN=postgres://md:secret@postgres:54321/md_calendar;LOG_LEVEL=info;LISTEN_IP=0:0:0:0;WEB_PORT=8888
-//DB_USER=md; DB_NAME=md_calendar;DB_HOST=localhost;DB_PORT=54321;DB_PASSWORD=secret;LOG_LEVEL=info;LISTEN_IP=0:0:0:0;WEB_PORT=8888
-//REG_SERVICE_DB_DSN: "postgres://test:test@postgres:5432/exampledb?sslmode=disable"
-//REG_SERVICE_AMQP_DSN: "amqp://guest:guest@rabbit:5672/"
-//REG_SERVICE_SERVER_ADDR: ":8088"
-
-//Addr:     conf.DbHost + ":" + conf.DbPort,
-//User:     conf.DbUser,
-//Password: conf.DbPassword,
-//Database: conf.DbName,
