@@ -1,33 +1,25 @@
 package config
 
-import (
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"log"
-)
-
-type Config struct {
-	ListenIp       string `yaml:"listen_ip"`
-	ListenPort     string `yaml:"listen_port"`
-	LogLevel       string `yaml:"log_level"`
-	RabbitPort     string `yaml:"rabbit_port"`
-	RabbitUser     string `yaml:"rabbit_user"`
-	RabbitPassword string `yaml:"rabbit_password"`
+type RabbitConfig struct {
+	RbHost     string `envconfig:"RABBIT_HOST" required:"true"`
+	RbPort     string `envconfig:"RABBIT_PORT" required:"true"`
+	RbUser     string `envconfig:"RABBIT_USER" required:"true"`
+	RbPassword string `envconfig:"RABBIT_PASSWORD" required:"true"`
+	DBPort     string `envconfig:"DB_PORT" required:"true"`
+	DBUser     string `envconfig:"DB_USER" required:"true"`
+	DBPassword string `envconfig:"DB_PASSWORD" required:"true"`
+	DBName     string `envconfig:"DB_NAME" required:"true"`
 }
 
-func CreateConfig(path string) *Config {
-	cf, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	conf := &Config{}
-	err = yaml.Unmarshal(cf, conf)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return conf
+type Addr struct {
+	GRPCPort string `envconfig:"GRPC_PORT"`
+	GRPCHost string `envconfig:"GRPC_HOST"`
+	WEBPort  string `envconfig:"WEB_PORT"`
+	ListenIP string `envconfig:"LISTEN_IP"`
 }
 
-func (conf *Config) ListenAddr() string {
-	return conf.ListenIp + ":" + conf.ListenPort
+type AppConfig struct {
+	RabbitConfig
+	Addr
+	LogLevel string `envconfig:"LOG_LEVEL" required:"true"`
 }

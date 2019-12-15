@@ -1,23 +1,11 @@
 package main
 
 import (
-	"flag"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/message_office/config"
 	"github.com/streadway/amqp"
 	"log"
 )
-
-var (
-	pathConfig string
-)
-
-const (
-	confFile = "./config/config.yaml"
-)
-
-func init() {
-	flag.StringVar(&pathConfig, "config", confFile, "path config")
-}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -26,9 +14,9 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	flag.Parse()
-	conf := config.CreateConfig(pathConfig)
-	strDial := "amqp://" + conf.RabbitUser + ":" + conf.RabbitPassword + "@localhost:" + conf.RabbitPort + "/"
+	var conf config.AppConfig
+	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
+	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
 	conn, err := amqp.Dial(strDial)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer func() { _ = conn.Close() }()

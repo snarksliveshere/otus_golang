@@ -5,10 +5,6 @@ type RabbitConfig struct {
 	RbPort     string `envconfig:"RABBIT_PORT" required:"true"`
 	RbUser     string `envconfig:"RABBIT_USER" required:"true"`
 	RbPassword string `envconfig:"RABBIT_PASSWORD" required:"true"`
-	DBPort     string `envconfig:"DB_PORT" required:"true"`
-	DBUser     string `envconfig:"DB_USER" required:"true"`
-	DBPassword string `envconfig:"DB_PASSWORD" required:"true"`
-	DBName     string `envconfig:"DB_NAME" required:"true"`
 }
 
 type Addr struct {
