@@ -10,7 +10,7 @@ type Storage struct {
 	Actions *usecases.Actions
 }
 
-func CreateStorageInstance(logger usecases.Logger, conf *config.Config) *Storage {
+func CreateStorageInstance(logger usecases.Logger, conf *config.AppConfig) *Storage {
 	dbHandler := postgres.CreatePgConn(conf, logger)
 	actions := new(usecases.Actions)
 	actions.Logger = logger

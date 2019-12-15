@@ -3,7 +3,7 @@ package grpc
 import (
 	"fmt"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/config"
-	pg_repository "github.com/snarksliveshere/otus_golang/hw_15_docker/server/internal/interfaces/repositories/pg_repository"
+	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/internal/interfaces/repositories/pg_repository"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/proto"
 	"google.golang.org/grpc"
@@ -21,20 +21,17 @@ var (
 	storage *pg_repository.Storage
 )
 
-func Server(path string) {
-	conf := config.CreateConfig(path)
-	log = logrus.CreateLogrusLog(conf)
-
+func Server(logg *logrus.Logger, conf *config.AppConfig) {
+	log = logg
 	storage = pg_repository.CreateStorageInstance(log, conf)
-
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
-	webApi(conf)
+	goGRPC(conf)
 	<-stopCh
 }
 
-func webApi(conf *config.Config) {
-	listenAddr := conf.ListenAddr()
+func goGRPC(conf *config.AppConfig) {
+	listenAddr := conf.ListenIP + ":" + conf.GRPCPort
 	listen, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatalf("failed to listen addr: %s, error: %v\n", listenAddr, err.Error())

@@ -4,35 +4,35 @@ import (
 	"flag"
 	"github.com/go-pg/migrations"
 	"github.com/go-pg/pg"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/internal/usecases"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/pkg/databases/postgres"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/pkg/logger/logrus"
-	"os"
+	"log"
 )
 
 func main() {
-	flag.Usage = usage
-	flag.Parse()
-
-	conf := config.CreateConfig("./config/config.yaml")
-	log := logrus.CreateLogrusLog(conf)
-	db := postgres.CreatePgConn(conf, log)
-	initMigrationTableIfNeeded(db, log)
+	var conf config.AppConfig
+	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
+	logg := logrus.CreateLogrusLog(conf.LogLevel)
+	db := postgres.CreatePgConn(&conf, logg)
+	initMigrationTableIfNeeded(db, logg)
 	oldVersion, newVersion, err := migrations.Run(db, flag.Args()...)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	if newVersion != oldVersion {
-		log.Infof("migrated from version %d to %d\n", oldVersion, newVersion)
+		logg.Infof("migrated from version %d to %d\n", oldVersion, newVersion)
 	} else {
-		log.Infof("version is %d\n", oldVersion)
+		logg.Infof("version is %d\n", oldVersion)
 	}
 }
 
-func usage() {
-	flag.PrintDefaults()
-	os.Exit(2)
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
 }
 
 func initMigrationTableIfNeeded(db *pg.DB, log usecases.Logger) {

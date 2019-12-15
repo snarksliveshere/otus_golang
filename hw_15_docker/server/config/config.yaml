@@ -1,8 +1,9 @@
+web_port: 8888
 listen_ip: 0.0.0.0
 listen_port: 50054
 log_level: info
 db_name: md_calendar
 db_user: md
 db_password: secret
-db_host: localhost
-db_port: 54321
+db_host: dbpg
+db_port: 5432

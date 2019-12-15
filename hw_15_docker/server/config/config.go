@@ -1,35 +1,33 @@
 package config
 
-import (
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"log"
-)
-
-type Config struct {
-	ListenIp   string `yaml:"listen_ip"`
-	ListenPort string `yaml:"listen_port"`
-	LogLevel   string `yaml:"log_level"`
-	DbName     string `yaml:"db_name"`
-	DbUser     string `yaml:"db_user"`
-	DbPassword string `yaml:"db_password"`
-	DbHost     string `yaml:"db_host"`
-	DbPort     string `yaml:"db_port"`
+type DbConfig struct {
+	DBDriver   string `envconfig:"DB_DRIVER" default:"postgres"`
+	DBHost     string `envconfig:"DB_HOST" required:"true"`
+	DBPort     string `envconfig:"DB_PORT" required:"true"`
+	DBUser     string `envconfig:"DB_USER" required:"true"`
+	DBPassword string `envconfig:"DB_PASSWORD" required:"true"`
+	DBName     string `envconfig:"DB_NAME" required:"true"`
 }
 
-func CreateConfig(path string) *Config {
-	cf, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	conf := &Config{}
-	err = yaml.Unmarshal(cf, conf)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return conf
+type Addr struct {
+	GRPCPort string `envconfig:"GRPC_PORT"`
+	WEBPort  string `envconfig:"WEB_PORT"`
+	ListenIP string `envconfig:"LISTEN_IP"`
 }
 
-func (conf *Config) ListenAddr() string {
-	return conf.ListenIp + ":" + conf.ListenPort
+type AppConfig struct {
+	DbConfig
+	Addr
+	LogLevel string `envconfig:"LOG_LEVEL" required:"true"`
 }
+
+//DB_DSN=postgres://md:secret@postgres:54321/md_calendar;LOG_LEVEL=info;LISTEN_IP=0:0:0:0;WEB_PORT=8888
+//DB_USER=md; DB_NAME=md_calendar;DB_HOST=localhost;DB_PORT=54321;DB_PASSWORD=secret;LOG_LEVEL=info;LISTEN_IP=0:0:0:0;WEB_PORT=8888
+//REG_SERVICE_DB_DSN: "postgres://test:test@postgres:5432/exampledb?sslmode=disable"
+//REG_SERVICE_AMQP_DSN: "amqp://guest:guest@rabbit:5672/"
+//REG_SERVICE_SERVER_ADDR: ":8088"
+
+//Addr:     conf.DbHost + ":" + conf.DbPort,
+//User:     conf.DbUser,
+//Password: conf.DbPassword,
+//Database: conf.DbName,

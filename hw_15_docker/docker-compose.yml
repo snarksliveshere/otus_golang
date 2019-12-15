@@ -1,7 +1,15 @@
 version: '3'
+
+networks:
+  db:
+    driver: bridge
+#  grpc_server:
+#    driver: bridge
+
 services:
   manager-postgres:
-    image: postgres:11.2-alpine
+    image: postgres:11.3-alpine
+    container_name: dbpg
     volumes:
       - ./storage/docker/postgres:/var/lib/postgresql/data
     environment:
@@ -10,11 +18,16 @@ services:
       POSTGRES_DB: md_calendar
     ports:
       - "54321:5432"
-  rb:
-    image: "rabbitmq:3-management"
-    environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "guest"
-    ports:
-      - "15672:15672"
-      - "5672:5672"
+    networks:
+      - db
+
+#  grpc_server:
+#    build: ./server
+#    container_name: grpc
+#    depends_on:
+#      - manager-postgres
+#    ports:
+#      - "8888:8888"
+#    networks:
+#      - grpc_server
+#      - db
