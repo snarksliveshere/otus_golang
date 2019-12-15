@@ -16,7 +16,7 @@ func CheckCreateEvent(title, desc, date string) (string, string, time.Time, erro
 	if err != nil {
 		return title, desc, time.Time{}, err
 	}
-	day, err := helpers.GetDateFromString(date)
+	day, err := helpers.GetDateTimeFromString(date)
 	if err != nil {
 		return title, desc, time.Time{}, err
 	}

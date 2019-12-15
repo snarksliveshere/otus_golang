@@ -15,6 +15,14 @@ func GetDateFromString(date string) (time.Time, error) {
 	return t, nil
 }
 
+func GetDateTimeFromString(date string) (time.Time, error) {
+	t, err := time.Parse(config.EventTimeLayout, date)
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 func IsNumOfMonthInString(month string) (uint8, error) {
 	i, err := strconv.ParseUint(month, 10, 64)
 	if err != nil {
