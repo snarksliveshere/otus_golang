@@ -8,13 +8,8 @@ RUN go mod download
 
 COPY . .
 RUN CGO_ENABLED=0 go build -o /opt/service/reg_service
-RUN CGO_ENABLED=0 cd ./migrations && go build -o /opt/service/migrations
 
 # Release
 FROM alpine:latest
-COPY --from=builder /opt/service/migrations /bin/migrations
 COPY --from=builder /opt/service/reg_service /bin/reg_service
-#RUN cd /bin && ./migrations
-CMD ["/bin/migrations"]
 ENTRYPOINT ["/bin/reg_service"]
-#cd $(CURDIR)/message_office && go build
