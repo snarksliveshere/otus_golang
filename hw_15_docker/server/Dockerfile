@@ -25,10 +25,12 @@ RUN CGO_ENABLED=0 cd ./migrations && go build -o /opt/service/migrations
 FROM alpine:latest
 COPY --from=builder /opt/service/migrations /bin/migrations
 COPY --from=builder /opt/service/reg_service /bin/reg_service
+RUN apk update && apk upgrade && apk add bash
 #RUN cd /bin && ./migrations
 #RUN chmod +x /bin/migrations
 #RUN cd /bin && ./migrations up
 #ENTRYPOINT ["/bin/migrations"]
+EXPOSE 8888
 CMD ["/bin/migrations"]
 ENTRYPOINT ["/bin/reg_service"]
 #cd $(CURDIR)/message_office && go build

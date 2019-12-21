@@ -49,11 +49,11 @@ services:
       REG_SERVICE_DB_HOST: dbpg
       REG_SERVICE_DB_PORT: 5432
       REG_SERVICE_LOG_LEVEL: info
-      REG_SERVICE_WEB_PORT: 8080
+      REG_SERVICE_WEB_PORT: 8888
       REG_SERVICE_GRPC_PORT: 50054
       REG_SERVICE_LISTEN_IP: localhost
     ports:
-      - "8888:8080"
+      - "8888:8888"
     networks:
       apinet:
         ipv4_address: 172.30.99.50
