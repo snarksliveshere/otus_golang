@@ -16,6 +16,7 @@ func main() {
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	logg := logrus.CreateLogrusLog(conf.LogLevel)
+	logg.Infof("Configs are %#v", conf)
 	db := postgres.CreatePgConn(&conf, logg)
 	initMigrationTableIfNeeded(db, logg)
 	oldVersion, newVersion, err := migrations.Run(db, flag.Args()...)
