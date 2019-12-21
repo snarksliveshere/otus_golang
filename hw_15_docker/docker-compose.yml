@@ -1,10 +1,10 @@
 version: '3'
 
-networks:
-  db:
-    driver: bridge
-  grpc_server:
-    driver: bridge
+#networks:
+#  db:
+#    driver: bridge
+#  grpc_server:
+#    driver: bridge
 #  rabbit:
 #    driver: bridge
 
@@ -22,7 +22,8 @@ services:
     ports:
       - "54321:5432"
     networks:
-      - db
+      apinet:
+        ipv4_address: 172.30.99.51
 
 #  rabbit:
 #    image: "rabbitmq:3-management"
@@ -54,8 +55,8 @@ services:
     ports:
       - "8888:8080"
     networks:
-      - grpc_server
-      - db
+      apinet:
+        ipv4_address: 172.30.99.50
 
 #  scheduler:
 #    build: ./scheduler
@@ -89,3 +90,10 @@ services:
 #      MSG_SERVICE_RABBIT_PORT: 5672
 #    networks:
 #      - rabbit
+
+networks:
+  apinet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.99.0/24
