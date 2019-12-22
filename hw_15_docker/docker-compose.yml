@@ -51,7 +51,7 @@ services:
       REG_SERVICE_LOG_LEVEL: info
       REG_SERVICE_WEB_PORT: 8888
       REG_SERVICE_GRPC_PORT: 50054
-      REG_SERVICE_LISTEN_IP: localhost
+      REG_SERVICE_LISTEN_IP: 0.0.0.0
     ports:
       - "8888:8888"
     networks:
