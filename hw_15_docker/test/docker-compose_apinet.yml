@@ -1,12 +1,12 @@
 version: '3'
 
-networks:
-  db:
-    driver: bridge
-  grpc_server:
-    driver: bridge
-  rabbit:
-    driver: bridge
+#networks:
+#  db:
+#    driver: bridge
+#  grpc_server:
+#    driver: bridge
+#  rabbit:
+#    driver: bridge
 
 services:
   manager-postgres:
@@ -22,7 +22,8 @@ services:
     ports:
       - "54321:5432"
     networks:
-      - db
+      apinet:
+        ipv4_address: 172.30.99.51
 
   rabbit:
     image: "rabbitmq:3-management"
@@ -34,11 +35,14 @@ services:
       - "15672:15672"
       - "5672:5672"
     networks:
-      - rabbit
+      apinet:
+        ipv4_address: 172.30.99.53
+
 
   grpc_server:
     build: ./server
     container_name: grpc
+    image: server_grpc
     depends_on:
       - manager-postgres
     environment:
@@ -54,13 +58,12 @@ services:
     ports:
       - "8888:8888"
     networks:
-      - grpc_server
-      - db
+      apinet:
+        ipv4_address: 172.30.99.50
 
   scheduler:
     build: ./scheduler
     container_name: scheduler
-    restart: on-failure
     depends_on:
       - manager-postgres
       - rabbit
@@ -74,14 +77,12 @@ services:
       SCHED_SERVICE_GRPC_HOST: grpc
       SCHED_SERVICE_LISTEN_IP: 0.0.0.0
     networks:
-      - grpc_server
-      - db
-      - rabbit
+      apinet:
+        ipv4_address: 172.30.99.55
 
   message_server:
     build: ./message_office
     container_name: message_server
-    restart: on-failure
     depends_on:
       - rabbit
     environment:
@@ -90,4 +91,12 @@ services:
       MSG_SERVICE_RABBIT_HOST: rabbit
       MSG_SERVICE_RABBIT_PORT: 5672
     networks:
-      - rabbit
+      apinet:
+        ipv4_address: 172.30.99.60
+
+networks:
+  apinet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.99.0/24

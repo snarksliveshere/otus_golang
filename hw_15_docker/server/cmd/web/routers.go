@@ -147,7 +147,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	day, err := storage.Actions.GetEventsByDay(date)
+	events, err := storage.Actions.GetEventsByDay(date)
 
 	resp := Response{}
 	if err != nil {
@@ -156,7 +156,7 @@ func eventsForDayHandler(w http.ResponseWriter, r *http.Request) {
 		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
-		resp.Events = day
+		resp.Events = events
 	}
 	sendResponse(resp, w, r)
 }
