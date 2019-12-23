@@ -10,8 +10,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.4.2
-	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271 // indirect
-	google.golang.org/grpc v1.25.1
-	gopkg.in/yaml.v2 v2.2.7
+	google.golang.org/grpc v1.26.0
 	mellium.im/sasl v0.2.1 // indirect
 )
