@@ -72,6 +72,7 @@ services:
     depends_on:
       - manager-postgres
       - rabbit
+      - grpc_server
     environment:
       RABBIT_USER: guest
       RABBIT_PASSWORD: guest
@@ -88,6 +89,7 @@ services:
   message_server:
     build: ./message_office
     depends_on:
+      - scheduler
       - rabbit
     restart: on-failure
     environment:
