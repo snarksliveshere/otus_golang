@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM golang:1.13.1 as builder
 LABEL maintainer="snarksliveshere"
 RUN mkdir -p /opt/msg_service
 WORKDIR /opt/msg_service

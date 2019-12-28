@@ -8,9 +8,6 @@ import (
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/proto"
 	"google.golang.org/grpc"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 type ServerCalendar struct {
@@ -23,11 +20,12 @@ var (
 
 func Server(logg *logrus.Logger, conf *config.AppConfig) {
 	log = logg
+	log.Infof("start grpc, conf #%v", conf)
 	storage = pg_repository.CreateStorageInstance(log, conf)
-	stopCh := make(chan os.Signal, 1)
-	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
+	//stopCh := make(chan os.Signal, 1)
+	//signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
 	goGRPC(conf)
-	<-stopCh
+	//<-stopCh
 }
 
 func goGRPC(conf *config.AppConfig) {
