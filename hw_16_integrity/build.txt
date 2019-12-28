@@ -434,3 +434,91 @@ Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_me
 [33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
 [33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
 [33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[34mrabbit              |[0m 2019-12-28 13:23:20.042 [warning] <0.820.0> closing AMQP connection <0.820.0> (172.30.99.60:47488 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
+[34mrabbit              |[0m client unexpectedly closed TCP connection
+[36;1mhw_16_integrity_message_server_1 exited with code 2
+[0m[32;1mhw_16_integrity_message_server_1 exited with code 2
+[0m[34mrabbit              |[0m 2019-12-28 13:23:22.758 [warning] <0.804.0> closing AMQP connection <0.804.0> (172.30.99.55:47258 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
+[34mrabbit              |[0m client unexpectedly closed TCP connection
+[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""[33;1mhw_16_integrity_scheduler_1 exited with code 2
+[0m[34mrabbit              |[0m Stopping and halting node rabbit@1e72fe7a3f35 ...
+[34mrabbit              |[0m 2019-12-28 13:23:26.833 [info] <0.1048.0> RabbitMQ is asked to stop...
+[34mrabbit              |[0m 2019-12-28 13:23:26.882 [info] <0.1048.0> Stopping RabbitMQ applications and their dependencies in the following order:
+[34mrabbit              |[0m     rabbitmq_management
+[34mrabbit              |[0m     amqp_client
+[34mrabbit              |[0m     rabbitmq_web_dispatch
+[34mrabbit              |[0m     cowboy
+[34mrabbit              |[0m     cowlib
+[34mrabbit              |[0m     rabbitmq_management_agent
+[34mrabbit              |[0m     rabbit
+[34mrabbit              |[0m     mnesia
+[34mrabbit              |[0m     rabbit_common
+[34mrabbit              |[0m     sysmon_handler
+[34mrabbit              |[0m     os_mon
+[34mrabbit              |[0m     ra
+[34mrabbit              |[0m 2019-12-28 13:23:26.882 [info] <0.1048.0> Stopping application 'rabbitmq_management'
+[34mrabbit              |[0m 2019-12-28 13:23:26.883 [warning] <0.636.0> RabbitMQ HTTP listener registry could not find context rabbitmq_management_tls
+[34mrabbit              |[0m 2019-12-28 13:23:26.884 [info] <0.43.0> Application rabbitmq_management exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.884 [info] <0.1048.0> Stopping application 'amqp_client'
+[34mrabbit              |[0m 2019-12-28 13:23:26.886 [info] <0.43.0> Application amqp_client exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.886 [info] <0.1048.0> Stopping application 'rabbitmq_web_dispatch'
+[34mrabbit              |[0m 2019-12-28 13:23:26.887 [info] <0.43.0> Application rabbitmq_web_dispatch exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.887 [info] <0.1048.0> Stopping application 'cowboy'
+[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.1048.0> Stopping application 'cowlib'
+[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.43.0> Application cowboy exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.43.0> Application cowlib exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.1048.0> Stopping application 'rabbitmq_management_agent'
+[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.43.0> Application rabbitmq_management_agent exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.1048.0> Stopping application 'rabbit'
+[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping unregistration.
+[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.630.0> stopped TCP listener on [::]:5672
+[34mrabbit              |[0m 2019-12-28 13:23:26.892 [info] <0.555.0> Closing all connections in vhost '/' on node 'rabbit@1e72fe7a3f35' because the vhost is stopping
+[34mrabbit              |[0m 2019-12-28 13:23:27.017 [info] <0.583.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent'
+[33mgrpc exited with code 0
+[0m[34mrabbit              |[0m 2019-12-28 13:23:27.097 [info] <0.583.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent' is stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.097 [info] <0.580.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient'
+[34mrabbit              |[0m 2019-12-28 13:23:27.277 [info] <0.580.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient' is stopped
+[36mdbpg                |[0m 2019-12-28 13:23:27.293 UTC [1] LOG:  received smart shutdown request
+[34mrabbit              |[0m 2019-12-28 13:23:27.315 [info] <0.43.0> Application rabbit exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.315 [info] <0.1048.0> Stopping application 'mnesia'
+[34mrabbit              |[0m 2019-12-28 13:23:27.341 [info] <0.43.0> Application mnesia exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.341 [info] <0.1048.0> Stopping application 'rabbit_common'
+[34mrabbit              |[0m 2019-12-28 13:23:27.342 [info] <0.43.0> Application rabbit_common exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.342 [info] <0.1048.0> Stopping application 'sysmon_handler'
+[34mrabbit              |[0m 2019-12-28 13:23:27.343 [info] <0.43.0> Application sysmon_handler exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.344 [info] <0.1048.0> Stopping application 'os_mon'
+[34mrabbit              |[0m 2019-12-28 13:23:27.345 [info] <0.43.0> Application os_mon exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.345 [info] <0.1048.0> Stopping application 'ra'
+[36mdbpg                |[0m 2019-12-28 13:23:27.362 UTC [1] LOG:  background worker "logical replication launcher" (PID 49) exited with exit code 1
+[36mdbpg                |[0m 2019-12-28 13:23:27.362 UTC [44] LOG:  shutting down
+[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.43.0> Application ra exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.1048.0> Successfully stopped RabbitMQ and its dependencies
+[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.1048.0> Halting Erlang VM with the following applications:
+[34mrabbit              |[0m     aten
+[34mrabbit              |[0m     stdout_formatter
+[34mrabbit              |[0m     ranch
+[34mrabbit              |[0m     gen_batch_server
+[34mrabbit              |[0m     credentials_obfuscation
+[34mrabbit              |[0m     xmerl
+[34mrabbit              |[0m     ssl
+[34mrabbit              |[0m     inets
+[34mrabbit              |[0m     public_key
+[34mrabbit              |[0m     asn1
+[34mrabbit              |[0m     observer_cli
+[34mrabbit              |[0m     tools
+[34mrabbit              |[0m     recon
+[34mrabbit              |[0m     crypto
+[34mrabbit              |[0m     jsx
+[34mrabbit              |[0m     lager
+[34mrabbit              |[0m     goldrush
+[34mrabbit              |[0m     compiler
+[34mrabbit              |[0m     syntax_tools
+[34mrabbit              |[0m     sasl
+[34mrabbit              |[0m     stdlib
+[34mrabbit              |[0m     kernel
+[34mrabbit              |[0m Gracefully halting Erlang VM
+[36mdbpg                |[0m 2019-12-28 13:23:28.050 UTC [1] LOG:  database system is shut down
+[36mdbpg exited with code 0
+[0m[34mrabbit exited with code 0
+[0m
