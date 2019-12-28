@@ -68,6 +68,7 @@ services:
 
   scheduler:
     build: ./scheduler
+    container_name: scheduler
     restart: on-failure
     depends_on:
       - manager-postgres
@@ -88,6 +89,7 @@ services:
 
   message_server:
     build: ./message_office
+    container_name: message_server
     depends_on:
       - scheduler
       - rabbit
@@ -101,3 +103,20 @@ services:
     networks:
       apinet:
         ipv4_address: 172.30.99.60
+
+  client_server:
+    build: ./client
+    container_name: client
+    depends_on:
+      - scheduler
+      - message_server
+      - grpc_server
+    restart: on-failure
+    environment:
+      WEB_PORT: 8888
+      GRPC_PORT: 50054
+      LISTEN_IP: grpc
+      LOG_LEVEL: info
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.70

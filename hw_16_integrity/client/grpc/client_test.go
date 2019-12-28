@@ -4,12 +4,34 @@ import (
 	"context"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/client/config"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/client/proto"
 	"google.golang.org/grpc"
+	"log"
 	"testing"
 	"time"
 )
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
+var (
+	conf config.AppConfig
+	cc   *grpc.ClientConn
+)
+
+func init() {
+	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
+	var err error
+	cc, err = grpc.Dial(conf.ListenIP+":"+conf.GRPCPort, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("cant connect to host: %s, port: %s, error:%s", conf.ListenIP, conf.GRPCPort, err.Error())
+	}
+}
 
 func TestSendCreateEventMessage(t *testing.T) {
 	cases := []struct {
@@ -43,10 +65,6 @@ func TestSendCreateEventMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
@@ -96,10 +114,6 @@ func TestSendDeleteEventMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
@@ -148,10 +162,6 @@ func TestSendUpdateEventMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
@@ -213,10 +223,6 @@ func TestSendGetEventsForDayMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestCreateEvent(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestCreateEvent(),  err time: %s", c.time)
@@ -265,10 +271,6 @@ func TestSendGetEventsForMonthMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestSendGetEventsForMonthMessage(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestSendGetEventsForMonthMessage(),  err time: %s", c.time)
@@ -332,10 +334,6 @@ func TestSendGetEventsForIntervalMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestSendGetEventsForIntervalMessage(), resp.status: %s", c.status)
-		}
 		timeS, err := createTimeStampFromTimeString(c.time)
 		if err != nil {
 			t.Errorf("TestSendGetEventsForIntervalMessage(),  err time: %s", c.time)
@@ -391,10 +389,6 @@ func TestDummyGetEventForTimeIntervalMessage(t *testing.T) {
 
 	for _, c := range cases {
 		ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		cc, err := grpc.Dial("0.0.0.0:"+config.ConfigPort, grpc.WithInsecure())
-		if err != nil {
-			t.Errorf("TestDummyCreateEvent(), resp.status: %s", c.status)
-		}
 		from, till, err := getTimestampsInterval()
 		if err != nil {
 			t.Errorf("TestDummyCreateEvent(), resp.status: %s", c.status)

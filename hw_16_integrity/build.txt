@@ -1,125 +1,213 @@
+11.3-alpine: Pulling from library/postgres
+Digest: sha256:1a43118a01dc1909be0b9d830b3d197e97f0977f01b82b688ad9fd267f838673
+Status: Downloaded newer image for postgres:11.3-alpine
+3-management: Pulling from library/rabbitmq
+Digest: sha256:e1ddebdb52d770a6d1f9265543965615c86c23f705f67c44f0cef34e5dc2ba70
+Status: Downloaded newer image for rabbitmq:3-management
 Step 1/12 : FROM golang:1.13.1 as builder
+1.13.1: Pulling from library/golang
+Digest: sha256:61e2bd591355d9c1ece9399e461d91a65beff8a4081df2dce7cd89f42ab1ee76
+Status: Downloaded newer image for golang:1.13.1
  ---> 52b59e9ead8e
 Step 2/12 : LABEL maintainer="snarksliveshere"
- ---> Using cache
- ---> 34695085d783
+ ---> Running in 12847830a514
+Removing intermediate container 12847830a514
+ ---> 6b7c0cff1a57
 Step 3/12 : RUN mkdir -p /opt/reg_service
- ---> Using cache
- ---> 1dd697933dc2
+ ---> Running in 260efeaa2263
+Removing intermediate container 260efeaa2263
+ ---> 9797513d2640
 Step 4/12 : WORKDIR /opt/reg_service
- ---> Using cache
- ---> e42766202afd
+ ---> Running in 537380eaf90a
+Removing intermediate container 537380eaf90a
+ ---> 02f56431ab4e
 Step 5/12 : COPY go.mod .
- ---> Using cache
- ---> a1be19ec04a3
+ ---> 01aafe1dd90b
 Step 6/12 : COPY go.sum .
- ---> Using cache
- ---> 32f6acbd22fd
+ ---> 7ea0d8b189e4
 Step 7/12 : RUN go mod download
- ---> Using cache
- ---> ac5b4a8f117b
+ ---> Running in 664fe811eb2c
+[91mgo: finding cloud.google.com/go v0.26.0
+[0m[91mgo: finding github.com/BurntSushi/toml v0.3.1
+[0m[91mgo: finding github.com/census-instrumentation/opencensus-proto v0.2.1
+[0m[91mgo: finding github.com/client9/misspell v0.3.4
+[0m[91mgo: finding github.com/davecgh/go-spew v1.1.1
+[0m[91mgo: finding github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473
+[0m[91mgo: finding github.com/envoyproxy/protoc-gen-validate v0.1.0
+[0m[91mgo: finding github.com/go-pg/migrations v6.7.3+incompatible
+[0m[91mgo: finding github.com/go-pg/pg v8.0.6+incompatible
+[0m[91mgo: finding github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+[0m[91mgo: finding github.com/golang/mock v1.1.1
+[0m[91mgo: finding github.com/golang/protobuf v1.3.2
+[0m[91mgo: finding github.com/google/go-cmp v0.2.0
+[0m[91mgo: finding github.com/gorilla/mux v1.7.3
+[0m[91mgo: finding github.com/jinzhu/inflection v1.0.0
+[0m[91mgo: finding github.com/kelseyhightower/envconfig v1.4.0
+[0m[91mgo: finding github.com/konsorten/go-windows-terminal-sequences v1.0.1
+[0m[91mgo: finding github.com/pmezard/go-difflib v1.0.0
+[0m[91mgo: finding github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
+[0m[91mgo: finding github.com/sirupsen/logrus v1.4.2
+[0m[91mgo: finding github.com/stretchr/objx v0.1.1
+[0m[91mgo: finding github.com/stretchr/testify v1.2.2
+[0m[91mgo: finding golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+[0m[91mgo: finding golang.org/x/exp v0.0.0-20190121172915-509febef88a4
+[0m[91mgo: finding golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3
+[0m[91mgo: finding golang.org/x/net v0.0.0-20190311183353-d8887717615a
+[0m[91mgo: finding golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+[0m[91mgo: finding golang.org/x/sync v0.0.0-20190423024810-112230192c58
+[0m[91mgo: finding golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+[0m[91mgo: finding golang.org/x/text v0.3.0
+[0m[91mgo: finding golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135
+[0m[91mgo: finding google.golang.org/appengine v1.4.0
+[0m[91mgo: finding google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
+[0m[91mgo: finding google.golang.org/grpc v1.26.0
+[0m[91mgo: finding honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc
+[0m[91mgo: finding mellium.im/sasl v0.2.1
+[0mRemoving intermediate container 664fe811eb2c
+ ---> adf55089f2bb
 Step 8/12 : COPY . .
- ---> 785e2b9303b9
+ ---> c23c66227124
 Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/reg_service
- ---> Running in 339be6e048ab
-Removing intermediate container 339be6e048ab
- ---> bd07f86a9bb0
+ ---> Running in ea9f00baba7b
+Removing intermediate container ea9f00baba7b
+ ---> 52432203f053
 
 Step 10/12 : FROM alpine:latest
+latest: Pulling from library/alpine
+Digest: sha256:2171658620155679240babee0a7714f6509fae66898db422ad803b951257db78
+Status: Downloaded newer image for alpine:latest
  ---> cc0abc535e36
 Step 11/12 : COPY --from=builder /opt/service/reg_service /bin/reg_service
- ---> aaf0237e31f0
+ ---> 9af6d90ddc2e
 Step 12/12 : ENTRYPOINT ["/bin/reg_service"]
- ---> Running in 93d0943a3fd8
-Removing intermediate container 93d0943a3fd8
- ---> c32a9d28fd36
+ ---> Running in 94137ad9e227
+Removing intermediate container 94137ad9e227
+ ---> e445411e8057
 
-Successfully built c32a9d28fd36
+Successfully built e445411e8057
 Successfully tagged hw_16_integrity_grpc_server:latest
 Step 1/12 : FROM golang:1.13.1 as builder
  ---> 52b59e9ead8e
 Step 2/12 : LABEL maintainer="snarksliveshere"
  ---> Using cache
- ---> 34695085d783
+ ---> 6b7c0cff1a57
 Step 3/12 : RUN mkdir -p /opt/sched_service
- ---> Using cache
- ---> 0a89fb1b3203
+ ---> Running in 4cb5e0f3efec
+Removing intermediate container 4cb5e0f3efec
+ ---> 0f153a25ba7c
 Step 4/12 : WORKDIR /opt/sched_service
- ---> Using cache
- ---> a42e38e1aea4
+ ---> Running in 25935a124147
+Removing intermediate container 25935a124147
+ ---> 542edc827e9a
 Step 5/12 : COPY go.mod .
- ---> Using cache
- ---> 12fd5f2b6ca5
+ ---> 48283e7f7233
 Step 6/12 : COPY go.sum .
- ---> Using cache
- ---> 275a57cd598c
+ ---> 14094120fc4c
 Step 7/12 : RUN go mod download
- ---> Using cache
- ---> 9d12d0c300a9
+ ---> Running in f6e42ae98a2f
+[91mgo: finding cloud.google.com/go v0.26.0
+[0m[91mgo: finding github.com/BurntSushi/toml v0.3.1
+[0m[91mgo: finding github.com/census-instrumentation/opencensus-proto v0.2.1
+[0m[91mgo: finding github.com/client9/misspell v0.3.4
+[0m[91mgo: finding github.com/davecgh/go-spew v1.1.1
+[0m[91mgo: finding github.com/envoyproxy/go-control-plane v0.9.0
+[0m[91mgo: finding github.com/envoyproxy/protoc-gen-validate v0.1.0
+[0m[91mgo: finding github.com/go-pg/pg v8.0.6+incompatible
+[0m[91mgo: finding github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+[0m[91mgo: finding github.com/golang/mock v1.1.1
+[0m[91mgo: finding github.com/golang/protobuf v1.3.2
+[0m[91mgo: finding github.com/google/go-cmp v0.2.0
+[0m[91mgo: finding github.com/jinzhu/inflection v1.0.0
+[0m[91mgo: finding github.com/kelseyhightower/envconfig v1.4.0
+[0m[91mgo: finding github.com/konsorten/go-windows-terminal-sequences v1.0.1
+[0m[91mgo: finding github.com/pmezard/go-difflib v1.0.0
+[0m[91mgo: finding github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
+[0m[91mgo: finding github.com/robfig/cron v1.2.0
+[0m[91mgo: finding github.com/sirupsen/logrus v1.4.2
+[0m[91mgo: finding github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
+[0m[91mgo: finding github.com/stretchr/objx v0.1.1
+[0m[91mgo: finding github.com/stretchr/testify v1.2.2
+[0m[91mgo: finding golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+[0m[91mgo: finding golang.org/x/exp v0.0.0-20190121172915-509febef88a4
+[0m[91mgo: finding golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3
+[0m[91mgo: finding golang.org/x/net v0.0.0-20190311183353-d8887717615a
+[0m[91mgo: finding golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+[0m[91mgo: finding golang.org/x/sync v0.0.0-20190423024810-112230192c58
+[0m[91mgo: finding golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+[0m[91mgo: finding golang.org/x/text v0.3.0
+[0m[91mgo: finding golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135
+[0m[91mgo: finding google.golang.org/appengine v1.4.0
+[0m[91mgo: finding google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
+[0m[91mgo: finding google.golang.org/grpc v1.25.1
+[0m[91mgo: finding gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405
+[0m[91mgo: finding gopkg.in/yaml.v2 v2.2.7
+[0m[91mgo: finding honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc
+[0m[91mgo: finding mellium.im/sasl v0.2.1
+[0mRemoving intermediate container f6e42ae98a2f
+ ---> 3774da882469
 Step 8/12 : COPY . .
- ---> Using cache
- ---> daca4a03431b
+ ---> f811094454bb
 Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/sched_service
- ---> Using cache
- ---> 22c73b8f54ab
+ ---> Running in 0806dfb215ee
+Removing intermediate container 0806dfb215ee
+ ---> ba408815ff3e
 
 Step 10/12 : FROM alpine:latest
  ---> cc0abc535e36
 Step 11/12 : COPY --from=builder /opt/service/sched_service /bin/sched_service
- ---> Using cache
- ---> bfd1482c2f6d
+ ---> 9793383ca104
 Step 12/12 : ENTRYPOINT ["/bin/sched_service"]
- ---> Using cache
- ---> cdcb85b39894
+ ---> Running in 1e2811e19d5d
+Removing intermediate container 1e2811e19d5d
+ ---> d67fdedb7186
 
-Successfully built cdcb85b39894
+Successfully built d67fdedb7186
 Successfully tagged hw_16_integrity_scheduler:latest
 Step 1/12 : FROM golang:1.13.1 as builder
  ---> 52b59e9ead8e
 Step 2/12 : LABEL maintainer="snarksliveshere"
  ---> Using cache
- ---> 34695085d783
+ ---> 6b7c0cff1a57
 Step 3/12 : RUN mkdir -p /opt/msg_service
- ---> Using cache
- ---> a443332a71a3
+ ---> Running in eb703a502a0d
+Removing intermediate container eb703a502a0d
+ ---> 1e4de7be32a1
 Step 4/12 : WORKDIR /opt/msg_service
- ---> Using cache
- ---> e49d702eb2bf
+ ---> Running in 0ee68b9d6ee8
+Removing intermediate container 0ee68b9d6ee8
+ ---> 0d8539d6b322
 Step 5/12 : COPY go.mod .
- ---> Using cache
- ---> 69514012518d
+ ---> ba6529fc2e94
 Step 6/12 : COPY go.sum .
- ---> Using cache
- ---> b95abd47b77d
+ ---> baf4c145cc89
 Step 7/12 : RUN go mod download
- ---> Using cache
- ---> a113e4072063
+ ---> Running in e18dc09cf098
+[91mgo: finding github.com/kelseyhightower/envconfig v1.4.0
+[0m[91mgo: finding github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
+[0mRemoving intermediate container e18dc09cf098
+ ---> 342999132694
 Step 8/12 : COPY . .
- ---> Using cache
- ---> 922d602264f7
+ ---> e8ce06456536
 Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/msg_service
- ---> Using cache
- ---> 2a8b62c726dd
+ ---> Running in 6e50d8806893
+Removing intermediate container 6e50d8806893
+ ---> 445ef4d235d4
 
 Step 10/12 : FROM alpine:latest
  ---> cc0abc535e36
 Step 11/12 : COPY --from=builder /opt/service/msg_service /bin/msg_service
- ---> Using cache
- ---> 99827c83b5a4
+ ---> 06f723a1eeb7
 Step 12/12 : ENTRYPOINT ["/bin/msg_service"]
- ---> Using cache
- ---> 819fd8d605ff
+ ---> Running in c8dcbdee9835
+Removing intermediate container c8dcbdee9835
+ ---> 94b14ee28143
 
-Successfully built 819fd8d605ff
+Successfully built 94b14ee28143
 Successfully tagged hw_16_integrity_message_server:latest
 Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_message_server_1
 [36mdbpg                |[0m The files belonging to this database system will be owned by user "postgres".
 [36mdbpg                |[0m This user must also own the server process.
 [36mdbpg                |[0m 
-[33mgrpc                |[0m time="2019-12-28T13:21:09Z" level=info msg="start web server" app=simple_app_calendar
-[33mgrpc                |[0m time="2019-12-28T13:21:09Z" level=info msg="start grpc server" app=simple_app_calendar
-[33mgrpc                |[0m time="2019-12-28T13:21:09Z" level=info msg="start grpc, conf #&{{postgres dbpg 5432 md secret md_calendar} {50054 8888 0.0.0.0} info}" app=simple_app_calendar
-[33mgrpc                |[0m time="2019-12-28T13:21:09Z" level=info msg="dial tcp 172.30.99.51:5432: connect: connection refused" app=simple_app_calendar
 [36mdbpg                |[0m The database cluster will be initialized with locale "en_US.utf8".
 [36mdbpg                |[0m The default database encoding has accordingly been set to "UTF8".
 [36mdbpg                |[0m The default text search configuration will be set to "english".
@@ -127,72 +215,45 @@ Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_me
 [36mdbpg                |[0m Data page checksums are disabled.
 [36mdbpg                |[0m 
 [36mdbpg                |[0m fixing permissions on existing directory /var/lib/postgresql/data ... ok
-[32mmessage_server_1    |[0m 2019/12/28 13:21:27 Failed to connect to RabbitMQ: dial tcp 172.30.99.53:5672: connect: connection refused
-[35mscheduler_1         |[0m 2019/12/28 13:21:17 Failed to connect to RabbitMQ: dial tcp 172.30.99.53:5672: connect: connection refused
-[33mgrpc                |[0m time="2019-12-28T13:21:09Z" level=info msg="Run web webApi server: 0.0.0.0:8888" app=simple_app_calendar
 [36mdbpg                |[0m creating subdirectories ... ok
+[32mmessage_server_1    |[0m 2019/12/28 13:58:04  [*] Waiting for messages. To exit press CTRL+C
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags:   [ ] drop_unroutable_metric
+[33mgrpc                |[0m time="2019-12-28T13:57:50Z" level=info msg="start web server" app=simple_app_calendar
+[35mscheduler_1         |[0m 2019/12/28 13:57:57 Failed to connect to RabbitMQ: dial tcp 172.30.99.53:5672: connect: connection refused
+[33mgrpc                |[0m time="2019-12-28T13:57:50Z" level=info msg="start grpc server" app=simple_app_calendar
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags:   [ ] empty_basic_get_metric
+[33mgrpc                |[0m time="2019-12-28T13:57:50Z" level=info msg="start grpc, conf #&{{postgres dbpg 5432 md secret md_calendar} {50054 8888 0.0.0.0} info}" app=simple_app_calendar
 [36mdbpg                |[0m selecting default max_connections ... 100
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags:   [ ] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags:   [ ] quorum_queue
+[33mgrpc                |[0m time="2019-12-28T13:57:50Z" level=info msg="dial tcp 172.30.99.51:5432: connect: connection refused" app=simple_app_calendar
+[33mgrpc                |[0m time="2019-12-28T13:57:50Z" level=info msg="Run web webApi server: 0.0.0.0:8888" app=simple_app_calendar
 [36mdbpg                |[0m selecting default shared_buffers ... 128MB
 [36mdbpg                |[0m selecting dynamic shared memory implementation ... posix
 [36mdbpg                |[0m creating configuration files ... ok
 [36mdbpg                |[0m running bootstrap script ... ok
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags:   [ ] virtual_host_metadata
 [36mdbpg                |[0m performing post-bootstrap initialization ... sh: locale: not found
-[36mdbpg                |[0m 2019-12-28 13:21:06.996 UTC [26] WARNING:  no usable system locales were found
+[36mdbpg                |[0m 2019-12-28 13:57:43.892 UTC [26] WARNING:  no usable system locales were found
+[34mrabbit              |[0m 2019-12-28 13:57:53.363 [info] <0.8.0> Feature flags: feature flag states written to disk: yes
 [36mdbpg                |[0m ok
+[34mrabbit              |[0m 2019-12-28 13:57:54.329 [info] <0.268.0> ra: meta data store initialised. 0 record(s) recovered
 [36mdbpg                |[0m syncing data to disk ... 
 [36mdbpg                |[0m WARNING: enabling "trust" authentication for local connections
 [36mdbpg                |[0m You can change this by editing pg_hba.conf or using the option -A, or
 [36mdbpg                |[0m --auth-local and --auth-host, the next time you run initdb.
+[34mrabbit              |[0m 2019-12-28 13:57:54.330 [info] <0.273.0> WAL: recovering []
+[34mrabbit              |[0m 2019-12-28 13:57:54.331 [info] <0.277.0> 
+[34mrabbit              |[0m  Starting RabbitMQ 3.8.2 on Erlang 22.2.1
+[34mrabbit              |[0m  Copyright (c) 2007-2019 Pivotal Software, Inc.
+[34mrabbit              |[0m  Licensed under the MPL 1.1. Website: https://rabbitmq.com
 [36mdbpg                |[0m ok
 [36mdbpg                |[0m 
 [36mdbpg                |[0m Success. You can now start the database server using:
 [36mdbpg                |[0m 
 [36mdbpg                |[0m     pg_ctl -D /var/lib/postgresql/data -l logfile start
 [36mdbpg                |[0m 
-[36mdbpg                |[0m waiting for server to start....2019-12-28 13:21:17.024 UTC [30] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-[36mdbpg                |[0m 2019-12-28 13:21:17.209 UTC [31] LOG:  database system was shut down at 2019-12-28 13:21:08 UTC
-[36mdbpg                |[0m 2019-12-28 13:21:17.310 UTC [30] LOG:  database system is ready to accept connections
-[36mdbpg                |[0m  done
-[36mdbpg                |[0m server started
-[36mdbpg                |[0m CREATE DATABASE
-[36mdbpg                |[0m 
-[36mdbpg                |[0m 
-[36mdbpg                |[0m /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/setup.sql
-[36mdbpg                |[0m CREATE SCHEMA
-[36mdbpg                |[0m CREATE TABLE
-[36mdbpg                |[0m CREATE TABLE
-[36mdbpg                |[0m INSERT 0 4
-[36mdbpg                |[0m INSERT 0 4
-[36mdbpg                |[0m 
-[36mdbpg                |[0m 
-[36mdbpg                |[0m waiting for server to shut down....2019-12-28 13:21:24.660 UTC [30] LOG:  received fast shutdown request
-[36mdbpg                |[0m 2019-12-28 13:21:24.841 UTC [30] LOG:  aborting any active transactions
-[36mdbpg                |[0m 2019-12-28 13:21:24.842 UTC [30] LOG:  background worker "logical replication launcher" (PID 37) exited with exit code 1
-[36mdbpg                |[0m 2019-12-28 13:21:24.842 UTC [32] LOG:  shutting down
-[36mdbpg                |[0m .2019-12-28 13:21:26.242 UTC [30] LOG:  database system is shut down
-[36mdbpg                |[0m  done
-[36mdbpg                |[0m server stopped
-[36mdbpg                |[0m 
-[36mdbpg                |[0m PostgreSQL init process complete; ready for start up.
-[36mdbpg                |[0m 
-[36mdbpg                |[0m 2019-12-28 13:21:26.407 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-[36mdbpg                |[0m 2019-12-28 13:21:26.407 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-[36mdbpg                |[0m 2019-12-28 13:21:26.574 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-[36mdbpg                |[0m 2019-12-28 13:21:26.859 UTC [43] LOG:  database system was shut down at 2019-12-28 13:21:25 UTC
-[36mdbpg                |[0m 2019-12-28 13:21:27.000 UTC [1] LOG:  database system is ready to accept connections
-[34mrabbit              |[0m 2019-12-28 13:21:28.165 [info] <0.8.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:28.165 [info] <0.8.0> Feature flags:   [ ] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:28.165 [info] <0.8.0> Feature flags:   [ ] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:28.165 [info] <0.8.0> Feature flags:   [ ] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:28.165 [info] <0.8.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:28.166 [info] <0.8.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:28.166 [info] <0.8.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:28.800 [info] <0.268.0> ra: meta data store initialised. 0 record(s) recovered
-[34mrabbit              |[0m 2019-12-28 13:21:28.800 [info] <0.273.0> WAL: recovering []
-[34mrabbit              |[0m 2019-12-28 13:21:28.815 [info] <0.277.0> 
-[34mrabbit              |[0m  Starting RabbitMQ 3.8.2 on Erlang 22.2.1
-[34mrabbit              |[0m  Copyright (c) 2007-2019 Pivotal Software, Inc.
-[34mrabbit              |[0m  Licensed under the MPL 1.1. Website: https://rabbitmq.com
 [34mrabbit              |[0m 
 [34mrabbit              |[0m   ##  ##      RabbitMQ 3.8.2
 [34mrabbit              |[0m   ##  ##
@@ -209,242 +270,264 @@ Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_me
 [34mrabbit              |[0m 
 [34mrabbit              |[0m   Config file(s): /etc/rabbitmq/rabbitmq.conf
 [34mrabbit              |[0m 
-[34mrabbit              |[0m   Starting broker...2019-12-28 13:21:28.815 [info] <0.277.0> 
-[34mrabbit              |[0m  node           : rabbit@1e72fe7a3f35
+[34mrabbit              |[0m   Starting broker...2019-12-28 13:57:54.331 [info] <0.277.0> 
+[34mrabbit              |[0m  node           : rabbit@7af17f08ac3d
 [34mrabbit              |[0m  home dir       : /var/lib/rabbitmq
 [34mrabbit              |[0m  config file(s) : /etc/rabbitmq/rabbitmq.conf
-[34mrabbit              |[0m  cookie hash    : XW84mSpOZpL2eRfBEQHqLw==
+[34mrabbit              |[0m  cookie hash    : kv/GEJjlgtxp/azyyJm1iQ==
 [34mrabbit              |[0m  log(s)         : <stdout>
-[34mrabbit              |[0m  database dir   : /var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35
-[34mrabbit              |[0m 2019-12-28 13:21:28.843 [info] <0.277.0> Running boot step pre_boot defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:28.843 [info] <0.277.0> Running boot step rabbit_core_metrics defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:28.843 [info] <0.277.0> Running boot step rabbit_alarm defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:29.236 [info] <0.283.0> Memory high watermark set to 3172 MiB (3326386176 bytes) of 7930 MiB (8315965440 bytes) total
-[34mrabbit              |[0m 2019-12-28 13:21:29.636 [info] <0.285.0> Enabling free disk space monitoring
-[34mrabbit              |[0m 2019-12-28 13:21:29.636 [info] <0.285.0> Disk free limit set to 50MB
-[34mrabbit              |[0m 2019-12-28 13:21:29.641 [info] <0.277.0> Running boot step code_server_cache defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:29.641 [info] <0.277.0> Running boot step file_handle_cache defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:29.642 [info] <0.288.0> Limiting to approx 1048479 file handles (943629 sockets)
-[34mrabbit              |[0m 2019-12-28 13:21:29.642 [info] <0.289.0> FHC read buffering:  OFF
-[34mrabbit              |[0m 2019-12-28 13:21:29.642 [info] <0.289.0> FHC write buffering: ON
-[34mrabbit              |[0m 2019-12-28 13:21:29.649 [info] <0.277.0> Running boot step worker_pool defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:29.649 [info] <0.278.0> Will use 4 processes for default worker pool
-[34mrabbit              |[0m 2019-12-28 13:21:29.649 [info] <0.278.0> Starting worker pool 'worker_pool' with 4 processes in it
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Running boot step database defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Node database directory at /var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35 is empty. Assuming we need to join an existing cluster or initialise from scratch...
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Configured peer discovery backend: rabbit_peer_discovery_classic_config
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Will try to lock with peer discovery backend rabbit_peer_discovery_classic_config
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Peer discovery backend does not support locking, falling back to randomized delay
-[34mrabbit              |[0m 2019-12-28 13:21:29.650 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping randomized startup delay.
-[34mrabbit              |[0m 2019-12-28 13:21:29.651 [info] <0.277.0> All discovered existing cluster peers: 
-[34mrabbit              |[0m 2019-12-28 13:21:29.651 [info] <0.277.0> Discovered no peer nodes to cluster with. Some discovery backends can filter nodes out based on a readiness criteria. Enabling debug logging might help troubleshoot.
-[34mrabbit              |[0m 2019-12-28 13:21:29.653 [info] <0.43.0> Application mnesia exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:21:32.251 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:32.357 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:32.358 [info] <0.277.0> Feature flag `drop_unroutable_metric`: supported, attempt to enable...
-[34mrabbit              |[0m 2019-12-28 13:21:32.358 [info] <0.277.0> Feature flag `drop_unroutable_metric`: mark as enabled=state_changing
-[34mrabbit              |[0m 2019-12-28 13:21:32.368 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags:   [~] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags:   [ ] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.369 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.378 [info] <0.277.0> Feature flag `drop_unroutable_metric`: mark as enabled=true
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags:   [ ] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.390 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.399 [info] <0.277.0> Feature flag `empty_basic_get_metric`: supported, attempt to enable...
-[34mrabbit              |[0m 2019-12-28 13:21:32.399 [info] <0.277.0> Feature flag `empty_basic_get_metric`: mark as enabled=state_changing
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags:   [~] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.413 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.423 [info] <0.277.0> Feature flag `empty_basic_get_metric`: mark as enabled=true
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.438 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.451 [info] <0.277.0> Feature flag `implicit_default_bindings`: supported, attempt to enable...
-[34mrabbit              |[0m 2019-12-28 13:21:32.451 [info] <0.277.0> Feature flag `implicit_default_bindings`: mark as enabled=state_changing
-[34mrabbit              |[0m 2019-12-28 13:21:32.473 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags:   [~] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.474 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.490 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 0 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:32.490 [info] <0.277.0> Feature flag `implicit_default_bindings`: mark as enabled=true
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags:   [ ] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.506 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.525 [info] <0.277.0> Feature flag `quorum_queue`: supported, attempt to enable...
-[34mrabbit              |[0m 2019-12-28 13:21:32.526 [info] <0.277.0> Feature flag `quorum_queue`: mark as enabled=state_changing
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags:   [~] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:32.543 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:32.563 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:32.563 [info] <0.277.0> Feature flag `quorum_queue`:   migrating Mnesia table rabbit_queue...
-[34mrabbit              |[0m 2019-12-28 13:21:33.556 [info] <0.277.0> Feature flag `quorum_queue`:   migrating Mnesia table rabbit_durable_queue...
-[34mrabbit              |[0m 2019-12-28 13:21:36.172 [info] <0.277.0> Feature flag `quorum_queue`:   Mnesia tables migration done
-[34mrabbit              |[0m 2019-12-28 13:21:36.172 [info] <0.277.0> Feature flag `quorum_queue`: mark as enabled=true
-[34mrabbit              |[0m 2019-12-28 13:21:36.184 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:36.184 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.185 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.185 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:36.185 [info] <0.277.0> Feature flags:   [x] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:36.185 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:36.185 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:36.199 [info] <0.277.0> Feature flag `virtual_host_metadata`: supported, attempt to enable...
-[34mrabbit              |[0m 2019-12-28 13:21:36.199 [info] <0.277.0> Feature flag `virtual_host_metadata`: mark as enabled=state_changing
-[34mrabbit              |[0m 2019-12-28 13:21:36.211 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags:   [x] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags:   [~] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:36.212 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:36.221 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:36.787 [info] <0.277.0> Feature flag `virtual_host_metadata`: mark as enabled=true
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags: list of feature flags found:
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags:   [x] quorum_queue
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags:   [x] virtual_host_metadata
-[34mrabbit              |[0m 2019-12-28 13:21:36.802 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
-[34mrabbit              |[0m 2019-12-28 13:21:36.811 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping registration.
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step database_sync defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step feature_flags defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step codec_correctness_check defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step external_infrastructure defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step rabbit_registry defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step rabbit_queue_location_random defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step rabbit_event defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.020 [info] <0.277.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_all defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_exactly defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_nodes defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_priority_queue defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Priority queues enabled, real BQ is rabbit_variable_queue
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_queue_location_client_local defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_queue_location_min_masters defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step kernel_ready defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.021 [info] <0.277.0> Running boot step rabbit_sysmon_minder defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.022 [info] <0.277.0> Running boot step rabbit_epmd_monitor defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.071 [info] <0.527.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
-[34mrabbit              |[0m 2019-12-28 13:21:37.072 [info] <0.277.0> Running boot step guid_generator defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.175 [info] <0.277.0> Running boot step rabbit_node_monitor defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.175 [info] <0.533.0> Starting rabbit_node_monitor
-[34mrabbit              |[0m 2019-12-28 13:21:37.175 [info] <0.277.0> Running boot step delegate_sup defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.176 [info] <0.277.0> Running boot step rabbit_memory_monitor defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.176 [info] <0.277.0> Running boot step core_initialized defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.176 [info] <0.277.0> Running boot step upgrade_queues defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:37.202 [info] <0.277.0> message_store upgrades: 1 to apply
-[34mrabbit              |[0m 2019-12-28 13:21:37.202 [info] <0.277.0> message_store upgrades: Applying rabbit_variable_queue:move_messages_to_vhost_store
-[34mrabbit              |[0m 2019-12-28 13:21:37.202 [info] <0.277.0> message_store upgrades: No durable queues found. Skipping message store migration
-[34mrabbit              |[0m 2019-12-28 13:21:37.202 [info] <0.277.0> message_store upgrades: Removing the old message store data
-[34mrabbit              |[0m 2019-12-28 13:21:37.202 [info] <0.277.0> message_store upgrades: All upgrades applied successfully
-[34mrabbit              |[0m 2019-12-28 13:21:38.119 [info] <0.277.0> Running boot step rabbit_connection_tracking defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.119 [info] <0.277.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.119 [info] <0.277.0> Running boot step rabbit_exchange_parameters defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.119 [info] <0.277.0> Running boot step rabbit_mirror_queue_misc defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.120 [info] <0.277.0> Running boot step rabbit_policies defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_policy defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_queue_location_validator defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_vhost_limit defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Management plugin: using rates mode 'basic'
-[34mrabbit              |[0m 2019-12-28 13:21:38.121 [info] <0.277.0> Running boot step recovery defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.122 [info] <0.277.0> Running boot step load_core_definitions defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.122 [info] <0.277.0> Running boot step empty_db_check defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:38.122 [info] <0.277.0> Adding vhost '/' (description: 'Default virtual host')
-[35mhw_16_integrity_scheduler_1 exited with code 1
-[0m[32mhw_16_integrity_message_server_1 exited with code 1
-[0m[34mrabbit              |[0m 2019-12-28 13:21:39.360 [info] <0.576.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
-[34mrabbit              |[0m 2019-12-28 13:21:39.473 [info] <0.576.0> Starting message stores for vhost '/'
-[34mrabbit              |[0m 2019-12-28 13:21:39.473 [info] <0.580.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_transient": using rabbit_msg_store_ets_index to provide index
-[34mrabbit              |[0m 2019-12-28 13:21:39.474 [info] <0.576.0> Started message store of type transient for vhost '/'
-[34mrabbit              |[0m 2019-12-28 13:21:39.474 [info] <0.583.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": using rabbit_msg_store_ets_index to provide index
-[34mrabbit              |[0m 2019-12-28 13:21:39.475 [warning] <0.583.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
-[34mrabbit              |[0m 2019-12-28 13:21:39.476 [info] <0.576.0> Started message store of type persistent for vhost '/'
-[34mrabbit              |[0m 2019-12-28 13:21:39.477 [info] <0.277.0> Creating user 'guest'
-[34mrabbit              |[0m 2019-12-28 13:21:39.590 [info] <0.277.0> Setting user tags for user 'guest' to [administrator]
-[34mrabbit              |[0m 2019-12-28 13:21:39.710 [info] <0.277.0> Setting permissions for 'guest' in '/' to '.*', '.*', '.*'
-[34mrabbit              |[0m 2019-12-28 13:21:39.757 [info] <0.277.0> Running boot step rabbit_looking_glass defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.757 [info] <0.277.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.758 [info] <0.277.0> Running boot step background_gc defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.758 [info] <0.277.0> Running boot step connection_tracking defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.849 [info] <0.277.0> Setting up a table for connection tracking on this node: tracked_connection_on_node_rabbit@1e72fe7a3f35
-[34mrabbit              |[0m 2019-12-28 13:21:39.944 [info] <0.277.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost_on_node_rabbit@1e72fe7a3f35
-[34mrabbit              |[0m 2019-12-28 13:21:39.944 [info] <0.277.0> Running boot step routing_ready defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.944 [info] <0.277.0> Running boot step pre_flight defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.944 [info] <0.277.0> Running boot step notify_cluster defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.944 [info] <0.277.0> Running boot step networking defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.945 [info] <0.630.0> started TCP listener on [::]:5672
-[34mrabbit              |[0m 2019-12-28 13:21:39.946 [info] <0.277.0> Running boot step cluster_name defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.946 [info] <0.277.0> Running boot step direct_client defined by app rabbit
-[34mrabbit              |[0m 2019-12-28 13:21:39.971 [info] <0.680.0> Management plugin: HTTP (non-TLS) listener started on port 15672
-[34mrabbit              |[0m 2019-12-28 13:21:39.971 [info] <0.786.0> Statistics database started.
-[34mrabbit              |[0m 2019-12-28 13:21:39.971 [info] <0.785.0> Starting worker pool 'management_worker_pool' with 3 processes in it
-[34mrabbit              |[0m  completed with 3 plugins.
-[34mrabbit              |[0m 2019-12-28 13:21:40.333 [info] <0.8.0> Server startup complete; 3 plugins started.
+[34mrabbit              |[0m  database dir   : /var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d
+[36mdbpg                |[0m waiting for server to start....2019-12-28 13:57:50.099 UTC [30] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+[34mrabbit              |[0m 2019-12-28 13:57:54.343 [info] <0.277.0> Running boot step pre_boot defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:57:54.343 [info] <0.277.0> Running boot step rabbit_core_metrics defined by app rabbit
+[36mdbpg                |[0m 2019-12-28 13:57:50.244 UTC [31] LOG:  database system was shut down at 2019-12-28 13:57:44 UTC
+[34mrabbit              |[0m 2019-12-28 13:57:54.344 [info] <0.277.0> Running boot step rabbit_alarm defined by app rabbit
+[36mdbpg                |[0m 2019-12-28 13:57:50.286 UTC [30] LOG:  database system is ready to accept connections
+[34mrabbit              |[0m 2019-12-28 13:57:54.346 [info] <0.283.0> Memory high watermark set to 3172 MiB (3326386176 bytes) of 7930 MiB (8315965440 bytes) total
+[36mdbpg                |[0m  done
+[36mdbpg                |[0m server started
+[36mdbpg                |[0m CREATE DATABASE
+[34mrabbit              |[0m 2019-12-28 13:57:54.350 [info] <0.285.0> Enabling free disk space monitoring
+[34mrabbit              |[0m 2019-12-28 13:57:54.350 [info] <0.285.0> Disk free limit set to 50MB
+[36mdbpg                |[0m 
+[34mrabbit              |[0m 2019-12-28 13:57:54.352 [info] <0.277.0> Running boot step code_server_cache defined by app rabbit
+[36mdbpg                |[0m 
+[34mrabbit              |[0m 2019-12-28 13:57:54.352 [info] <0.277.0> Running boot step file_handle_cache defined by app rabbit
+[36mdbpg                |[0m /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/setup.sql
+[34mrabbit              |[0m 2019-12-28 13:57:54.352 [info] <0.288.0> Limiting to approx 1048479 file handles (943629 sockets)
+[36mdbpg                |[0m CREATE SCHEMA
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.289.0> FHC read buffering:  OFF
+[36mdbpg                |[0m CREATE TABLE
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.289.0> FHC write buffering: ON
+[36mdbpg                |[0m CREATE TABLE
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.277.0> Running boot step worker_pool defined by app rabbit
+[36mdbpg                |[0m INSERT 0 4
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.278.0> Will use 4 processes for default worker pool
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.278.0> Starting worker pool 'worker_pool' with 4 processes in it
+[36mdbpg                |[0m INSERT 0 4
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.277.0> Running boot step database defined by app rabbit
+[36mdbpg                |[0m 
+[36mdbpg                |[0m 
+[34mrabbit              |[0m 2019-12-28 13:57:54.353 [info] <0.277.0> Node database directory at /var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d is empty. Assuming we need to join an existing cluster or initialise from scratch...
+[36mdbpg                |[0m waiting for server to shut down....2019-12-28 13:57:55.964 UTC [30] LOG:  received fast shutdown request
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> Configured peer discovery backend: rabbit_peer_discovery_classic_config
+[36mdbpg                |[0m 2019-12-28 13:57:56.146 UTC [30] LOG:  aborting any active transactions
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> Will try to lock with peer discovery backend rabbit_peer_discovery_classic_config
+[36mdbpg                |[0m 2019-12-28 13:57:56.147 UTC [30] LOG:  background worker "logical replication launcher" (PID 37) exited with exit code 1
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> Peer discovery backend does not support locking, falling back to randomized delay
+[36mdbpg                |[0m 2019-12-28 13:57:56.148 UTC [32] LOG:  shutting down
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping randomized startup delay.
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> All discovered existing cluster peers: 
+[36mdbpg                |[0m .2019-12-28 13:57:57.358 UTC [30] LOG:  database system is shut down
+[34mrabbit              |[0m 2019-12-28 13:57:54.354 [info] <0.277.0> Discovered no peer nodes to cluster with. Some discovery backends can filter nodes out based on a readiness criteria. Enabling debug logging might help troubleshoot.
+[36mdbpg                |[0m  done
+[36mdbpg                |[0m server stopped
+[36mdbpg                |[0m 
+[36mdbpg                |[0m PostgreSQL init process complete; ready for start up.
+[36mdbpg                |[0m 
+[34mrabbit              |[0m 2019-12-28 13:57:54.355 [info] <0.43.0> Application mnesia exited with reason: stopped
+[36mdbpg                |[0m 2019-12-28 13:57:57.480 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+[36mdbpg                |[0m 2019-12-28 13:57:57.480 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+[34mrabbit              |[0m 2019-12-28 13:57:57.186 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[36mdbpg                |[0m 2019-12-28 13:57:57.577 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+[34mrabbit              |[0m 2019-12-28 13:57:57.262 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[36mdbpg                |[0m 2019-12-28 13:57:57.750 UTC [43] LOG:  database system was shut down at 2019-12-28 13:57:57 UTC
+[34mrabbit              |[0m 2019-12-28 13:57:57.262 [info] <0.277.0> Feature flag `drop_unroutable_metric`: supported, attempt to enable...
+[36mdbpg                |[0m 2019-12-28 13:57:57.848 UTC [1] LOG:  database system is ready to accept connections
+[34mrabbit              |[0m 2019-12-28 13:57:57.262 [info] <0.277.0> Feature flag `drop_unroutable_metric`: mark as enabled=state_changing
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags:   [~] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags:   [ ] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.278 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.288 [info] <0.277.0> Feature flag `drop_unroutable_metric`: mark as enabled=true
+[34mrabbit              |[0m 2019-12-28 13:57:57.298 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags:   [ ] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.299 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.308 [info] <0.277.0> Feature flag `empty_basic_get_metric`: supported, attempt to enable...
+[34mrabbit              |[0m 2019-12-28 13:57:57.308 [info] <0.277.0> Feature flag `empty_basic_get_metric`: mark as enabled=state_changing
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags:   [~] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.321 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.333 [info] <0.277.0> Feature flag `empty_basic_get_metric`: mark as enabled=true
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags:   [ ] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.349 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.360 [info] <0.277.0> Feature flag `implicit_default_bindings`: supported, attempt to enable...
+[34mrabbit              |[0m 2019-12-28 13:57:57.360 [info] <0.277.0> Feature flag `implicit_default_bindings`: mark as enabled=state_changing
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags:   [~] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.371 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.380 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 0 retries left
+[34mrabbit              |[0m 2019-12-28 13:57:57.380 [info] <0.277.0> Feature flag `implicit_default_bindings`: mark as enabled=true
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags:   [ ] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.393 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.402 [info] <0.277.0> Feature flag `quorum_queue`: supported, attempt to enable...
+[34mrabbit              |[0m 2019-12-28 13:57:57.403 [info] <0.277.0> Feature flag `quorum_queue`: mark as enabled=state_changing
+[34mrabbit              |[0m 2019-12-28 13:57:57.413 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:57.413 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.413 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:57.413 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:57.414 [info] <0.277.0> Feature flags:   [~] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:57.414 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:57.414 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:57.423 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2019-12-28 13:57:57.423 [info] <0.277.0> Feature flag `quorum_queue`:   migrating Mnesia table rabbit_queue...
+[34mrabbit              |[0m 2019-12-28 13:57:57.703 [info] <0.277.0> Feature flag `quorum_queue`:   migrating Mnesia table rabbit_durable_queue...
+[34mrabbit              |[0m 2019-12-28 13:57:58.423 [info] <0.277.0> Feature flag `quorum_queue`:   Mnesia tables migration done
+[34mrabbit              |[0m 2019-12-28 13:57:58.423 [info] <0.277.0> Feature flag `quorum_queue`: mark as enabled=true
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags:   [x] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags:   [ ] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:58.434 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:58.443 [info] <0.277.0> Feature flag `virtual_host_metadata`: supported, attempt to enable...
+[34mrabbit              |[0m 2019-12-28 13:57:58.443 [info] <0.277.0> Feature flag `virtual_host_metadata`: mark as enabled=state_changing
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags:   [x] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags:   [~] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:58.456 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:58.466 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2019-12-28 13:57:59.868 [info] <0.277.0> Feature flag `virtual_host_metadata`: mark as enabled=true
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags:   [x] drop_unroutable_metric
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags:   [x] quorum_queue
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags:   [x] virtual_host_metadata
+[34mrabbit              |[0m 2019-12-28 13:57:59.879 [info] <0.277.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2019-12-28 13:57:59.888 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2019-12-28 13:58:00.524 [info] <0.277.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2019-12-28 13:58:00.524 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping registration.
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step database_sync defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step feature_flags defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step codec_correctness_check defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step external_infrastructure defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step rabbit_registry defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step rabbit_queue_location_random defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step rabbit_event defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.525 [info] <0.277.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_all defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_exactly defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_mirror_queue_mode_nodes defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_priority_queue defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Priority queues enabled, real BQ is rabbit_variable_queue
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_queue_location_client_local defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.526 [info] <0.277.0> Running boot step rabbit_queue_location_min_masters defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.527 [info] <0.277.0> Running boot step kernel_ready defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.527 [info] <0.277.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.527 [info] <0.277.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.529 [info] <0.525.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+[34mrabbit              |[0m 2019-12-28 13:58:00.529 [info] <0.277.0> Running boot step guid_generator defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.730 [info] <0.277.0> Running boot step rabbit_node_monitor defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.731 [info] <0.531.0> Starting rabbit_node_monitor
+[34mrabbit              |[0m 2019-12-28 13:58:00.731 [info] <0.277.0> Running boot step delegate_sup defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.732 [info] <0.277.0> Running boot step rabbit_memory_monitor defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.733 [info] <0.277.0> Running boot step core_initialized defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.733 [info] <0.277.0> Running boot step upgrade_queues defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:00.759 [info] <0.277.0> message_store upgrades: 1 to apply
+[34mrabbit              |[0m 2019-12-28 13:58:00.759 [info] <0.277.0> message_store upgrades: Applying rabbit_variable_queue:move_messages_to_vhost_store
+[34mrabbit              |[0m 2019-12-28 13:58:00.759 [info] <0.277.0> message_store upgrades: No durable queues found. Skipping message store migration
+[34mrabbit              |[0m 2019-12-28 13:58:00.759 [info] <0.277.0> message_store upgrades: Removing the old message store data
+[34mrabbit              |[0m 2019-12-28 13:58:00.759 [info] <0.277.0> message_store upgrades: All upgrades applied successfully
+[34mrabbit              |[0m 2019-12-28 13:58:01.002 [info] <0.277.0> Running boot step rabbit_connection_tracking defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.002 [info] <0.277.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.002 [info] <0.277.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.003 [info] <0.277.0> Running boot step rabbit_mirror_queue_misc defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.003 [info] <0.277.0> Running boot step rabbit_policies defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.005 [info] <0.277.0> Running boot step rabbit_policy defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.005 [info] <0.277.0> Running boot step rabbit_queue_location_validator defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.006 [info] <0.277.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.006 [info] <0.277.0> Running boot step rabbit_vhost_limit defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.006 [info] <0.277.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+[34mrabbit              |[0m 2019-12-28 13:58:01.006 [info] <0.277.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+[34mrabbit              |[0m 2019-12-28 13:58:01.006 [info] <0.277.0> Management plugin: using rates mode 'basic'
+[34mrabbit              |[0m 2019-12-28 13:58:01.007 [info] <0.277.0> Running boot step recovery defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.008 [info] <0.277.0> Running boot step load_core_definitions defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.008 [info] <0.277.0> Running boot step empty_db_check defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.008 [info] <0.277.0> Adding vhost '/' (description: 'Default virtual host')
+[34mrabbit              |[0m 2019-12-28 13:58:01.645 [info] <0.573.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+[34mrabbit              |[0m 2019-12-28 13:58:01.756 [info] <0.573.0> Starting message stores for vhost '/'
+[34mrabbit              |[0m 2019-12-28 13:58:01.756 [info] <0.577.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_transient": using rabbit_msg_store_ets_index to provide index
+[34mrabbit              |[0m 2019-12-28 13:58:01.757 [info] <0.573.0> Started message store of type transient for vhost '/'
+[34mrabbit              |[0m 2019-12-28 13:58:01.758 [info] <0.580.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": using rabbit_msg_store_ets_index to provide index
+[34mrabbit              |[0m 2019-12-28 13:58:01.758 [warning] <0.580.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
+[34mrabbit              |[0m 2019-12-28 13:58:01.759 [info] <0.573.0> Started message store of type persistent for vhost '/'
+[34mrabbit              |[0m 2019-12-28 13:58:01.760 [info] <0.277.0> Creating user 'guest'
+[34mrabbit              |[0m 2019-12-28 13:58:01.797 [info] <0.277.0> Setting user tags for user 'guest' to [administrator]
+[34mrabbit              |[0m 2019-12-28 13:58:01.839 [info] <0.277.0> Setting permissions for 'guest' in '/' to '.*', '.*', '.*'
+[34mrabbit              |[0m 2019-12-28 13:58:01.923 [info] <0.277.0> Running boot step rabbit_looking_glass defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.923 [info] <0.277.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.923 [info] <0.277.0> Running boot step background_gc defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:01.923 [info] <0.277.0> Running boot step connection_tracking defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.015 [info] <0.277.0> Setting up a table for connection tracking on this node: tracked_connection_on_node_rabbit@7af17f08ac3d
+[34mrabbit              |[0m 2019-12-28 13:58:02.116 [info] <0.277.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost_on_node_rabbit@7af17f08ac3d
+[34mrabbit              |[0m 2019-12-28 13:58:02.116 [info] <0.277.0> Running boot step routing_ready defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.116 [info] <0.277.0> Running boot step pre_flight defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.117 [info] <0.277.0> Running boot step notify_cluster defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.117 [info] <0.277.0> Running boot step networking defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.119 [info] <0.626.0> started TCP listener on [::]:5672
+[34mrabbit              |[0m 2019-12-28 13:58:02.120 [info] <0.277.0> Running boot step cluster_name defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.120 [info] <0.277.0> Running boot step direct_client defined by app rabbit
+[34mrabbit              |[0m 2019-12-28 13:58:02.148 [info] <0.676.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+[34mrabbit              |[0m 2019-12-28 13:58:02.149 [info] <0.782.0> Statistics database started.
+[34mrabbit              |[0m 2019-12-28 13:58:02.149 [info] <0.781.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+[34mrabbit              |[0m 2019-12-28 13:58:02.294 [info] <0.8.0> Server startup complete; 3 plugins started.
 [34mrabbit              |[0m  * rabbitmq_management
 [34mrabbit              |[0m  * rabbitmq_management_agent
 [34mrabbit              |[0m  * rabbitmq_web_dispatch
-[34mrabbit              |[0m 2019-12-28 13:21:41.783 [info] <0.804.0> accepting AMQP connection <0.804.0> (172.30.99.55:47258 -> 172.30.99.53:5672)
-[34mrabbit              |[0m 2019-12-28 13:21:41.785 [info] <0.804.0> connection <0.804.0> (172.30.99.55:47258 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
-[34mrabbit              |[0m 2019-12-28 13:21:42.707 [info] <0.820.0> accepting AMQP connection <0.820.0> (172.30.99.60:47488 -> 172.30.99.53:5672)
-[34mrabbit              |[0m 2019-12-28 13:21:42.709 [info] <0.820.0> connection <0.820.0> (172.30.99.60:47488 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
-[33;1mscheduler_1         |[0m 
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
-[34mrabbit              |[0m 2019-12-28 13:23:20.042 [warning] <0.820.0> closing AMQP connection <0.820.0> (172.30.99.60:47488 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
+[34mrabbit              |[0m  completed with 3 plugins.
+[34mrabbit              |[0m 2019-12-28 13:58:03.423 [info] <0.794.0> accepting AMQP connection <0.794.0> (172.30.99.55:49028 -> 172.30.99.53:5672)
+[34mrabbit              |[0m 2019-12-28 13:58:03.488 [info] <0.794.0> connection <0.794.0> (172.30.99.55:49028 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
+[34mrabbit              |[0m 2019-12-28 13:58:04.489 [info] <0.811.0> accepting AMQP connection <0.811.0> (172.30.99.60:49258 -> 172.30.99.53:5672)
+[34mrabbit              |[0m 2019-12-28 13:58:04.491 [info] <0.811.0> connection <0.811.0> (172.30.99.60:49258 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
+[34mrabbit              |[0m 2019-12-28 13:59:15.958 [warning] <0.811.0> closing AMQP connection <0.811.0> (172.30.99.60:49258 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
 [34mrabbit              |[0m client unexpectedly closed TCP connection
-[36;1mhw_16_integrity_message_server_1 exited with code 2
-[0m[32;1mhw_16_integrity_message_server_1 exited with code 2
-[0m[34mrabbit              |[0m 2019-12-28 13:23:22.758 [warning] <0.804.0> closing AMQP connection <0.804.0> (172.30.99.55:47258 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
+[32mhw_16_integrity_message_server_1 exited with code 2
+[0m[34mrabbit              |[0m 2019-12-28 13:59:18.701 [warning] <0.794.0> closing AMQP connection <0.794.0> (172.30.99.55:49028 -> 172.30.99.53:5672, vhost: '/', user: 'guest'):
 [34mrabbit              |[0m client unexpectedly closed TCP connection
-[33;1mscheduler_1         |[0m status:error text:there are no events in this day, events: ""[33;1mhw_16_integrity_scheduler_1 exited with code 2
-[0m[34mrabbit              |[0m Stopping and halting node rabbit@1e72fe7a3f35 ...
-[34mrabbit              |[0m 2019-12-28 13:23:26.833 [info] <0.1048.0> RabbitMQ is asked to stop...
-[34mrabbit              |[0m 2019-12-28 13:23:26.882 [info] <0.1048.0> Stopping RabbitMQ applications and their dependencies in the following order:
+[35mhw_16_integrity_scheduler_1 exited with code 2
+[0m[33mgrpc exited with code 0
+[0m[36mdbpg                |[0m 2019-12-28 13:59:22.011 UTC [1] LOG:  received smart shutdown request
+[36mdbpg                |[0m 2019-12-28 13:59:22.047 UTC [1] LOG:  background worker "logical replication launcher" (PID 49) exited with exit code 1
+[36mdbpg                |[0m 2019-12-28 13:59:22.048 UTC [44] LOG:  shutting down
+[34mrabbit              |[0m Stopping and halting node rabbit@7af17f08ac3d ...
+[34mrabbit              |[0m 2019-12-28 13:59:22.162 [info] <0.910.0> RabbitMQ is asked to stop...
+[34mrabbit              |[0m 2019-12-28 13:59:22.210 [info] <0.910.0> Stopping RabbitMQ applications and their dependencies in the following order:
 [34mrabbit              |[0m     rabbitmq_management
 [34mrabbit              |[0m     amqp_client
 [34mrabbit              |[0m     rabbitmq_web_dispatch
@@ -457,44 +540,41 @@ Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_me
 [34mrabbit              |[0m     sysmon_handler
 [34mrabbit              |[0m     os_mon
 [34mrabbit              |[0m     ra
-[34mrabbit              |[0m 2019-12-28 13:23:26.882 [info] <0.1048.0> Stopping application 'rabbitmq_management'
-[34mrabbit              |[0m 2019-12-28 13:23:26.883 [warning] <0.636.0> RabbitMQ HTTP listener registry could not find context rabbitmq_management_tls
-[34mrabbit              |[0m 2019-12-28 13:23:26.884 [info] <0.43.0> Application rabbitmq_management exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.884 [info] <0.1048.0> Stopping application 'amqp_client'
-[34mrabbit              |[0m 2019-12-28 13:23:26.886 [info] <0.43.0> Application amqp_client exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.886 [info] <0.1048.0> Stopping application 'rabbitmq_web_dispatch'
-[34mrabbit              |[0m 2019-12-28 13:23:26.887 [info] <0.43.0> Application rabbitmq_web_dispatch exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.887 [info] <0.1048.0> Stopping application 'cowboy'
-[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.1048.0> Stopping application 'cowlib'
-[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.43.0> Application cowboy exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.43.0> Application cowlib exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.889 [info] <0.1048.0> Stopping application 'rabbitmq_management_agent'
-[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.43.0> Application rabbitmq_management_agent exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.1048.0> Stopping application 'rabbit'
-[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping unregistration.
-[34mrabbit              |[0m 2019-12-28 13:23:26.891 [info] <0.630.0> stopped TCP listener on [::]:5672
-[34mrabbit              |[0m 2019-12-28 13:23:26.892 [info] <0.555.0> Closing all connections in vhost '/' on node 'rabbit@1e72fe7a3f35' because the vhost is stopping
-[34mrabbit              |[0m 2019-12-28 13:23:27.017 [info] <0.583.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent'
-[33mgrpc exited with code 0
-[0m[34mrabbit              |[0m 2019-12-28 13:23:27.097 [info] <0.583.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent' is stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.097 [info] <0.580.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient'
-[34mrabbit              |[0m 2019-12-28 13:23:27.277 [info] <0.580.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@1e72fe7a3f35/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient' is stopped
-[36mdbpg                |[0m 2019-12-28 13:23:27.293 UTC [1] LOG:  received smart shutdown request
-[34mrabbit              |[0m 2019-12-28 13:23:27.315 [info] <0.43.0> Application rabbit exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.315 [info] <0.1048.0> Stopping application 'mnesia'
-[34mrabbit              |[0m 2019-12-28 13:23:27.341 [info] <0.43.0> Application mnesia exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.341 [info] <0.1048.0> Stopping application 'rabbit_common'
-[34mrabbit              |[0m 2019-12-28 13:23:27.342 [info] <0.43.0> Application rabbit_common exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.342 [info] <0.1048.0> Stopping application 'sysmon_handler'
-[34mrabbit              |[0m 2019-12-28 13:23:27.343 [info] <0.43.0> Application sysmon_handler exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.344 [info] <0.1048.0> Stopping application 'os_mon'
-[34mrabbit              |[0m 2019-12-28 13:23:27.345 [info] <0.43.0> Application os_mon exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.345 [info] <0.1048.0> Stopping application 'ra'
-[36mdbpg                |[0m 2019-12-28 13:23:27.362 UTC [1] LOG:  background worker "logical replication launcher" (PID 49) exited with exit code 1
-[36mdbpg                |[0m 2019-12-28 13:23:27.362 UTC [44] LOG:  shutting down
-[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.43.0> Application ra exited with reason: stopped
-[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.1048.0> Successfully stopped RabbitMQ and its dependencies
-[34mrabbit              |[0m 2019-12-28 13:23:27.363 [info] <0.1048.0> Halting Erlang VM with the following applications:
+[34mrabbit              |[0m 2019-12-28 13:59:22.210 [info] <0.910.0> Stopping application 'rabbitmq_management'
+[34mrabbit              |[0m 2019-12-28 13:59:22.212 [warning] <0.632.0> RabbitMQ HTTP listener registry could not find context rabbitmq_management_tls
+[34mrabbit              |[0m 2019-12-28 13:59:22.213 [info] <0.43.0> Application rabbitmq_management exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.213 [info] <0.910.0> Stopping application 'amqp_client'
+[34mrabbit              |[0m 2019-12-28 13:59:22.214 [info] <0.43.0> Application amqp_client exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.214 [info] <0.910.0> Stopping application 'rabbitmq_web_dispatch'
+[34mrabbit              |[0m 2019-12-28 13:59:22.216 [info] <0.43.0> Application rabbitmq_web_dispatch exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.216 [info] <0.910.0> Stopping application 'cowboy'
+[34mrabbit              |[0m 2019-12-28 13:59:22.217 [info] <0.910.0> Stopping application 'cowlib'
+[34mrabbit              |[0m 2019-12-28 13:59:22.217 [info] <0.43.0> Application cowboy exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.217 [info] <0.43.0> Application cowlib exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.217 [info] <0.910.0> Stopping application 'rabbitmq_management_agent'
+[34mrabbit              |[0m 2019-12-28 13:59:22.219 [info] <0.43.0> Application rabbitmq_management_agent exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.219 [info] <0.910.0> Stopping application 'rabbit'
+[34mrabbit              |[0m 2019-12-28 13:59:22.219 [info] <0.277.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping unregistration.
+[34mrabbit              |[0m 2019-12-28 13:59:22.219 [info] <0.626.0> stopped TCP listener on [::]:5672
+[34mrabbit              |[0m 2019-12-28 13:59:22.220 [info] <0.552.0> Closing all connections in vhost '/' on node 'rabbit@7af17f08ac3d' because the vhost is stopping
+[34mrabbit              |[0m 2019-12-28 13:59:22.274 [info] <0.580.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent'
+[34mrabbit              |[0m 2019-12-28 13:59:22.333 [info] <0.580.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent' is stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.333 [info] <0.577.0> Stopping message store for directory '/var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient'
+[34mrabbit              |[0m 2019-12-28 13:59:22.400 [info] <0.577.0> Message store for directory '/var/lib/rabbitmq/mnesia/rabbit@7af17f08ac3d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L/msg_store_transient' is stopped
+[36mdbpg                |[0m 2019-12-28 13:59:22.434 UTC [1] LOG:  database system is shut down
+[34mrabbit              |[0m 2019-12-28 13:59:22.456 [info] <0.43.0> Application rabbit exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.456 [info] <0.910.0> Stopping application 'mnesia'
+[34mrabbit              |[0m 2019-12-28 13:59:22.461 [info] <0.43.0> Application mnesia exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.461 [info] <0.910.0> Stopping application 'rabbit_common'
+[34mrabbit              |[0m 2019-12-28 13:59:22.461 [info] <0.43.0> Application rabbit_common exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.461 [info] <0.910.0> Stopping application 'sysmon_handler'
+[34mrabbit              |[0m 2019-12-28 13:59:22.462 [info] <0.43.0> Application sysmon_handler exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.462 [info] <0.910.0> Stopping application 'os_mon'
+[34mrabbit              |[0m 2019-12-28 13:59:22.464 [info] <0.43.0> Application os_mon exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.464 [info] <0.910.0> Stopping application 'ra'
+[34mrabbit              |[0m 2019-12-28 13:59:22.466 [info] <0.43.0> Application ra exited with reason: stopped
+[34mrabbit              |[0m 2019-12-28 13:59:22.466 [info] <0.910.0> Successfully stopped RabbitMQ and its dependencies
+[34mrabbit              |[0m 2019-12-28 13:59:22.466 [info] <0.910.0> Halting Erlang VM with the following applications:
 [34mrabbit              |[0m     aten
 [34mrabbit              |[0m     stdout_formatter
 [34mrabbit              |[0m     ranch
@@ -518,7 +598,6 @@ Attaching to dbpg, rabbit, grpc, hw_16_integrity_scheduler_1, hw_16_integrity_me
 [34mrabbit              |[0m     stdlib
 [34mrabbit              |[0m     kernel
 [34mrabbit              |[0m Gracefully halting Erlang VM
-[36mdbpg                |[0m 2019-12-28 13:23:28.050 UTC [1] LOG:  database system is shut down
 [36mdbpg exited with code 0
 [0m[34mrabbit exited with code 0
 [0m
