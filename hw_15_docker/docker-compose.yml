@@ -48,6 +48,7 @@ services:
   grpc_server:
     build: ./server
     container_name: grpc
+    restart: on-failure
     depends_on:
       - manager-postgres
     environment:

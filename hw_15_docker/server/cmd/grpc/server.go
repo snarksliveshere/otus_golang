@@ -8,9 +8,6 @@ import (
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/proto"
 	"google.golang.org/grpc"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 type ServerCalendar struct {
@@ -24,10 +21,7 @@ var (
 func Server(logg *logrus.Logger, conf *config.AppConfig) {
 	log = logg
 	storage = pg_repository.CreateStorageInstance(log, conf)
-	stopCh := make(chan os.Signal, 1)
-	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
 	goGRPC(conf)
-	<-stopCh
 }
 
 func goGRPC(conf *config.AppConfig) {

@@ -6,9 +6,6 @@ import (
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/internal/interfaces/repositories/pg_repository"
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/server/pkg/logger/logrus"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 var (
@@ -19,10 +16,7 @@ var (
 func Server(logg *logrus.Logger, conf *config.AppConfig) {
 	log = logg
 	storage = pg_repository.CreateStorageInstance(log, conf)
-	stopCh := make(chan os.Signal, 1)
-	signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
 	webApi(conf)
-	<-stopCh
 }
 
 func webApi(conf *config.AppConfig) {
