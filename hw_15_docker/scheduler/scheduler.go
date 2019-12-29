@@ -9,6 +9,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"os"
+	"time"
 )
 
 func failOnError(err error, msg string) {
@@ -18,6 +19,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	time.Sleep(30 * time.Second)
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	logg := logger.CreateLogrusLog(conf.LogLevel)

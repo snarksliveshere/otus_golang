@@ -5,6 +5,7 @@ import (
 	"github.com/snarksliveshere/otus_golang/hw_15_docker/message_office/config"
 	"github.com/streadway/amqp"
 	"log"
+	"time"
 )
 
 func failOnError(err error, msg string) {
@@ -14,6 +15,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	time.Sleep(30 * time.Second)
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
