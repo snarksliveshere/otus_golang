@@ -298,7 +298,10 @@ func (test *notifyTest) iSendGoodRequestToRouterWithData(httpMethod, router, con
 }
 
 func (test *notifyTest) eventShouldExist() error {
-	return godog.ErrPending
+	if test.responseStruct.Event.Title == "" {
+		return fmt.Errorf("title must not be empty string: %#v", test.responseStruct.Event)
+	}
+	return nil
 }
 
 func (test *notifyTest) iSendBadRequestToRouterWithData(httpMethod, router, contentType string, data *gherkin.DocString) error {
@@ -346,15 +349,10 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^The response should match text "([^"]*)"$`, test.theResponseShouldMatchText)
 
 	// create-event
-	//s.Step(`^I send "([^"]*)" good request to router "([^"]*)" with "([^"]*)" data:$`, test.iSendGoodRequestToRouterWithData)
 	s.Step(`^I send "([^"]*)" good request to router "([^"]*)" with date "([^"]*)" title "([^"]*)" description "([^"]*)"$`, test.iSendGoodRequestToRouterWithDateTitleDescription)
 	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^event should exist$`, test.eventShouldExist)
-
-	s.Step(`^I send "([^"]*)" bad request to router "([^"]*)" with "([^"]*)" data:$`, test.iSendBadRequestToRouterWithData)
-	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
-	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
 
 	// get events-for-day
 	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with param "([^"]*)" and value "([^"]*)"$`, test.iSendRequestToRouterEventsfordayWithParamAndValue)

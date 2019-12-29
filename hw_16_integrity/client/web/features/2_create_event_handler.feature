@@ -10,15 +10,3 @@ Feature: Create Event for Date
         Then The response code should be 200
         And status should be equal to success "success"
         And event should exist
-
-    Scenario: Unsuccessfully created event for date
-    When I send "POST" bad request to router "create-event" with "application/json" data:
-                """
-                {
-                    "title": "test_title",
-                    "description": "test_description"
-                }
-                """
-        Then The response code should be 200
-        And status should be equal to error "error"
-        And The error text must be non empty string
