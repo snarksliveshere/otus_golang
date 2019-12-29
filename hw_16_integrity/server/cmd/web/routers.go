@@ -25,7 +25,7 @@ type Response struct {
 }
 
 func routesRegister(router *mux.Router) {
-	router.HandleFunc("/", helloHandler)
+	router.HandleFunc("/healthcheck", healthCheckHandler)
 	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods(http.MethodPost)
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
@@ -66,8 +66,8 @@ func otherErrorHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("hello"))
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := w.Write([]byte("Ok"))
 	if err != nil {
 		log.Fatal("An error occurred")
 	}

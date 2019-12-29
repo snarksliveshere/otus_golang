@@ -105,7 +105,7 @@ services:
         ipv4_address: 172.30.99.60
 
   client_server:
-    build: client/test/Dockerfile_test
+    build: client/
     container_name: client_web
     depends_on:
       - scheduler
@@ -115,7 +115,7 @@ services:
     environment:
       WEB_PORT: 8888
       GRPC_PORT: 50054
-      LISTEN_IP: grpc
+      LISTEN_IP: 172.30.99.50
       LOG_LEVEL: info
     networks:
       apinet:

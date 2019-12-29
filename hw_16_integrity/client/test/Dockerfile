@@ -7,7 +7,7 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-COPY . .
+COPY ../. .
 WORKDIR /opt/integration_tests/web
 CMD ["go", "test"]
 
