@@ -6,6 +6,12 @@ up-test:
 up:
 	docker-compose up -d --build
 
+rebuild-test:
+	docker-compose -f docker-compose.test.yml up --build --no-deps -d client_server
+
+restart-test:
+	docker-compose -f docker-compose.test.yml restart client_server
+
 down:
 	docker-compose down
 

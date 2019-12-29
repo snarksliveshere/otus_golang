@@ -67,7 +67,7 @@ func otherErrorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Ok"))
+	_, err := w.Write([]byte("OK"))
 	if err != nil {
 		log.Fatal("An error occurred")
 	}

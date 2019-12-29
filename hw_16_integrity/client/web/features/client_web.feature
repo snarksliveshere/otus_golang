@@ -13,3 +13,4 @@ Feature: API events CRUD
 		When I send "GET" request to healthCheck "healthcheck"
 		Then The response code should be 200
 		And The response should match text "OK"
+
