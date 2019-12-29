@@ -1,9 +1,11 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/client/config"
 	"io/ioutil"
@@ -98,6 +100,38 @@ func (test *notifyTest) returnGetResponse(httpMethod, addr string) (resp *http.R
 	return resp, nil
 }
 
+func (test *notifyTest) returnPostValueResponse(httpMethod, addr, params string) (resp *http.Response, err error) {
+	switch httpMethod {
+	case http.MethodPost:
+		resp, err = http.Post(addr, "application/x-www-form-urlencoded", strings.NewReader(params))
+	default:
+		err = fmt.Errorf("unknown method: %s", httpMethod)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (test *notifyTest) returnPostResponse(httpMethod, addr, contentType string, data *gherkin.DocString) (resp *http.Response, err error) {
+	switch httpMethod {
+	case http.MethodPost:
+		replacer := strings.NewReplacer("\n", "", "\t", "", " ", "")
+		cleanJson := replacer.Replace(data.Content)
+		fmt.Printf("addr: %s, content-type: %s, params: %s\n", addr, contentType, cleanJson)
+		resp, err = http.Post(addr, contentType, bytes.NewReader([]byte(cleanJson)))
+	default:
+		err = fmt.Errorf("unknown method: %s", httpMethod)
+	}
+	i, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(i))
+	fmt.Println("return post resp")
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (test *notifyTest) iSendRequestToHealthCheck(httpMethod, healthCheckRouter string) error {
 	addr, err := test.createUrlWithGetParams(healthCheckRouter, nil)
 	if err != nil {
@@ -129,6 +163,20 @@ func (test *notifyTest) createUrlWithGetParams(router string, params map[string]
 	apiUrl.RawQuery = parameters.Encode()
 	fmt.Printf("make url: %s", apiUrl.String())
 	return apiUrl.String(), nil
+}
+
+func (test *notifyTest) createUrlWithPostParams(router string, params map[string]string) (string, string, error) {
+	apiStr := "http://" + conf.ListenIP + ":" + conf.WEBPort + "/" + router
+	apiUrl, err := url.Parse(apiStr)
+	if err != nil {
+		return "", "", err
+	}
+	parameters := url.Values{}
+	for k, v := range params {
+		parameters.Set(k, v)
+	}
+	fmt.Printf("make url: %s, parameters: %s\n", apiUrl.String(), parameters.Encode())
+	return apiUrl.String(), parameters.Encode(), nil
 }
 
 func (test *notifyTest) theResponseCodeShouldBe(code int) error {
@@ -165,6 +213,7 @@ func (test *notifyTest) unmarshallResponseToStruct(bytes []byte) error {
 	resp := new(Response)
 	err := json.Unmarshal(bytes, resp)
 	if err != nil {
+		fmt.Println(string(bytes))
 		return err
 	}
 	test.responseStruct = resp
@@ -198,6 +247,14 @@ func (test *notifyTest) iSendRequestToRouterEventsfordayThereAreNoEventsWithPara
 	if err != nil {
 		return err
 	}
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (test *notifyTest) enrichTestStruct(resp *http.Response) error {
 	test.responseStatusCode = resp.StatusCode
 	test.status = resp.Status
 
@@ -223,12 +280,83 @@ func (test *notifyTest) theErrorTextMustBeNonEmptyString() error {
 	return nil
 }
 
+func (test *notifyTest) iSendGoodRequestToRouterWithData(httpMethod, router, contentType string, data *gherkin.DocString) error {
+	addr, _, err := test.createUrlWithPostParams(router, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostResponse(httpMethod, addr, contentType, data)
+	if err != nil {
+		return err
+	}
+
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (test *notifyTest) eventShouldExist() error {
+	return godog.ErrPending
+}
+
+func (test *notifyTest) iSendBadRequestToRouterWithData(httpMethod, router, contentType string, data *gherkin.DocString) error {
+	addr, _, err := test.createUrlWithPostParams(router, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostResponse(httpMethod, addr, contentType, data)
+	if err != nil {
+		return err
+	}
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (test *notifyTest) iSendGoodRequestToRouterWithDateTitleDescription(httpMethod, router, date, title, description string) error {
+	mm := make(map[string]string, 3)
+	mm["date"] = date
+	mm["title"] = title
+	mm["description"] = description
+	url, params, err := test.createUrlWithPostParams(router, mm)
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostValueResponse(httpMethod, url, params)
+	if err != nil {
+		return err
+	}
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func FeatureContext(s *godog.Suite) {
 	test := new(notifyTest)
+	// healthcheck
 	s.Step(`^I send "([^"]*)" request to healthCheck "([^"]*)"$`, test.iSendRequestToHealthCheck)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^The response should match text "([^"]*)"$`, test.theResponseShouldMatchText)
 
+	// create-event
+	//s.Step(`^I send "([^"]*)" good request to router "([^"]*)" with "([^"]*)" data:$`, test.iSendGoodRequestToRouterWithData)
+	s.Step(`^I send "([^"]*)" good request to router "([^"]*)" with date "([^"]*)" title "([^"]*)" description "([^"]*)"$`, test.iSendGoodRequestToRouterWithDateTitleDescription)
+	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^event should exist$`, test.eventShouldExist)
+
+	s.Step(`^I send "([^"]*)" bad request to router "([^"]*)" with "([^"]*)" data:$`, test.iSendBadRequestToRouterWithData)
+	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
+	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
+
+	// get events-for-day
 	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with param "([^"]*)" and value "([^"]*)"$`, test.iSendRequestToRouterEventsfordayWithParamAndValue)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^The response should have length more than (\d+)$`, test.theResponseShouldHaveLengthMoreThan)

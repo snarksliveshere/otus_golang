@@ -77,19 +77,24 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
 	title, desc, time, err := data_handlers.CheckCreateEvent(title, desc, date)
+	resp := Response{}
 	if err != nil {
-		notValidHandler(w, r)
-		return
+		resp.Status = statusError
+		resp.Error = err.Error()
 	}
 	recId, err := storage.Actions.CreateEvent(title, desc, time)
 	if err != nil {
-		otherErrorHandler(w, r)
+		resp.Status = statusError
+		resp.Error = err.Error()
 	}
 	rec, err := storage.Actions.EventRepository.FindById(recId)
 	if err != nil {
-		otherErrorHandler(w, r)
+		resp.Status = statusError
+		resp.Error = err.Error()
+	} else {
+		resp.Status = statusOK
+		resp.Event = rec
 	}
-	resp := Response{Event: rec, Status: statusOK}
 	sendResponse(resp, w, r)
 }
 
