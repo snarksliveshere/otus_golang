@@ -103,7 +103,6 @@ func (test *notifyTest) iSendRequestToHealthCheck(httpMethod, healthCheckRouter 
 	if err != nil {
 		return err
 	}
-	//addr := "http://" + conf.ListenIP + ":" + conf.WEBPort + "/" + healthCheckRouter
 	resp, err := test.returnGetResponse(httpMethod, addr)
 	if err != nil {
 		return err
@@ -146,8 +145,8 @@ func (test *notifyTest) theResponseShouldMatchText(responseText string) error {
 	return nil
 }
 
-func (test *notifyTest) iSendRequestToRouterEventsfordayWithDay(httpMethod, router, dayParam string) error {
-	addr, err := test.createUrlWithGetParams(router, map[string]string{"date": "2019-11-10"})
+func (test *notifyTest) iSendRequestToRouterEventsfordayWithParamAndValue(httpMethod, router, param, value string) error {
+	addr, err := test.createUrlWithGetParams(router, map[string]string{param: value})
 	if err != nil {
 		return err
 	}
@@ -162,37 +161,66 @@ func (test *notifyTest) iSendRequestToRouterEventsfordayWithDay(httpMethod, rout
 	return nil
 }
 
-func (test *notifyTest) theResponseShouldHaveLengthMoreThan(zeroLen int) error {
+func (test *notifyTest) unmarshallResponseToStruct(bytes []byte) error {
 	resp := new(Response)
-	err := json.Unmarshal(test.responseBody, resp)
+	err := json.Unmarshal(bytes, resp)
 	if err != nil {
 		return err
-	}
-	if len(resp.Events) == zeroLen {
-		return fmt.Errorf("unexpected events length: %d must be more than zero %d", len(resp.Events), zeroLen)
 	}
 	test.responseStruct = resp
 	return nil
 }
 
+func (test *notifyTest) theResponseShouldHaveLengthMoreThan(zeroLen int) error {
+	err := test.unmarshallResponseToStruct(test.responseBody)
+	if err != nil {
+		return err
+	}
+	if len(test.responseStruct.Events) == zeroLen {
+		return fmt.Errorf("unexpected events length: %d must be more than zero %d", len(test.responseStruct.Events), zeroLen)
+	}
+	return nil
+}
+
 func (test *notifyTest) statusShouldBeEqualToSuccess(status string) error {
-	fmt.Println("olala restarting..........................")
 	if test.responseStruct.Status != status {
 		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
 	}
 	return nil
 }
 
-func (test *notifyTest) iSendRequestToRouterEventsfordayWithDayThereAreNoEvents(arg1, arg2, arg3 string) error {
-	return godog.ErrPending
+func (test *notifyTest) iSendRequestToRouterEventsfordayThereAreNoEventsWithParamAndValue(httpMethod, router, param, value string) error {
+	addr, err := test.createUrlWithGetParams(router, map[string]string{param: value})
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnGetResponse(httpMethod, addr)
+	if err != nil {
+		return err
+	}
+	test.responseStatusCode = resp.StatusCode
+	test.status = resp.Status
+
+	rb, err := ioutil.ReadAll(resp.Body)
+	err = test.unmarshallResponseToStruct(rb)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (test *notifyTest) statusShouldBeEqualToError(arg1 string) error {
-	return godog.ErrPending
+func (test *notifyTest) statusShouldBeEqualToError(status string) error {
+	if test.responseStruct.Status != status {
+		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
+	}
+	return nil
 }
 
 func (test *notifyTest) theErrorTextMustBeNonEmptyString() error {
-	return godog.ErrPending
+	if test.responseStruct.Error == "" {
+		return fmt.Errorf("error must not be empty string: %s", test.responseStruct.Error)
+	}
+	return nil
 }
 
 func FeatureContext(s *godog.Suite) {
@@ -201,12 +229,12 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^The response should match text "([^"]*)"$`, test.theResponseShouldMatchText)
 
-	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with day "([^"]*)"$`, test.iSendRequestToRouterEventsfordayWithDay)
+	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with param "([^"]*)" and value "([^"]*)"$`, test.iSendRequestToRouterEventsfordayWithParamAndValue)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^The response should have length more than (\d+)$`, test.theResponseShouldHaveLengthMoreThan)
 	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
 
-	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with day "([^"]*)" there are no events$`, test.iSendRequestToRouterEventsfordayWithDayThereAreNoEvents)
+	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" there are no events with param "([^"]*)" and value "([^"]*)"$`, test.iSendRequestToRouterEventsfordayThereAreNoEventsWithParamAndValue)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
 	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
