@@ -98,26 +98,30 @@ func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(resp, w, r)
 }
 
-// curl -d 'title=new-title&description=new_desc&date=2019-11-01&eventId=123' -X POST http://localhost:3001/update-event
+// curl -d 'title=new-title&description=new_desc&date=2019-11-01&eventId=123' -X POST http://localhost:8888/update-event
 func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 	title, desc, date, eventId := r.FormValue("title"),
 		r.FormValue("description"),
 		r.FormValue("date"),
 		r.FormValue("eventId")
 	title, desc, _, id, err := data_handlers.CheckUpdateEvent(title, desc, date, eventId)
-	if err != nil {
-		notValidHandler(w, r)
-		return
-	}
-
-	err = storage.Actions.UpdateEventById(id, title, desc)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
 		resp.Error = err.Error()
-		otherErrorHandler(w, r)
+	}
+	rec, err := storage.Actions.EventRepository.FindById(id)
+	if err != nil {
+		resp.Status = statusError
+		resp.Error = err.Error()
+	}
+	err = storage.Actions.UpdateEventById(id, title, desc)
+	if err != nil {
+		resp.Status = statusError
+		resp.Error = err.Error()
 	} else {
 		resp.Status = statusOK
+		resp.Event = rec
 	}
 	sendResponse(resp, w, r)
 }

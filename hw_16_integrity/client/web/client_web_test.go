@@ -314,6 +314,28 @@ func (test *notifyTest) iSendGoodRequestToRouterWithDateTitleDescription(httpMet
 	return nil
 }
 
+func (test *notifyTest) iSendUpdateRequestToRouterWithTitleDescription(httpMethod, router, title, description string) error {
+	mm := make(map[string]string, 3)
+	mm["title"] = title
+	mm["description"] = description
+	mm["date"] = "2019-11-11"
+	mm["eventId"] = strconv.Itoa(int(test.responseStruct.Event.Id))
+	url, params, err := test.createUrlWithPostParams(router, mm)
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostValueResponse(httpMethod, url, params)
+	if err != nil {
+		return err
+	}
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("resp str %#v", test.responseStruct)
+	return nil
+}
+
 func (test *notifyTest) iSendRequestToRouterDeleteeventWithParam(httpMethod, router, param string) error {
 	url, params, err := test.createUrlWithPostParams(router,
 		map[string]string{param: strconv.Itoa(int(test.responseStruct.Event.Id))})
@@ -354,6 +376,12 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^I send "([^"]*)" good request to router "([^"]*)" with date "([^"]*)" title "([^"]*)" description "([^"]*)"$`, test.iSendGoodRequestToRouterWithDateTitleDescription)
 	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^event should exist$`, test.eventShouldExist)
+
+	// update-event by eventId
+	s.Step(`^I send "([^"]*)" update request to router "([^"]*)" with title "([^"]*)" description "([^"]*)"$`, test.iSendUpdateRequestToRouterWithTitleDescription)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
 	s.Step(`^event should exist$`, test.eventShouldExist)
 
 	// delete-event  by eventId
