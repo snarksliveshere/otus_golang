@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -179,13 +180,6 @@ func (test *notifyTest) createUrlWithPostParams(router string, params map[string
 	return apiUrl.String(), parameters.Encode(), nil
 }
 
-func (test *notifyTest) theResponseCodeShouldBe(code int) error {
-	if test.responseStatusCode != code {
-		return fmt.Errorf("unexpected status code: %d != %d", test.responseStatusCode, code)
-	}
-	return nil
-}
-
 func (test *notifyTest) theResponseShouldMatchText(responseText string) error {
 	if string(test.responseBody) != responseText {
 		return fmt.Errorf("unexpected text: %s != %s", test.responseBody, responseText)
@@ -231,13 +225,6 @@ func (test *notifyTest) theResponseShouldHaveLengthMoreThan(zeroLen int) error {
 	return nil
 }
 
-func (test *notifyTest) statusShouldBeEqualToSuccess(status string) error {
-	if test.responseStruct.Status != status {
-		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
-	}
-	return nil
-}
-
 func (test *notifyTest) iSendRequestToRouterEventsfordayThereAreNoEventsWithParamAndValue(httpMethod, router, param, value string) error {
 	addr, err := test.createUrlWithGetParams(router, map[string]string{param: value})
 	if err != nil {
@@ -266,20 +253,6 @@ func (test *notifyTest) enrichTestStruct(resp *http.Response) error {
 	return nil
 }
 
-func (test *notifyTest) statusShouldBeEqualToError(status string) error {
-	if test.responseStruct.Status != status {
-		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
-	}
-	return nil
-}
-
-func (test *notifyTest) theErrorTextMustBeNonEmptyString() error {
-	if test.responseStruct.Error == "" {
-		return fmt.Errorf("error must not be empty string: %s", test.responseStruct.Error)
-	}
-	return nil
-}
-
 func (test *notifyTest) iSendGoodRequestToRouterWithData(httpMethod, router, contentType string, data *gherkin.DocString) error {
 	addr, _, err := test.createUrlWithPostParams(router, nil)
 	if err != nil {
@@ -298,7 +271,7 @@ func (test *notifyTest) iSendGoodRequestToRouterWithData(httpMethod, router, con
 }
 
 func (test *notifyTest) eventShouldExist() error {
-	if test.responseStruct.Event.Title == "" {
+	if test.responseStruct.Event.Id == 0 {
 		return fmt.Errorf("title must not be empty string: %#v", test.responseStruct.Event)
 	}
 	return nil
@@ -341,6 +314,35 @@ func (test *notifyTest) iSendGoodRequestToRouterWithDateTitleDescription(httpMet
 	return nil
 }
 
+func (test *notifyTest) iSendRequestToRouterDeleteeventWithParam(httpMethod, router, param string) error {
+	url, params, err := test.createUrlWithPostParams(router,
+		map[string]string{param: strconv.Itoa(int(test.responseStruct.Event.Id))})
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostValueResponse(httpMethod, url, params)
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (test *notifyTest) iSendRequestToRouterDeleteeventWithNotExistParam(httpMethod, router, param string) error {
+	url, params, err := test.createUrlWithPostParams(router,
+		map[string]string{param: strconv.Itoa(0)})
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnPostValueResponse(httpMethod, url, params)
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FeatureContext(s *godog.Suite) {
 	test := new(notifyTest)
 	// healthcheck
@@ -354,6 +356,16 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^event should exist$`, test.eventShouldExist)
 
+	// delete-event  by eventId
+	s.Step(`^I send "([^"]*)" request to router delete-event "([^"]*)" with param "([^"]*)"$`, test.iSendRequestToRouterDeleteeventWithParam)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
+
+	s.Step(`^I send "([^"]*)" request to router delete-event "([^"]*)" with not exist param "([^"]*)"$`, test.iSendRequestToRouterDeleteeventWithNotExistParam)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
+	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
+
 	// get events-for-day
 	s.Step(`^I send "([^"]*)" request to router events-for-day "([^"]*)" with param "([^"]*)" and value "([^"]*)"$`, test.iSendRequestToRouterEventsfordayWithParamAndValue)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
@@ -365,4 +377,32 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
 	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
 
+}
+
+func (test *notifyTest) theResponseCodeShouldBe(code int) error {
+	if test.responseStatusCode != code {
+		return fmt.Errorf("unexpected status code: %d != %d", test.responseStatusCode, code)
+	}
+	return nil
+}
+
+func (test *notifyTest) statusShouldBeEqualToSuccess(status string) error {
+	if test.responseStruct.Status != status {
+		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
+	}
+	return nil
+}
+
+func (test *notifyTest) statusShouldBeEqualToError(status string) error {
+	if test.responseStruct.Status != status {
+		return fmt.Errorf("status must be: %s, not %s", status, test.responseStruct.Status)
+	}
+	return nil
+}
+
+func (test *notifyTest) theErrorTextMustBeNonEmptyString() error {
+	if test.responseStruct.Error == "" {
+		return fmt.Errorf("error must not be empty string: %s", test.responseStruct.Error)
+	}
+	return nil
 }

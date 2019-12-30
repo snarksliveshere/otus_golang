@@ -17,6 +17,8 @@ down:
 
 restart: down up
 
+restart-test: down up-test
+
 test:
 	set -e ;\
 	docker-compose -f docker-compose.test.yml up --build -d ;\

@@ -73,7 +73,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//curl -d 'title=some-title&description=some_desc&date=2019-11-01' -X POST http://localhost:3001/create-event
+//curl -d 'title=some-title&description=some_desc&date=2019-03-01T20:03+0300' -X POST http://localhost:8888/create-event
 func createEventHandler(w http.ResponseWriter, r *http.Request) {
 	title, desc, date := r.FormValue("title"), r.FormValue("description"), r.FormValue("date")
 	title, desc, time, err := data_handlers.CheckCreateEvent(title, desc, date)
@@ -126,16 +126,15 @@ func updateEventHandler(w http.ResponseWriter, r *http.Request) {
 func deleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	eventId := r.FormValue("eventId")
 	id, err := data_handlers.CheckDeleteEvent(eventId)
-	if err != nil {
-		notValidHandler(w, r)
-		return
-	}
-	err = storage.Actions.DeleteEventById(id)
 	resp := Response{}
 	if err != nil {
 		resp.Status = statusError
 		resp.Error = err.Error()
-		otherErrorHandler(w, r)
+	}
+	err = storage.Actions.DeleteEventById(id)
+	if err != nil {
+		resp.Status = statusError
+		resp.Error = err.Error()
 	} else {
 		resp.Status = statusOK
 	}
