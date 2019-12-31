@@ -1,5 +1,5 @@
-Feature: Get Events for one day
-    When I request events in one day
+Feature: Get Events for one Day
+    When I request events in one Day
     I want to see the list of events and status successfully
     Or status error and text error
 

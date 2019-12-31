@@ -15,10 +15,9 @@ const (
 )
 
 type Response struct {
-	Date       entity.Date    `json:"day,omitempty"`
-	Event      entity.Event   `json:"event,omitempty"`
-	Events     []entity.Event `json:"events,omitempty"`
-	Collection []interface{}  `json:"collection,omitempty"`
+	Date   entity.Date    `json:"day,omitempty"`
+	Event  entity.Event   `json:"event,omitempty"`
+	Events []entity.Event `json:"events,omitempty"`
 	//Result     []string      `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
@@ -186,10 +185,10 @@ func eventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
 
 	events, err := storage.Actions.EventRepository.GetEventsByDateInterval(dates["firstDate"], dates["lastDate"])
 	resp := Response{}
+
 	if err != nil {
 		resp.Status = statusError
 		resp.Error = err.Error()
-		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
 		resp.Events = events
