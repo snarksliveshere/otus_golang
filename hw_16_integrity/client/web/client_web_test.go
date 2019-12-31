@@ -397,6 +397,22 @@ func (test *notifyTest) iSendRequestToRouterEventsformonthThereAreNoEventsWithPa
 	return nil
 }
 
+func (test *notifyTest) iSendRequestToRouterEventsforweekWithFromAndTill(httpMethod, router, fromP, fromV, tillP, tillV string) error {
+	addr, err := test.createUrlWithGetParams(router, map[string]string{fromP: fromV, tillP: tillV})
+	if err != nil {
+		return err
+	}
+	resp, err := test.returnGetResponse(httpMethod, addr)
+	if err != nil {
+		return err
+	}
+	err = test.enrichTestStruct(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FeatureContext(s *godog.Suite) {
 	test := new(notifyTest)
 	// healthcheck
@@ -448,6 +464,16 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
 	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
 
+	// events-for-week
+	s.Step(`^I send "([^"]*)" request to router events-for-week "([^"]*)" with "([^"]*)" from "([^"]*)" and "([^"]*)" till "([^"]*)"$`, test.iSendRequestToRouterEventsforweekWithFromAndTill)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^The response should have length more than (\d+)$`, test.theResponseShouldHaveLengthMoreThan)
+	s.Step(`^status should be equal to success "([^"]*)"$`, test.statusShouldBeEqualToSuccess)
+
+	s.Step(`^I send "([^"]*)" request to router events-for-week "([^"]*)" with "([^"]*)" from "([^"]*)" and "([^"]*)" till "([^"]*)"$`, test.iSendRequestToRouterEventsforweekWithFromAndTill)
+	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
+	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
 }
 
 func (test *notifyTest) theResponseCodeShouldBe(code int) error {

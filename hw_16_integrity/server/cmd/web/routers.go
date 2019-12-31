@@ -214,7 +214,6 @@ func eventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		resp.Status = statusError
 		resp.Error = err.Error()
-		otherErrorHandler(w, r)
 	} else {
 		resp.Status = statusOK
 		resp.Events = events
