@@ -1,13 +1,5 @@
 version: '3.7'
 
-#networks:
-#  db:
-#    driver: bridge
-#  grpc_server:
-#    driver: bridge
-#  rabbit:
-#    driver: bridge
-
 networks:
   apinet:
     ipam:
@@ -103,20 +95,3 @@ services:
     networks:
       apinet:
         ipv4_address: 172.30.99.60
-
-  client_server:
-    build: ./client
-    container_name: client
-    depends_on:
-      - scheduler
-      - message_server
-      - grpc_server
-    restart: on-failure
-    environment:
-      WEB_PORT: 8888
-      GRPC_PORT: 50054
-      LISTEN_IP: 172.30.99.50
-      LOG_LEVEL: info
-    networks:
-      apinet:
-        ipv4_address: 172.30.99.70

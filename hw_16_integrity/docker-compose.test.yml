@@ -115,7 +115,7 @@ services:
     environment:
       WEB_PORT: 8888
       GRPC_PORT: 50054
-      LISTEN_IP: 172.30.99.50
+      LISTEN_IP: grpc
       LOG_LEVEL: info
     networks:
       apinet:

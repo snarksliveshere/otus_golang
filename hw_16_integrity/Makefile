@@ -21,12 +21,12 @@ restart-test: down up-test
 
 test:
 	set -e ;\
-	docker-compose -f docker-compose.test.yml up --build -d ;\
+	docker-compose up --build -d ;\
 	test_status_code=0 ;\
 	docker-compose -f docker-compose.test.yml run client_server go test || test_status_code=$$? ;\
 	docker-compose -f docker-compose.test.yml down ;\
+	echo $$test_status_code;\
 	exit $$test_status_code ;\
-	echo $$test_status_code ;
 
 example:
 	docker-compose -f docker-compose.test.yml up --build -d
