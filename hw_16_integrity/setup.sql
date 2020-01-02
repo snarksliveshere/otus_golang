@@ -34,3 +34,20 @@ values
 ((SELECT id FROM calendar.calendar WHERE date = '2019-11-12'), '2019-11-12 10:20:09.767953 +00:00', 'some title event3', 'desc event3'),
 ((SELECT id FROM calendar.calendar WHERE date = '2019-10-20'), '2019-10-20 10:30:09.767953 +00:00', 'some title event4', 'desc event4')
 ;
+CREATE TABLE calendar.message (
+                                  id BIGSERIAL PRIMARY KEY,
+                                  status TEXT NOT NULL,
+                                  msg TEXT
+);
+WITH cte AS (
+    INSERT INTO calendar.calendar (date, description)
+        VALUES (NOW() :: date, 'test_msg')
+        RETURNING id
+)
+INSERT INTO calendar.event (date_fk, time, title, description)
+VALUES (
+           (SELECT id FROM cte),
+           NOW() + interval '5 minutes',
+           'test_title',
+           'test_description'
+       );

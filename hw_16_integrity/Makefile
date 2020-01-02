@@ -13,7 +13,7 @@ restart-test:
 	docker-compose -f docker-compose.test.yml restart client_server
 
 down:
-	docker-compose down
+	docker-compose down --remove-orphans
 
 restart: down up
 

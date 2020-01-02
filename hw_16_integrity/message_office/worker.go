@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/message_office/config"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/message_office/model"
 	"github.com/streadway/amqp"
 	"log"
 )
@@ -62,9 +63,29 @@ func main() {
 			if err != nil {
 				log.Printf("error: %v", err.Error())
 			}
+			err = insertToDb(string(d.Body), &conf)
+			if err != nil {
+				log.Printf("error: %v", err.Error())
+			}
+
 		}
 	}()
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
+}
+
+func insertToDb(msg string, conf *config.AppConfig) error {
+	db := model.DB{Conf: conf}
+	m := model.Message{
+		Status: "Success",
+		Msg:    msg,
+	}
+	_, err := db.CreatePgConn().Model(&m).
+		Insert()
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

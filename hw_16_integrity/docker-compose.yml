@@ -92,6 +92,11 @@ services:
       RABBIT_HOST: rabbit
       RABBIT_PORT: 5672
       LOG_LEVEL: info
+      DB_USER: md
+      DB_PASSWORD: secret
+      DB_NAME: md_calendar
+      DB_HOST: dbpg
+      DB_PORT: 5432
     networks:
       apinet:
         ipv4_address: 172.30.99.60

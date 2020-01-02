@@ -8,6 +8,7 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/client/config"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/client/model"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -49,6 +50,7 @@ type notifyTest struct {
 	status, errorText  string
 	events             []interface{}
 	responseStruct     *Response
+	Message            []model.Message
 }
 
 func failOnError(err error, msg string) {
@@ -73,6 +75,8 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	fmt.Println("waiting 5s")
+	time.Sleep(5 * time.Second)
 	status := godog.RunWithOptions("integration", func(s *godog.Suite) {
 		FeatureContext(s)
 	}, godog.Options{
@@ -413,6 +417,25 @@ func (test *notifyTest) iSendRequestToRouterEventsforweekWithFromAndTill(httpMet
 	return nil
 }
 
+func (test *notifyTest) iEstablishAConnectionToTheDatabase() error {
+	db := model.DB{Conf: &conf}
+	msgs := &test.Message
+	err := db.CreatePgConn().Model(msgs).
+		Select()
+	if err != nil {
+		return err
+	}
+	test.Message = *msgs
+	return nil
+}
+
+func (test *notifyTest) theRowsShouldHaveLengthMoreThan(countRows int) error {
+	if len(test.Message) == countRows {
+		return fmt.Errorf("length of message rows sould be different from zero: %d", len(test.Message))
+	}
+	return nil
+}
+
 func FeatureContext(s *godog.Suite) {
 	test := new(notifyTest)
 	// healthcheck
@@ -474,6 +497,11 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
 	s.Step(`^status should be equal to error "([^"]*)"$`, test.statusShouldBeEqualToError)
 	s.Step(`^The error text must be non empty string$`, test.theErrorTextMustBeNonEmptyString)
+
+	// check message office
+	s.Step(`^I establish a connection to the database$`, test.iEstablishAConnectionToTheDatabase)
+	s.Step(`^The rows should have length more than (\d+)$`, test.theRowsShouldHaveLengthMoreThan)
+
 }
 
 func (test *notifyTest) theResponseCodeShouldBe(code int) error {
