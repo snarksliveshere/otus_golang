@@ -3,7 +3,7 @@ package pg_repository
 import (
 	"github.com/go-pg/pg"
 	pg_models2 "github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/interfaces/repositories/pg_repository/pg_models"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/logger/logrus"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/logger/logrus"
 )
 
 type DateRepo struct {

@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/interfaces/repositories/pg_repository"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/logger/logrus"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/logger/logrus"
 	"net/http"
 )
 
@@ -16,10 +16,7 @@ var (
 func Server(logg *logrus.Logger, conf *config.AppConfig) {
 	log = logg
 	storage = pg_repository.CreateStorageInstance(log, conf)
-	//stopCh := make(chan os.Signal, 1)
-	//signal.Notify(stopCh, syscall.SIGINT, syscall.SIGTERM)
 	webApi(conf)
-	//<-stopCh
 }
 
 func webApi(conf *config.AppConfig) {

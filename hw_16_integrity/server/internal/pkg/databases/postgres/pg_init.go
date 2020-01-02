@@ -12,18 +12,23 @@ const dbSchema = "calendar"
 var dbOnce sync.Once
 var dbConn *pg.DB
 
-func CreatePgConn(conf *config.AppConfig, log usecases.Logger) *pg.DB {
+type DB struct {
+	Conf *config.AppConfig
+	Log  usecases.Logger
+}
+
+func (db *DB) CreatePgConn() *pg.DB {
 	opt := &pg.Options{
-		Addr:     conf.DBHost + ":" + conf.DBPort,
-		User:     conf.DBUser,
-		Password: conf.DBPassword,
-		Database: conf.DBName,
+		Addr:     db.Conf.DBHost + ":" + db.Conf.DBPort,
+		User:     db.Conf.DBUser,
+		Password: db.Conf.DBPassword,
+		Database: db.Conf.DBName,
 	}
 
 	dbOnce.Do(func() {
 		dbConn = pg.Connect(opt)
 		if _, err := dbConn.Exec("set search_path=?", dbSchema); err != nil {
-			log.Infof(err.Error())
+			db.Log.Infof(err.Error())
 		}
 	})
 	return dbConn

@@ -6,9 +6,9 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/config"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/databases/postgres"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/usecases"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/databases/postgres"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/logger/logrus"
 	"log"
 )
 
@@ -17,7 +17,11 @@ func main() {
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	logg := logrus.CreateLogrusLog(conf.LogLevel)
 	logg.Infof("Configs are %#v", conf)
-	db := postgres.CreatePgConn(&conf, logg)
+
+	db := postgres.DB{
+		Conf: &conf,
+		Log:  logg,
+	}.CreatePgConn()
 	initMigrationTableIfNeeded(db, logg)
 	oldVersion, newVersion, err := migrations.Run(db, flag.Args()...)
 	if err != nil {

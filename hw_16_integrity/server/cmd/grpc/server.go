@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/interfaces/repositories/pg_repository"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/logger/logrus"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/logger/logrus"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/proto"
 	"google.golang.org/grpc"
 	"net"

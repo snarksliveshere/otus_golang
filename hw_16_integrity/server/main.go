@@ -5,7 +5,7 @@ import (
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/cmd/grpc"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/cmd/web"
 	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/config"
-	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/pkg/logger/logrus"
+	"github.com/snarksliveshere/otus_golang/hw_16_integrity/server/internal/pkg/logger/logrus"
 	"log"
 	"os"
 	"os/signal"
