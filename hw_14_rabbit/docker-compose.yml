@@ -2,8 +2,6 @@ version: '3'
 services:
   manager-postgres:
     image: postgres:11.2-alpine
-    volumes:
-      - ./storage/docker/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: md
       POSTGRES_PASSWORD: secret
