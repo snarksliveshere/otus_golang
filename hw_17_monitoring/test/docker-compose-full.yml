@@ -1,0 +1,91 @@
+version: '3'
+
+networks:
+  db:
+    driver: bridge
+  grpc_server:
+    driver: bridge
+  rabbit:
+    driver: bridge
+
+services:
+  manager-postgres:
+    image: postgres:11.3-alpine
+    container_name: dbpg
+#    volumes:
+#      - ./setup.sql:/docker-entrypoint-initdb.d/init.sql
+#      - ./storage/docker/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: md
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: md_calendar
+    ports:
+      - "54321:5432"
+    networks:
+      - db
+
+  rabbit:
+    image: "rabbitmq:3-management"
+    container_name: rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - rabbit
+
+  grpc_server:
+    build: ./server
+    container_name: grpc
+    depends_on:
+      - manager-postgres
+    environment:
+      REG_SERVICE_DB_USER: md
+      REG_SERVICE_DB_PASSWORD: secret
+      REG_SERVICE_DB_NAME: md_calendar
+      REG_SERVICE_DB_HOST: dbpg
+      REG_SERVICE_DB_PORT: 5432
+      REG_SERVICE_LOG_LEVEL: info
+      REG_SERVICE_WEB_PORT: 8080
+      REG_SERVICE_GRPC_PORT: 50054
+      REG_SERVICE_LISTEN_IP: localhost
+    ports:
+      - "8888:8080"
+    networks:
+      - grpc_server
+      - db
+
+  scheduler:
+    build: ./scheduler
+    container_name: scheduler
+    depends_on:
+      - manager-postgres
+      - rabbit
+    environment:
+      SCHED_SERVICE_RABBIT_USER: guest
+      SCHED_SERVICE_RABBIT_PASSWORD: guest
+      SCHED_SERVICE_RABBIT_HOST: rabbit
+      SCHED_SERVICE_RABBIT_PORT: 5672
+      SCHED_SERVICE_LOG_LEVEL: info
+      SCHED_SERVICE_GRPC_PORT: 50054
+      SCHED_SERVICE_GRPC_HOST: grpc
+      SCHED_SERVICE_LISTEN_IP: 0.0.0.0
+    networks:
+      - grpc_server
+      - db
+      - rabbit
+
+  message_server:
+    build: ./message_office
+    container_name: message_server
+    depends_on:
+      - rabbit
+    environment:
+      MSG_SERVICE_RABBIT_USER: guest
+      MSG_SERVICE_RABBIT_PASSWORD: guest
+      MSG_SERVICE_RABBIT_HOST: rabbit
+      MSG_SERVICE_RABBIT_PORT: 5672
+    networks:
+      - rabbit

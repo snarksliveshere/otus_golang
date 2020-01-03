@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "proto";
+
+import "google/protobuf/timestamp.proto";
+
+service EventService {
+    rpc sendCreateEventMessage (CreateEventRequestMessage) returns (CreateEventResponseMessage);
+    rpc sendDeleteEventMessage (DeleteEventRequestMessage) returns (DeleteEventResponseMessage);
+    rpc sendUpdateEventMessage (UpdateEventRequestMessage) returns (UpdateEventResponseMessage);
+    rpc sendGetEventsForDayMessage (GetEventsForDateRequestMessage) returns (GetEventsForDateResponseMessage);
+    rpc sendGetEventsForMonthMessage (GetEventsForMonthRequestMessage) returns (GetEventsForMonthResponseMessage);
+    rpc sendGetEventsForIntervalMessage (GetEventsForIntervalRequestMessage) returns (GetEventsForIntervalResponseMessage);
+    rpc sendGetEventsByIdMessage (GetEventByIdRequestMessage) returns (GetEventByIdResponseMessage);
+}
+
+message Event {
+    uint64 id = 1;
+    uint32 dateFk = 2;
+    string title = 3;
+    string description = 4;
+    google.protobuf.Timestamp time = 5;
+}
+
+message Date {
+    google.protobuf.Timestamp date = 1;
+    repeated Event events = 2;
+}
+
+message Calendar {
+    repeated Date dates = 1;
+}
+
+message CreateEventResponseMessage {
+    string status = 1;
+    string error = 2;
+    uint64 id = 3;
+}
+
+message CreateEventRequestMessage {
+    string title = 1;
+    string description = 2;
+    reserved 3 to 100;
+    google.protobuf.Timestamp time = 102;
+
+}
+
+message DeleteEventRequestMessage {
+    uint64 eventId = 1;
+}
+
+message DeleteEventResponseMessage {
+    string status = 1;
+    string text = 2;
+}
+
+message UpdateEventRequestMessage {
+    uint64 eventId = 1;
+    string title = 2;
+    string description = 3;
+}
+
+message UpdateEventResponseMessage {
+    string status = 1;
+    string text = 2;
+}
+
+message GetEventsForDateRequestMessage {
+    string date = 1;
+}
+
+message GetEventsForDateResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Event events = 3;
+}
+
+message GetEventsForMonthRequestMessage {
+    string month = 1;
+}
+
+message GetEventsForMonthResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Event events = 3;
+}
+
+message GetEventsForIntervalRequestMessage {
+    string from = 1;
+    string till = 2;
+}
+
+message GetEventsForIntervalResponseMessage {
+    string status = 1;
+    string text = 2;
+    repeated Event events = 3;
+}
+
+message GetEventByIdResponseMessage {
+    string status = 1;
+    string error = 2;
+    uint64 id = 3;
+    Event event = 4;
+}
+
+message GetEventByIdRequestMessage {
+    uint64 eventId = 1;
+}

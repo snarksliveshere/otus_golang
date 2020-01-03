@@ -1,0 +1,63 @@
+version: '3.7'
+
+networks:
+  apinet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.99.0/24
+
+services:
+  manager-postgres:
+    image: postgres:11.3-alpine
+    container_name: dbpg
+    volumes:
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    environment:
+      POSTGRES_USER: md
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: md_calendar
+    ports:
+      - "54321:5432"
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.51
+
+  grpc_server:
+    build: ./server
+    container_name: grpc
+    restart: on-failure
+    depends_on:
+      - manager-postgres
+    environment:
+      REG_SERVICE_DB_USER: md
+      REG_SERVICE_DB_PASSWORD: secret
+      REG_SERVICE_DB_NAME: md_calendar
+      REG_SERVICE_DB_HOST: dbpg
+      REG_SERVICE_DB_PORT: 5432
+      REG_SERVICE_LOG_LEVEL: info
+      REG_SERVICE_WEB_PORT: 8888
+      REG_SERVICE_GRPC_PORT: 50054
+      REG_SERVICE_LISTEN_IP: 0.0.0.0
+    ports:
+      - "8888:8888"
+      - "9102:9102"
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.50
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prom
+    volumes:
+      - ./build/prometheus/:/etc/prometheus/
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - grpc_server
+    restart: always
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.15
