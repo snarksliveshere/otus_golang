@@ -3,6 +3,8 @@ package web
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
+	"github.com/slok/go-http-metrics/middleware"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/entity"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/internal/data_handlers"
@@ -24,8 +26,15 @@ type Response struct {
 }
 
 func routesRegister(router *mux.Router) {
+	mdlw := middleware.New(middleware.Config{
+		Recorder: metrics.NewRecorder(metrics.Config{}),
+	})
 	//router.Handle("/metrics", promhttp.Handler())
-	router.HandleFunc("/healthcheck", healthCheckHandler)
+
+	//router.Handle()
+	rr := router.HandleFunc("/healthcheck", healthCheckHandler)
+	mdlw.Handler("/healthcheck", rr.GetHandler())
+	//rr.GetHandler()
 	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods(http.MethodPost)
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
 	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
