@@ -2,13 +2,14 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
-	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
-	"github.com/slok/go-http-metrics/middleware"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/entity"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/internal/data_handlers"
 	"net/http"
+	"time"
 )
 
 const (
@@ -25,15 +26,46 @@ type Response struct {
 	Status string `json:"status,omitempty"`
 }
 
+func Sayhello(histogram *prometheus.HistogramVec) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		//monitoring how long it takes to respond
+		start := time.Now()
+		defer r.Body.Close()
+		code := 500
+
+		defer func() {
+			httpDuration := time.Since(start)
+			histogram.WithLabelValues(fmt.Sprintf("%d", code)).Observe(httpDuration.Seconds())
+		}()
+
+		code = http.StatusBadRequest // if req is not GET
+		if r.Method == "GET" {
+			code = http.StatusOK
+			w.Write([]byte("OK"))
+		} else {
+			w.WriteHeader(code)
+		}
+	}
+}
+
 func routesRegister(router *mux.Router) {
-	mdlw := middleware.New(middleware.Config{
-		Recorder: metrics.NewRecorder(metrics.Config{}),
-	})
+	histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    "greeting_seconds",
+		Help:    "Time take to greet someone",
+		Buckets: []float64{1, 2, 5, 6, 10}, //defining small buckets as this app should not take more than 1 sec to respond
+	}, []string{"code"}) // this will be partitioned by the HTTP code.
+	//mdlw := middleware.New(middleware.Config{
+	//	Recorder: metrics.NewRecorder(metrics.Config{}),
+	//})
 	//router.Handle("/metrics", promhttp.Handler())
+	//./wrk -t4 -c100 -d60s http://127.0.0.1:8888/healthcheck
 
 	//router.Handle()
-	rr := router.HandleFunc("/healthcheck", healthCheckHandler)
-	mdlw.Handler("/healthcheck", rr.GetHandler())
+	//rr := router.HandleFunc("/healthcheck", healthCheckHandler)
+	router.Handle("/healthcheck", Sayhello(histogram))
+	prometheus.Register(histogram)
+	//mdlw.Handler("/healthcheck", rr.GetHandler())
 	//rr.GetHandler()
 	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods(http.MethodPost)
 	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
