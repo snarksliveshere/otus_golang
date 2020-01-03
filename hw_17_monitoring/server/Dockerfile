@@ -12,4 +12,7 @@ RUN CGO_ENABLED=0 go build -o /opt/service/reg_service
 # Release
 FROM alpine:latest
 COPY --from=builder /opt/service/reg_service /bin/reg_service
-ENTRYPOINT ["/bin/reg_service"]
+COPY wait.sh /bin/wait.sh
+ENV LOG_LEVEL = "error"
+RUN ["/bin/wait.sh"]
+#ENTRYPOINT ["/bin/reg_service"]
