@@ -62,3 +62,23 @@ services:
     networks:
       apinet:
         ipv4_address: 172.30.99.15
+
+  pg_exporter:
+    image: wrouesnel/postgres_exporter:v0.8.0
+    container_name: pg_exporter
+    volumes:
+      - ./build/pgexporter/:/app/
+    depends_on:
+      - grpc_server
+      - prometheus
+      - manager-postgres
+    restart: on-failure
+    command:
+      - --extend.query-path=/app/pg_queries.yml
+      - --disable-default-metrics
+      - --disable-settings-metrics
+    environment:
+      DATA_SOURCE_NAME: "postgresql://md:secret@172.30.99.51:5432/md_calendar?sslmode=disable"
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.17

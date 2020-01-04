@@ -5,3 +5,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['172.30.99.50:9102']
+  - job_name: pg_exporter
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['172.30.99.17:9187']
