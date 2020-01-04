@@ -26,13 +26,10 @@ services:
   grpc_server:
     build:
       context: ./server
-      args:
-        LOG_LEVEL: warning
     container_name: grpc
     restart: on-failure
     depends_on:
       - manager-postgres
-    command: ["/bin/wait.sh", "DB_HOST1111"]
     environment:
       REG_SERVICE_DB_USER: md
       REG_SERVICE_DB_PASSWORD: secret
