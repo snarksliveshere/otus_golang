@@ -2,10 +2,14 @@ package main
 
 import (
 	"github.com/kelseyhightower/envconfig"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/message_office/config"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/message_office/model"
 	"github.com/streadway/amqp"
 	"log"
+	"net/http"
+	"time"
 )
 
 func failOnError(err error, msg string) {
@@ -15,6 +19,12 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	msgInSec := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "messages_in_sec",
+		})
+	prometheus.MustRegister(msgInSec)
+
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
@@ -57,6 +67,13 @@ func main() {
 	forever := make(chan bool)
 
 	go func() {
+		msgInSec.Set(float64(len(msgs)))
+
+		for i := 0; i < 100; i++ {
+			msgInSec.Set(float64(i)) // or: Inc(), Dec(), Add(5), Dec(5)
+			time.Sleep(10 * time.Millisecond)
+		}
+
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			err := d.Ack(false)
@@ -68,6 +85,11 @@ func main() {
 				log.Printf("error: %v", err.Error())
 			}
 
+		}
+	}()
+	go func() {
+		if err := http.ListenAndServe(":9102", promhttp.Handler()); err != nil {
+			log.Fatal(err)
 		}
 	}()
 

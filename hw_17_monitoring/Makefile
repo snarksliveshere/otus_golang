@@ -9,6 +9,9 @@ up:
 rebuild-test:
 	docker-compose -f docker-compose.test.yml up --build --no-deps -d client_server
 
+run-test:
+	docker-compose -f docker-compose.test.yml up --build --no-deps -d client_server
+
 grpc-rebuild:
 	docker-compose up --build --no-deps -d grpc_server
 

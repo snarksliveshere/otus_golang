@@ -23,6 +23,19 @@ services:
       apinet:
         ipv4_address: 172.30.99.51
 
+  rabbit:
+    image: "rabbitmq:3-management"
+    container_name: rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.53
+
   grpc_server:
     build:
       context: ./server
@@ -47,6 +60,50 @@ services:
       apinet:
         ipv4_address: 172.30.99.50
 
+  scheduler:
+    build: ./scheduler
+    container_name: scheduler
+    restart: on-failure
+    depends_on:
+      - manager-postgres
+      - rabbit
+      - grpc_server
+    environment:
+      RABBIT_USER: guest
+      RABBIT_PASSWORD: guest
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      LOG_LEVEL: info
+      GRPC_PORT: 50054
+      GRPC_HOST: grpc
+      LISTEN_IP: 0.0.0.0
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.55
+
+  message_server:
+    build: ./message_office
+    container_name: message_server
+    depends_on:
+      - scheduler
+      - rabbit
+      - manager-postgres
+    restart: on-failure
+    environment:
+      RABBIT_USER: guest
+      RABBIT_PASSWORD: guest
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      LOG_LEVEL: info
+      DB_USER: md
+      DB_PASSWORD: secret
+      DB_NAME: md_calendar
+      DB_HOST: dbpg
+      DB_PORT: 5432
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.60
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prom
@@ -58,6 +115,7 @@ services:
       - "9090:9090"
     depends_on:
       - grpc_server
+      - manager-postgres
     restart: always
     networks:
       apinet:
@@ -75,10 +133,34 @@ services:
     restart: on-failure
     command:
       - --extend.query-path=/app/pg_queries.yml
-      - --disable-default-metrics
-      - --disable-settings-metrics
+#      - --disable-default-metrics
+#      - --disable-settings-metrics
     environment:
       DATA_SOURCE_NAME: "postgresql://md:secret@172.30.99.51:5432/md_calendar?sslmode=disable"
     networks:
       apinet:
         ipv4_address: 172.30.99.17
+
+  client_server:
+    build:
+      context: ./client
+      dockerfile: Dockerfile_grpc
+    container_name: client_web
+    depends_on:
+      - scheduler
+      - message_server
+      - grpc_server
+    restart: on-failure
+    environment:
+      WEB_PORT: 8888
+      GRPC_PORT: 50054
+      LISTEN_IP: grpc
+      LOG_LEVEL: info
+      DB_USER: md
+      DB_PASSWORD: secret
+      DB_NAME: md_calendar
+      DB_HOST: dbpg
+      DB_PORT: 5432
+    networks:
+      apinet:
+        ipv4_address: 172.30.99.75
