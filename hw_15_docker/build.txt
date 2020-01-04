@@ -1,0 +1,286 @@
+Step 1/12 : FROM golang:1.13.1 as builder
+ ---> 52b59e9ead8e
+Step 2/12 : LABEL maintainer="snarksliveshere"
+ ---> Using cache
+ ---> 6b7c0cff1a57
+Step 3/12 : RUN mkdir -p /opt/reg_service
+ ---> Using cache
+ ---> 9797513d2640
+Step 4/12 : WORKDIR /opt/reg_service
+ ---> Using cache
+ ---> 02f56431ab4e
+Step 5/12 : COPY go.mod .
+ ---> Using cache
+ ---> 6bd9b4c0fe64
+Step 6/12 : COPY go.sum .
+ ---> Using cache
+ ---> 1caf764dd8b2
+Step 7/12 : RUN go mod download
+ ---> Using cache
+ ---> 76d0c1c6b486
+Step 8/12 : COPY . .
+ ---> e49b4b17bc26
+Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/reg_service
+ ---> Running in 7668a9559f7d
+Removing intermediate container 7668a9559f7d
+ ---> 57288ee9d8d1
+
+Step 10/12 : FROM alpine:latest
+ ---> cc0abc535e36
+Step 11/12 : COPY --from=builder /opt/service/reg_service /bin/reg_service
+ ---> 067b5feb16bf
+Step 12/12 : ENTRYPOINT ["/bin/reg_service"]
+ ---> Running in d9810977d729
+Removing intermediate container d9810977d729
+ ---> 52d4b743e499
+
+Successfully built 52d4b743e499
+Successfully tagged hw_15_docker_grpc_server:latest
+Step 1/12 : FROM golang:1.13.1 as builder
+ ---> 52b59e9ead8e
+Step 2/12 : LABEL maintainer="snarksliveshere"
+ ---> Using cache
+ ---> 6b7c0cff1a57
+Step 3/12 : RUN mkdir -p /opt/sched_service
+ ---> Using cache
+ ---> 0f153a25ba7c
+Step 4/12 : WORKDIR /opt/sched_service
+ ---> Using cache
+ ---> 542edc827e9a
+Step 5/12 : COPY go.mod .
+ ---> Using cache
+ ---> b7f98b29bbc9
+Step 6/12 : COPY go.sum .
+ ---> Using cache
+ ---> 0a8e6257cbc7
+Step 7/12 : RUN go mod download
+ ---> Using cache
+ ---> 08fc0659de72
+Step 8/12 : COPY . .
+ ---> Using cache
+ ---> bc36bf9e8cca
+Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/sched_service
+ ---> Using cache
+ ---> 6bb0bbef6b4b
+
+Step 10/12 : FROM alpine:latest
+ ---> cc0abc535e36
+Step 11/12 : COPY --from=builder /opt/service/sched_service /bin/sched_service
+ ---> Using cache
+ ---> e104713a57b4
+Step 12/12 : ENTRYPOINT ["/bin/sched_service"]
+ ---> Using cache
+ ---> 65e225922f38
+
+Successfully built 65e225922f38
+Successfully tagged hw_15_docker_scheduler:latest
+Step 1/12 : FROM golang:1.13.1 as builder
+ ---> 52b59e9ead8e
+Step 2/12 : LABEL maintainer="snarksliveshere"
+ ---> Using cache
+ ---> 6b7c0cff1a57
+Step 3/12 : RUN mkdir -p /opt/msg_service
+ ---> Using cache
+ ---> 1e4de7be32a1
+Step 4/12 : WORKDIR /opt/msg_service
+ ---> Using cache
+ ---> 0d8539d6b322
+Step 5/12 : COPY go.mod .
+ ---> Using cache
+ ---> c8f0a5a9cddd
+Step 6/12 : COPY go.sum .
+ ---> Using cache
+ ---> 15e4445d42b6
+Step 7/12 : RUN go mod download
+ ---> Using cache
+ ---> 44fb569dd0d2
+Step 8/12 : COPY . .
+ ---> Using cache
+ ---> a6a15fac1208
+Step 9/12 : RUN CGO_ENABLED=0 go build -o /opt/service/msg_service
+ ---> Using cache
+ ---> 8d84250ccb8b
+
+Step 10/12 : FROM alpine:latest
+ ---> cc0abc535e36
+Step 11/12 : COPY --from=builder /opt/service/msg_service /bin/msg_service
+ ---> Using cache
+ ---> 577ab3b92dd2
+Step 12/12 : ENTRYPOINT ["/bin/msg_service"]
+ ---> Using cache
+ ---> 790c32e2634e
+
+Successfully built 790c32e2634e
+Successfully tagged hw_15_docker_message_server:latest
+Attaching to rabbit, dbpg, grpc, hw_15_docker_scheduler_1, hw_15_docker_message_server_1
+[36mdbpg                |[0m 2020-01-04 07:16:47.920 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+[36mdbpg                |[0m 2020-01-04 07:16:47.920 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+[36mdbpg                |[0m 2020-01-04 07:16:48.087 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+[33mgrpc                |[0m time="2020-01-04T07:16:52Z" level=info msg="start web server" app=simple_app_calendar
+[36mdbpg                |[0m 2020-01-04 07:16:49.212 UTC [18] LOG:  database system was shut down at 2020-01-04 07:16:03 UTC
+[33mgrpc                |[0m time="2020-01-04T07:16:52Z" level=info msg="start grpc server" app=simple_app_calendar
+[36mdbpg                |[0m 2020-01-04 07:16:49.374 UTC [1] LOG:  database system is ready to accept connections
+[34mrabbit              |[0m 2020-01-04 07:16:54.679 [info] <0.8.0> Feature flags: list of feature flags found:
+[34mrabbit              |[0m 2020-01-04 07:16:54.679 [info] <0.8.0> Feature flags:   [x] drop_unroutable_metric
+[33mgrpc                |[0m time="2020-01-04T07:16:52Z" level=info msg="Run web webApi server: 0.0.0.0:8888" app=simple_app_calendar
+[34mrabbit              |[0m 2020-01-04 07:16:54.679 [info] <0.8.0> Feature flags:   [x] empty_basic_get_metric
+[34mrabbit              |[0m 2020-01-04 07:16:54.680 [info] <0.8.0> Feature flags:   [x] implicit_default_bindings
+[34mrabbit              |[0m 2020-01-04 07:16:54.680 [info] <0.8.0> Feature flags:   [x] quorum_queue
+[34mrabbit              |[0m 2020-01-04 07:16:54.680 [info] <0.8.0> Feature flags:   [x] virtual_host_metadata
+[34mrabbit              |[0m 2020-01-04 07:16:54.680 [info] <0.8.0> Feature flags: feature flag states written to disk: yes
+[34mrabbit              |[0m 2020-01-04 07:16:55.210 [info] <0.302.0> ra: meta data store initialised. 0 record(s) recovered
+[34mrabbit              |[0m 2020-01-04 07:16:55.211 [info] <0.307.0> WAL: recovering ["/var/lib/rabbitmq/mnesia/rabbit@d63b6d80ae50/quorum/rabbit@d63b6d80ae50/00000001.wal"]
+[34mrabbit              |[0m 2020-01-04 07:16:55.212 [info] <0.311.0> 
+[34mrabbit              |[0m  Starting RabbitMQ 3.8.2 on Erlang 22.2.1
+[34mrabbit              |[0m  Copyright (c) 2007-2019 Pivotal Software, Inc.
+[34mrabbit              |[0m  Licensed under the MPL 1.1. Website: https://rabbitmq.com
+[34mrabbit              |[0m 
+[34mrabbit              |[0m   ##  ##      RabbitMQ 3.8.2
+[34mrabbit              |[0m   ##  ##
+[34mrabbit              |[0m   ##########  Copyright (c) 2007-2019 Pivotal Software, Inc.
+[34mrabbit              |[0m   ######  ##
+[34mrabbit              |[0m   ##########  Licensed under the MPL 1.1. Website: https://rabbitmq.com
+[34mrabbit              |[0m 
+[34mrabbit              |[0m   Doc guides: https://rabbitmq.com/documentation.html
+[34mrabbit              |[0m   Support:    https://rabbitmq.com/contact.html
+[34mrabbit              |[0m   Tutorials:  https://rabbitmq.com/getstarted.html
+[34mrabbit              |[0m   Monitoring: https://rabbitmq.com/monitoring.html
+[34mrabbit              |[0m 
+[34mrabbit              |[0m   Logs: <stdout>
+[34mrabbit              |[0m 
+[34mrabbit              |[0m   Config file(s): /etc/rabbitmq/rabbitmq.conf
+[34mrabbit              |[0m 
+[34mrabbit              |[0m   Starting broker...2020-01-04 07:16:55.212 [info] <0.311.0> 
+[34mrabbit              |[0m  node           : rabbit@d63b6d80ae50
+[34mrabbit              |[0m  home dir       : /var/lib/rabbitmq
+[34mrabbit              |[0m  config file(s) : /etc/rabbitmq/rabbitmq.conf
+[34mrabbit              |[0m  cookie hash    : 0KFeBFzdpn7frSC6H1T8gg==
+[34mrabbit              |[0m  log(s)         : <stdout>
+[34mrabbit              |[0m  database dir   : /var/lib/rabbitmq/mnesia/rabbit@d63b6d80ae50
+[34mrabbit              |[0m 2020-01-04 07:16:55.226 [info] <0.311.0> Running boot step pre_boot defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.226 [info] <0.311.0> Running boot step rabbit_core_metrics defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.226 [info] <0.311.0> Running boot step rabbit_alarm defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.228 [info] <0.317.0> Memory high watermark set to 3172 MiB (3326386176 bytes) of 7930 MiB (8315965440 bytes) total
+[34mrabbit              |[0m 2020-01-04 07:16:55.235 [info] <0.319.0> Enabling free disk space monitoring
+[34mrabbit              |[0m 2020-01-04 07:16:55.235 [info] <0.319.0> Disk free limit set to 50MB
+[34mrabbit              |[0m 2020-01-04 07:16:55.246 [info] <0.311.0> Running boot step code_server_cache defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.246 [info] <0.311.0> Running boot step file_handle_cache defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.246 [info] <0.322.0> Limiting to approx 1048479 file handles (943629 sockets)
+[34mrabbit              |[0m 2020-01-04 07:16:55.246 [info] <0.323.0> FHC read buffering:  OFF
+[34mrabbit              |[0m 2020-01-04 07:16:55.247 [info] <0.323.0> FHC write buffering: ON
+[34mrabbit              |[0m 2020-01-04 07:16:55.247 [info] <0.311.0> Running boot step worker_pool defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.247 [info] <0.312.0> Will use 4 processes for default worker pool
+[34mrabbit              |[0m 2020-01-04 07:16:55.247 [info] <0.312.0> Starting worker pool 'worker_pool' with 4 processes in it
+[34mrabbit              |[0m 2020-01-04 07:16:55.247 [info] <0.311.0> Running boot step database defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.266 [info] <0.311.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2020-01-04 07:16:55.439 [info] <0.311.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Peer discovery backend rabbit_peer_discovery_classic_config does not support registration, skipping registration.
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Running boot step database_sync defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Running boot step feature_flags defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Running boot step codec_correctness_check defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Running boot step external_infrastructure defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.599 [info] <0.311.0> Running boot step rabbit_registry defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_queue_location_random defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_event defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.600 [info] <0.311.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_mirror_queue_mode_all defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_mirror_queue_mode_exactly defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_mirror_queue_mode_nodes defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_priority_queue defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Priority queues enabled, real BQ is rabbit_variable_queue
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_queue_location_client_local defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_queue_location_min_masters defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step kernel_ready defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.601 [info] <0.311.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.603 [info] <0.389.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+[34mrabbit              |[0m 2020-01-04 07:16:55.603 [info] <0.311.0> Running boot step guid_generator defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.643 [info] <0.311.0> Running boot step rabbit_node_monitor defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.644 [info] <0.395.0> Starting rabbit_node_monitor
+[34mrabbit              |[0m 2020-01-04 07:16:55.644 [info] <0.311.0> Running boot step delegate_sup defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.645 [info] <0.311.0> Running boot step rabbit_memory_monitor defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.645 [info] <0.311.0> Running boot step core_initialized defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.645 [info] <0.311.0> Running boot step upgrade_queues defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.672 [info] <0.311.0> Running boot step rabbit_connection_tracking defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.672 [info] <0.311.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.672 [info] <0.311.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.672 [info] <0.311.0> Running boot step rabbit_mirror_queue_misc defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.672 [info] <0.311.0> Running boot step rabbit_policies defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.673 [info] <0.311.0> Running boot step rabbit_policy defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.673 [info] <0.311.0> Running boot step rabbit_queue_location_validator defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Running boot step rabbit_vhost_limit defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Management plugin: using rates mode 'basic'
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [info] <0.311.0> Running boot step recovery defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.674 [error] emulator Discarding message {'$gen_cast',{force_event_refresh,#Ref<0.3304808626.902823937.62235>}} from <0.311.0> to <0.826.0> in an old incarnation (1) of this node (3)
+[34mrabbit              |[0m 
+[34mrabbit              |[0m 2020-01-04 07:16:55.675 [info] <0.428.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@d63b6d80ae50/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+[34mrabbit              |[0m 2020-01-04 07:16:55.710 [info] <0.428.0> Starting message stores for vhost '/'
+[34mrabbit              |[0m 2020-01-04 07:16:55.711 [info] <0.432.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_transient": using rabbit_msg_store_ets_index to provide index
+[34mrabbit              |[0m 2020-01-04 07:16:55.714 [info] <0.428.0> Started message store of type transient for vhost '/'
+[34mrabbit              |[0m 2020-01-04 07:16:55.714 [info] <0.435.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": using rabbit_msg_store_ets_index to provide index
+[34mrabbit              |[0m 2020-01-04 07:16:55.719 [info] <0.428.0> Started message store of type persistent for vhost '/'
+[34mrabbit              |[0m 2020-01-04 07:16:55.756 [info] <0.311.0> Running boot step load_core_definitions defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.756 [info] <0.311.0> Running boot step empty_db_check defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.756 [info] <0.311.0> Running boot step rabbit_looking_glass defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.756 [info] <0.311.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.757 [info] <0.311.0> Running boot step background_gc defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.757 [info] <0.311.0> Running boot step connection_tracking defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.757 [info] <0.311.0> Setting up a table for connection tracking on this node: tracked_connection_on_node_rabbit@d63b6d80ae50
+[34mrabbit              |[0m 2020-01-04 07:16:55.757 [info] <0.311.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost_on_node_rabbit@d63b6d80ae50
+[34mrabbit              |[0m 2020-01-04 07:16:55.758 [info] <0.311.0> Running boot step routing_ready defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.758 [info] <0.311.0> Running boot step pre_flight defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.758 [info] <0.311.0> Running boot step notify_cluster defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.758 [info] <0.311.0> Running boot step networking defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.760 [info] <0.476.0> started TCP listener on [::]:5672
+[34mrabbit              |[0m 2020-01-04 07:16:55.760 [info] <0.311.0> Running boot step cluster_name defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.760 [info] <0.311.0> Running boot step direct_client defined by app rabbit
+[34mrabbit              |[0m 2020-01-04 07:16:55.787 [info] <0.526.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+[34mrabbit              |[0m 2020-01-04 07:16:55.787 [info] <0.632.0> Statistics database started.
+[34mrabbit              |[0m 2020-01-04 07:16:55.787 [info] <0.631.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+[34mrabbit              |[0m 2020-01-04 07:16:55.888 [info] <0.8.0> Server startup complete; 3 plugins started.
+[34mrabbit              |[0m  * rabbitmq_management
+[34mrabbit              |[0m  * rabbitmq_management_agent
+[34mrabbit              |[0m  * rabbitmq_web_dispatch
+[34mrabbit              |[0m  completed with 3 plugins.
+[34mrabbit              |[0m 2020-01-04 07:17:26.260 [info] <0.673.0> accepting AMQP connection <0.673.0> (172.30.99.55:49016 -> 172.30.99.53:5672)
+[34mrabbit              |[0m 2020-01-04 07:17:26.263 [info] <0.673.0> connection <0.673.0> (172.30.99.55:49016 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
+[35mscheduler_1         |[0m time="2020-01-04T07:17:26Z" level=info msg="Run scheduler" app=simple_app_calendar
+[34mrabbit              |[0m 2020-01-04 07:17:29.896 [info] <0.687.0> accepting AMQP connection <0.687.0> (172.30.99.60:47076 -> 172.30.99.53:5672)
+[34mrabbit              |[0m 2020-01-04 07:17:29.898 [info] <0.687.0> connection <0.687.0> (172.30.99.60:47076 -> 172.30.99.53:5672): user 'guest' authenticated and granted access to vhost '/'
+[32mmessage_server_1    |[0m 2020/01/04 07:17:29  [*] Waiting for messages. To exit press CTRL+C
+[35mscheduler_1         |[0m 
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""
+[35mscheduler_1         |[0m status:error text:there are no events in this day, events: ""

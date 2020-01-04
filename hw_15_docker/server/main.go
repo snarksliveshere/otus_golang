@@ -10,11 +10,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func main() {
-	time.Sleep(30 * time.Second)
+	//time.Sleep(30 * time.Second)
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	logg := logrus.CreateLogrusLog(conf.LogLevel)
