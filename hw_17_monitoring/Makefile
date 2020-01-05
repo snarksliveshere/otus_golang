@@ -15,6 +15,9 @@ run-test:
 grpc-rebuild:
 	docker-compose up --build --no-deps -d grpc_server
 
+msg-rebuild:
+	docker-compose up --build --no-deps -d message_server
+
 restart-test:
 	docker-compose -f docker-compose.test.yml restart client_server
 

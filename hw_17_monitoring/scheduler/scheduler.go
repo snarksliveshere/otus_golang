@@ -9,6 +9,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"os"
+	"time"
 )
 
 func failOnError(err error, msg string) {
@@ -36,9 +37,15 @@ func main() {
 
 func createRabbitConn(conf *config.AppConfig) *amqp.Connection {
 	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
-	conn, err := amqp.Dial(strDial)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	return conn
+	for {
+		conn, err := amqp.Dial(strDial)
+		if err == nil {
+			return conn
+		} else {
+			log.Printf("INFO:Failed to connect to RabbitMQ with %s", err.Error())
+			time.Sleep(1 * time.Second)
+		}
+	}
 }
 
 func createChannel(conn *amqp.Connection) *amqp.Channel {

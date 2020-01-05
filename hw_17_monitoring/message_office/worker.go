@@ -18,18 +18,36 @@ func failOnError(err error, msg string) {
 	}
 }
 
+func connectRabbit(str string) *amqp.Connection {
+	for {
+		conn, err := amqp.Dial(str)
+		if err == nil {
+			return conn
+		} else {
+			log.Printf("INFO:Failed to connect to RabbitMQ with %s", err.Error())
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
 func main() {
 	msgInSec := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "messages_in_sec",
+			Name: "msgs_messages_in_sec",
 		})
 	prometheus.MustRegister(msgInSec)
 
 	var conf config.AppConfig
 	failOnError(envconfig.Process("reg_service", &conf), "failed to init config")
 	strDial := "amqp://" + conf.RbUser + ":" + conf.RbPassword + "@" + conf.RbHost + ":" + conf.RbPort + "/"
-	conn, err := amqp.Dial(strDial)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	//for {
+	//	conn, err := amqp.Dial(strDial)
+	//	if err != nil {
+	//		failOnError(err, "Failed to connect to RabbitMQ")
+	//	}
+	//}
+	conn := connectRabbit(strDial)
+
 	defer func() { _ = conn.Close() }()
 
 	ch, err := conn.Channel()
@@ -67,24 +85,31 @@ func main() {
 	forever := make(chan bool)
 
 	go func() {
-		msgInSec.Set(float64(len(msgs)))
-
-		for i := 0; i < 100; i++ {
-			msgInSec.Set(float64(i)) // or: Inc(), Dec(), Add(5), Dec(5)
-			time.Sleep(10 * time.Millisecond)
-		}
-
+		var t time.Time
+		var inc float64
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			start := time.Now()
+			log.Printf("Received a message: %s\n", d.Body)
+			inc++
+			if !t.IsZero() {
+				elapsed := start.Sub(t).Seconds()
+				if elapsed >= 1 {
+					msgInSec.Set(inc / elapsed)
+					log.Printf("elapsed: %v\n", elapsed)
+					log.Println("inc is: ", inc, "elapsed is:", int(elapsed))
+					log.Println("divide: ", inc/elapsed)
+					inc = 0
+				}
+			}
 			err := d.Ack(false)
 			if err != nil {
-				log.Printf("error: %v", err.Error())
+				log.Printf("error: %v\n", err.Error())
 			}
 			err = insertToDb(string(d.Body), &conf)
 			if err != nil {
-				log.Printf("error: %v", err.Error())
+				log.Printf("error: %v\n", err.Error())
 			}
-
+			t = time.Now()
 		}
 	}()
 	go func() {

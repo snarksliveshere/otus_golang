@@ -34,7 +34,6 @@ func webApi(conf *config.AppConfig) {
 		if err := metricServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
-
 	}()
 	go func() {
 		log.Info("web server start")
