@@ -51,7 +51,7 @@ func Sayhello(histogram *prometheus.HistogramVec) http.HandlerFunc {
 	}
 }
 
-func hch() http.HandlerFunc {
+func healthcheck() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("OK"))
 		if err != nil {
@@ -61,35 +61,27 @@ func hch() http.HandlerFunc {
 }
 
 func routesRegister(router *mux.Router) {
-	//histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-	//	Name:    "greeting_seconds",
-	//	Help:    "Time take to greet someone",
-	//	Buckets: []float64{1, 2, 5, 6, 10}, //defining small buckets as this app should not take more than 1 sec to respond
-	//}, []string{"code"}) // this will be partitioned by the HTTP code.
 	mdlw := middleware.New(middleware.Config{
 		Recorder: metrics.NewRecorder(metrics.Config{}),
 	})
-	//mdlw.Handler("", Sayhello(histogram))
-	h := mdlw.Handler("", hch())
-	//router.Handle("/metrics", promhttp.Handler())
-
 	//./wrk -t4 -c100 -d60s http://127.0.0.1:8888/healthcheck
-
-	//router.Handle()
-	//router.HandleFunc("/healthcheck", healthCheckHandler)
-	//router.Handle("/healthcheck", Sayhello(histogram))
-	//prometheus.Register(histogram)
-	router.Handle("/healthcheck", h)
-	router.HandleFunc("/create-event", validCreateEventHandler(createEventHandler)).Methods(http.MethodPost)
-	router.HandleFunc("/update-event", validUpdateEventHandler(updateEventHandler))
-	router.HandleFunc("/delete-event", validDeleteEventHandler(deleteEventHandler))
-	router.HandleFunc("/events-for-day", validEventsForDayHandler(eventsForDayHandler)).
+	router.Handle("/healthcheck", mdlw.Handler("", healthcheck()))
+	router.Handle("/create-event",
+		mdlw.Handler("", validCreateEventHandler(createEventHandler))).
+		Methods(http.MethodPost)
+	router.Handle("/update-event",
+		mdlw.Handler("", validUpdateEventHandler(updateEventHandler)))
+	router.Handle("/delete-event",
+		mdlw.Handler("", validDeleteEventHandler(deleteEventHandler)))
+	router.Handle("/events-for-day",
+		mdlw.Handler("", validEventsForDayHandler(eventsForDayHandler))).
 		Queries("date", "{date}")
-	router.HandleFunc("/events-for-week", validEventsForIntervalHandler(eventsForWeekHandler)).
+	router.Handle("/events-for-week",
+		mdlw.Handler("", validEventsForIntervalHandler(eventsForWeekHandler))).
 		Queries("from", "{from}", "till", "{till}")
-	router.HandleFunc("/events-for-month", validEventsForMonthHandler(eventsForMonthHandler)).
+	router.Handle("/events-for-month",
+		mdlw.Handler("", validEventsForMonthHandler(eventsForMonthHandler))).
 		Queries("month", "{month}")
-
 }
 
 func sendResponse(resp Response, w http.ResponseWriter, r *http.Request) {
