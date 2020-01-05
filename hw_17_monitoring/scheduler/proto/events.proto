@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "proto";
+
+import "google/protobuf/timestamp.proto";
+
+service EventService {
+    rpc sendGetEventsForTimeIntervalMessage (GetEventsForTimeIntervalRequestMessage) returns (GetEventsForTimeIntervalResponseMessage);
+}
+
+message GetEventsForTimeIntervalRequestMessage {
+    google.protobuf.Timestamp from = 1;
+    google.protobuf.Timestamp till = 2;
+}
+
+message GetEventsForTimeIntervalResponseMessage {
+    string status = 1;
+    string text = 2;
+    string events = 3;
+}
