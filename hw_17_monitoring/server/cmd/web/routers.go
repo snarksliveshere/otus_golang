@@ -2,16 +2,13 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus"
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/slok/go-http-metrics/middleware"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/config"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/entity"
 	"github.com/snarksliveshere/otus_golang/hw_17_monitoring/server/internal/data_handlers"
 	"net/http"
-	"time"
 )
 
 const (
@@ -26,29 +23,6 @@ type Response struct {
 	//Result     []string      `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 	Status string `json:"status,omitempty"`
-}
-
-func Sayhello(histogram *prometheus.HistogramVec) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		//monitoring how long it takes to respond
-		start := time.Now()
-		defer r.Body.Close()
-		code := 500
-
-		defer func() {
-			httpDuration := time.Since(start)
-			histogram.WithLabelValues(fmt.Sprintf("%d", code)).Observe(httpDuration.Seconds())
-		}()
-
-		code = http.StatusBadRequest // if req is not GET
-		if r.Method == "GET" {
-			code = http.StatusOK
-			w.Write([]byte("OK"))
-		} else {
-			w.WriteHeader(code)
-		}
-	}
 }
 
 func healthcheck() http.HandlerFunc {
@@ -110,13 +84,6 @@ func otherErrorHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("500"))
 	if err != nil {
 		log.Fatal("An error occurred", err.Error())
-	}
-}
-
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("OK"))
-	if err != nil {
-		log.Fatal("An error occurred")
 	}
 }
 
